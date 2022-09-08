@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{16846F65-74FA-4E1A-854C-81F8C9709BF4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XLAutoDeploy</RootNamespace>
+    <AssemblyName>XLAutoDeploy</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ExcelDna.Integration, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f225e9659857edbe, processorArchitecture=MSIL">
+      <HintPath>packages\ExcelDna.Integration.1.5.0\lib\net452\ExcelDna.Integration.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>packages\NLog.4.7.12\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XLAutoDeploy.Mage, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\XLAutoDeploy.Mage.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Deployments\UpdateService.cs" />
+    <Compile Include="Deployments\CheckedUpdate.cs" />
+    <Compile Include="Deployments\ClientSystemDetection.cs" />
+    <Compile Include="ComAddInExtensibility.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="Deployments\DeploymentPayload.cs" />
+    <Compile Include="Deployments\DeploymentService.cs" />
+    <Compile Include="FileSystem\Access\Abstract\IRemoteFileDownloader.cs" />
+    <Compile Include="FileSystem\Access\Abstract\IRemoteFileDownloaderFactory.cs" />
+    <Compile Include="FileSystem\Access\Abstract\IFileNetworkConnection.cs" />
+    <Compile Include="FileSystem\Access\RemoteFileDownloader.cs" />
+    <Compile Include="FileSystem\Access\RemoteFileDownloaderFactory.cs" />
+    <Compile Include="FileSystem\Comparison.cs" />
+    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemMonitor.cs" />
+    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemMonitorFactory.cs" />
+    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemWatcherEventAggregator.cs" />
+    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemWatcherEventProvider.cs" />
+    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemWatcherFactory.cs" />
+    <Compile Include="FileSystem\Monitoring\FileSystemMonitor.cs" />
+    <Compile Include="FileSystem\Monitoring\FileSystemMonitorFactory.cs" />
+    <Compile Include="FileSystem\Monitoring\FileSystemWatcherEventAggregator.cs" />
+    <Compile Include="FileSystem\Monitoring\FileSystemWatcherFactory.cs" />
+    <Compile Include="FileSystem\Access\FileNetworkConnection.cs" />
+    <Compile Include="FileSystem\Utilities.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="InteropIntegration.cs" />
+    <Compile Include="Logging\Abstract\ILogger.cs" />
+    <Compile Include="Logging\Abstract\INLoggerProxyFactory.cs" />
+    <Compile Include="Logging\NLoggerProxy.cs" />
+    <Compile Include="Logging\NLoggerProxyFactory.cs" />
+    <Compile Include="Deployments\ManifestSerialization.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThisAddIn.cs" />
+    <Compile Include="Deployments\UpdateDeploymentDestination.cs" />
+    <Compile Include="Updates\Abstract\IUpdateDownloader.cs" />
+    <Compile Include="Updates\Abstract\IUpdateInstaller.cs" />
+    <Compile Include="Updates\Abstract\IUpdateLoader.cs" />
+    <Compile Include="Updates\Abstract\IUpdateNotifier.cs" />
+    <Compile Include="Updates\Abstract\IUpdateCoordinator.cs" />
+    <Compile Include="Updates\Abstract\IUpdateCoordinatorFactory.cs" />
+    <Compile Include="Updates\UpdateNotificationEventArgs.cs" />
+    <Compile Include="Updates\UpdateNotificationView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updates\UpdateNotificationView.Designer.cs">
+      <DependentUpon>UpdateNotificationView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Updates\UpdateDownloader.cs" />
+    <Compile Include="Updates\UpdateInstaller.cs" />
+    <Compile Include="Updates\UpdateLoader.cs" />
+    <Compile Include="Updates\UpdateNotifier.cs" />
+    <Compile Include="Updates\UpdateCoordinator.cs" />
+    <Compile Include="Updates\UpdateCoordinatorFactory.cs" />
+    <Compile Include="Deployments\UpdateMonitor.cs" />
+    <Compile Include="Deployments\UpdateMonitorFactory.cs" />
+    <Compile Include="XLAutoDeployManifest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\ExcelDna.Build.props" />
+    <None Include="README.md" />
+    <None Include="XLAutoDeploy-AddIn.dna" />
+    <None Include="XLAutoDeploy-AddIn.xll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="XLAutoDeploy-AddIn64.xll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lib\XLAutoDeploy.Mage.dll" />
+    <Content Include="Lib\XLAutoDeploy.Mage.xml" />
+    <Content Include="Lib\XLAutoDeploy.Mage.XmlSerializers.dll" />
+    <Content Include="XLAutoDeploy.Manifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Updates\UpdateNotificationView.resx">
+      <DependentUpon>UpdateNotificationView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild" DependsOnTargets="AssignTargetPaths;Compile;ResolveKeySource" Inputs="$(MSBuildAllProjects);@(IntermediateAssembly)" Outputs="$(OutputPath)$(_SGenDllName)">
+    <ItemGroup>
+      <SgenTypes Include="XLAutoDeploy.XLAutoDeployManifest" />
+    </ItemGroup>
+    <!-- Delete the file because I can't figure out how to force the SGen task. -->
+    <Delete Files="$(TargetDir)$(TargetName).XmlSerializers.dll" ContinueOnError="true" />
+    <SGen BuildAssemblyName="$(TargetFileName)" BuildAssemblyPath="$(OutputPath)" References="@(ReferencePath)" ShouldGenerateSerializer="true" UseProxyTypes="false" KeyContainer="$(KeyContainerName)" KeyFile="$(KeyOriginatorFile)" DelaySign="$(DelaySign)" ToolPath="$(TargetFrameworkSDKToolsDirectory)" Platform="$(Platform)">
+      <Output TaskParameter="SerializationAssembly" ItemName="SerializationAssembly" />
+    </SGen>
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="packages\ExcelDna.AddIn.1.5.0\build\ExcelDna.AddIn.targets" Condition="Exists('packages\ExcelDna.AddIn.1.5.0\build\ExcelDna.AddIn.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\ExcelDna.AddIn.1.5.0\build\ExcelDna.AddIn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ExcelDna.AddIn.1.5.0\build\ExcelDna.AddIn.targets'))" />
+  </Target>
+</Project>

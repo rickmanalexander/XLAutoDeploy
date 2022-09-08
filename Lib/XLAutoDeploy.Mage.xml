@@ -1,0 +1,1092 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>XLAutoDeploy.Mage</name>
+    </assembly>
+    <members>
+        <member name="T:XLAutoDeploy.Mage.AddIn">
+            <summary>
+            Represents a manifest file for an Excel add-in.
+            </summary>  
+            <remarks>
+            The latest version of this file should be stored on a remote <see cref="T:XLAutoDeploy.Mage.FileHost"/>
+            and the <see cref="T:XLAutoDeploy.Mage.Deployment"/> should point it. Based on the <see cref="T:XLAutoDeploy.Mage.DeploymentSettings"/>,
+            a copy of this file will be downloded onto to the client. 
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddIn.Uri">
+            <summary>
+            Specifies the Uri of the add-in file.
+            </summary>  
+            <remarks>
+            This is used locate the add-in file. Supported file extentions include .xlam, .xla, 
+            .xll, or .dll. Note, if .dll, then the <see cref="T:XLAutoDeploy.Mage.AddInType"/> must be either 
+            <see cref="F:XLAutoDeploy.Mage.AddInType.Automation"/> or <see cref="F:XLAutoDeploy.Mage.AddInType.Com"/>. The client 
+            must have admin rights so that the assembly can be programatically registered
+            for COM interop. <br/> <br/>  
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddIn.DeploymentUri">
+            <summary>
+            Specifies the Uri of the associated <see cref="T:XLAutoDeploy.Mage.Deployment"/>.
+            </summary>  
+            <remarks>
+            This is used locate the depoyment manifest on the remote <see cref="T:XLAutoDeploy.Mage.FileHost"/> 
+            so that it can be de-serialized. <br/> <br/>  
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddIn.Identity">
+            <summary>
+            Identifies the version of the application to install, and the location of the 
+            add-in manifest.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddIn.Dependencies">
+            <summary>
+            Identifies assembly(s) on which the add-in depends.
+            </summary>  
+            <remarks>
+            If the <see cref="P:XLAutoDeploy.Mage.AddInIdentity.AddInType"/> == <see cref="F:XLAutoDeploy.Mage.AddInType.ExcelDna"/>, 
+            and it is being deployed as un-packed, then there must be one or more 
+            <see cref="T:XLAutoDeploy.Mage.Dependency"/>(s) included. The same is true for add-ins of type 
+            <see cref="F:XLAutoDeploy.Mage.AddInType.Vba"/> that reference an external assembly(s). <br/> <br/>
+            Xml Node Type: Array <br/>
+            Xml Required: N <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddIn.AssetFiles">
+            <summary>
+            Identifies nonassembly file(s) to be downloaded and used by the add-in.
+            </summary>  
+            <remarks>
+            If the <see cref="P:XLAutoDeploy.Mage.AddInIdentity.AddInType"/> == <see cref="F:XLAutoDeploy.Mage.AddInType.ExcelDna"/>, and it 
+            is being deployed as un-packed, then the .dna file must be included as an
+            <see cref="T:XLAutoDeploy.Mage.AssetFile"/>. <br/> <br/>
+            Xml Node Type: Array <br/>
+            Xml Required: N <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddIn.DigitalSignature">
+            <summary>
+            Specifies a Digital Signature that can be used to verify the authenticity of the 
+            add-in Manifest.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.AddInIdentity">
+            <summary>
+            Represents information that identifies an Excel add-in.
+            </summary> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddInIdentity.AddInType">
+            <summary>
+            Identifies the type of Excel Add-in.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: N 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddInIdentity.Title">
+            <summary>
+            Identifies the title of the application. 
+            </summary>  
+            <remarks>
+            This is used by com interop methods to index the Microsoft.Office.Interop.Addins 
+            collection. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddInIdentity.Name">
+            <summary>
+            Identifies the human-readable name of the application. 
+            </summary>  
+            <remarks>
+            Cannot contain non-alpha-numeric characters. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddInIdentity.FileExtension">
+            <summary>
+            Identifies the file extension of the application. 
+            </summary>  
+            <remarks>
+            Cannot contain non-alpha-numeric characters. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AddInIdentity.Version">
+            <summary>
+            Specifies the version number of the add-in.
+            </summary>  
+            <remarks>
+            To trigger an application update, this value must be incremented in an updated 
+            <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.AddInType">
+            <summary>
+            Types of Excel add-ins that can be created.
+            </summary> 
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInType.Vba">
+            <summary>
+            An .xla or .xlam file that contains functions/procedures (written in VBA) to extend 
+            Excel's functionality.
+            </summary>  
+            <remarks>
+            By defaul the only references/dependencies for this type of add-in are self contained; 
+            however, the add-in can utilize COM-Visible assemblys (.dll(s)) that are called by  
+            VBA. 
+            </remarks> 
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInType.ExcelDna">
+            <summary>
+            An .xll file (written in .Net) using the Excel-DNA project/library.
+            </summary>  
+            <remarks>
+            <see href="https://excel-dna.net/"/>
+            </remarks> 
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInType.Automation">
+            <summary>
+            An assembly (.dll) that exposes .Net functions to Excel as UDFs.
+            </summary>  
+            <remarks>
+            This type does NOT interact with Excel Objects (via COM interop) by default. These 
+            functions should be visible in the excel function wizard. <br/> <br/>
+            See: <see href="https://support.microsoft.com/en-us/topic/excel-com-add-ins-and-automation-add-ins-91f5ff06-0c9c-b98e-06e9-3657964eec72"/> <br/>
+                 <see href="https://stackoverflow.com/a/2001275/9743237"/>
+            </remarks> 
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInType.Com">
+            <summary>
+            An assembly (.dll) that uses COM interop to in (using .Net) to interact with the Excel Application.
+            </summary>  
+            <remarks>
+            This type is typically used to automate Excel in response to events such as the click 
+            of a CommandBar button, a form/dialog box, or other. The functions within a COM Add-in 
+            cannot be called from cell formulas in worksheets. <br/> <br/>
+            See: <see href="https://support.microsoft.com/en-us/topic/excel-com-add-ins-and-automation-add-ins-91f5ff06-0c9c-b98e-06e9-3657964eec72"/> <br/>
+                 <see href="https://stackoverflow.com/a/2001275/9743237"/>
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.AddInFileExtensionType">
+            <summary>
+            File extensions available for Excel add-ins.
+            </summary> 
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInFileExtensionType.Xlam">
+            <summary>
+            A .xlam file must be of type <see cref="F:XLAutoDeploy.Mage.AddInType.Vba"/>.
+            </summary>  
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInFileExtensionType.Xla">
+            <summary>
+            A .xla file must be of type <see cref="F:XLAutoDeploy.Mage.AddInType.Vba"/>.
+            </summary>  
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInFileExtensionType.Xll">
+            <summary>
+            A .xll file can be any type except <see cref="F:XLAutoDeploy.Mage.AddInType.Vba"/>.
+            </summary>  
+        </member>
+        <member name="F:XLAutoDeploy.Mage.AddInFileExtensionType.Dll">
+            <summary>
+            A .dll file must be of type <see cref="F:XLAutoDeploy.Mage.AddInType.Automation"/> or 
+            <see cref="F:XLAutoDeploy.Mage.AddInType.Com"/>.
+            </summary>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.AssemblyIdentity">
+            <summary>
+            Describes the identity of an assembly.
+            </summary>  
+            <remarks>
+            All assemblies must target the .Net Framework. Valid ProcessorArchitecture values will be
+            will be MSIL, X86, or IA64. The file extension should always be .dll.
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssemblyIdentity.Name">
+            <summary>
+            Identifies the human-readable name of the assembly. 
+            </summary>  
+            <remarks>
+            Cannot contain non-alpha-numeric characters. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssemblyIdentity.Version">
+            <summary>
+            Specifies the version number of the assembly.
+            </summary>  
+            <remarks>
+            This value must be incremented in an updated manifest to trigger an application update.  <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssemblyIdentity.PublicKey">
+            <summary>
+            Specifies a 16-character hexadecimal string that represents the last 8 bytes of the 
+            SHA-1 hash value of the public key under which the deployment manifest is signed. 
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: N
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssemblyIdentity.ProcessorArchitecture">
+            <summary>
+            Identifies the processor and bits-per-word of the platform targeted by an executable
+            </summary>  
+            <remarks>
+            Specifies the processor. Valid values are MSIL (neutral with respect to processor 
+            and bits per word), X86 for 32-bit Windows, IA64 for 64-bit Windows. 
+            The value of this property must match that of the assembly being deployed. See 
+            <see href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.processorarchitecture?view=netframework-4.8"/> 
+            for more information.<br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssemblyIdentity.Culture">
+            <summary>
+            The name of the culture to associate with the assembly. 
+            </summary>  
+            <remarks>
+            Specify null, Empty, or "neutral" (any casing) to represent InvariantCulture. 
+            The name can be an arbitrary string that doesn't contain NUL character, the legality of the culture name is not validated. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssemblyIdentity.Hash">
+            <summary>
+            Represents a cryptographic hash that can be used to verify the authenticity of an assembly.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N 
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.AssetFile">
+            <summary>
+            Identifies a nonassembly file to be downloaded and used by the application.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.Uri">
+            <summary>
+            Specifies the Uri of the file.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.Name">
+            <summary>
+            The name (including the extension) of the file.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.Size">
+            <summary>
+            Specifies the size (in bytes) of the file.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.Writeable">
+            <summary>
+            Specifies that the file is a read/write data file.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.DecompressIfZipped">
+            <summary>
+            Indicated if the file is a zipped file that it should be decompressed. 
+            </summary>  
+            <remarks>
+            If true, the file unzipped when downloaded. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.FilePlacement">
+            <summary>
+            Represents the physical file location on the client machine to which this file is 
+            deployed. 
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.AssetFile.Hash">
+            <summary>
+            Represents a cryptographic hash that can be used to verify the authenticity of an the file.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N 
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.UnitOfTime">
+            <summary>
+            Represents an interval of time. 
+            </summary>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.MicrosoftOfficeBitness">
+            <summary>
+            Represents the bits-per-word (i.e. "Bitness", either 32 or 64) of the installation of Microsoft Office targeted by the add-in.
+            </summary> 
+            <remarks>
+            Note that 64 bit operating systems are compatible with 32 bit installations of Microsoft Office.
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.OperatingSystemBitness">
+            <summary>
+            Represents the bits-per-word (i.e. "Bitness", either 32 or 64) of the platform targeted by 
+            an assembly.
+            </summary> 
+            <remarks>
+            For unmanaged assemblies that do not target the .Net framework, or are native 
+            (e.g. written C, assembler, or similar), <see cref="F:XLAutoDeploy.Mage.OperatingSystemBitness.None"/> should 
+            be used.
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.NetClrVersion">
+            <summary>
+            Represents all .Net Framework CLR versions published and deployed by Microsoft.
+            </summary> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.CompatibleFramework">
+            <summary>
+            Represents a version of the .NET Framework where an application can be installed and run.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.CompatibleFramework.SupportUrl">
+            <summary>
+            Specifies a URL where the preferred compatible .NET Framework version can be downloaded.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.CompatibleFramework.SupportedRuntime">
+            <summary>
+            Specifies CLR version required to run the application.
+            </summary>  
+            <remarks>
+            The CLR version required to run the application. <br/> <br/>
+            Xml Node Type: Attribute <br/> 
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.CompatibleFramework.TargetVersion">
+            <summary>
+            Specifies the version number of the target .NET Framework.
+            </summary>  
+            <remarks>
+            The .NET Framework version required to run the application. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.Dependency">
+            <summary>
+            Represents an assembly (and any accompanying files) on which an add-in depends.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.Uri">
+            <summary>
+            Specifies the full path to the application Dependency.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.Type">
+            <summary>
+            Specifies enumeration value that identifies the type of dependency.
+            </summary>  
+            <remarks>
+            A dependent assembly of type <see cref="F:XLAutoDeploy.Mage.DependencyType.RequiredReference"/> is always downloaded alongside the application. 
+            A dependent assembly of type <see cref="F:XLAutoDeploy.Mage.DependencyType.Prequisite"/> must be present in the global assembly cache (GAC) before 
+            the application can be loaded or installed. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.Size">
+            <summary>
+            Specifies the size (in bytes) of the assembly file.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.AssemblyIdentity">
+            <summary>
+            Describes the identity of an assembly.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.ManagedAssembly">
+            <summary>
+            Specifies if the assembly is managed (CLR) or unmanaged (i.e. native/non-CLR).
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.FilePlacement">
+            <summary>
+            Represents the physical file location on the client machine to which this file is deployed. 
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Dependency.AssetFiles">
+            <summary>
+            Identifies nonassembly file(s) to be downloaded and used by the assembly.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N <br/>
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.DependencyType">
+            <summary>
+            Describes the type/contents of file.
+            </summary>
+        </member>
+        <member name="F:XLAutoDeploy.Mage.DependencyType.Prequisite">
+            <summary>
+            Must be present in the global assembly cache (GAC) before the application can be run or installed. 
+            </summary>
+        </member>
+        <member name="F:XLAutoDeploy.Mage.DependencyType.RequiredReference">
+            <summary>
+            A required file that is part or referenced by the application.
+            </summary>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.Deployment">
+            <summary>
+            Represents a manifest file that contains information required to deploy updates to 
+            an Excel add-in from a remote <see cref="T:XLAutoDeploy.Mage.FileHost"/> to a client. 
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.AddInUri">
+            <summary>
+            Specifies the Uri of the associated <see cref="T:XLAutoDeploy.Mage.AddIn"/>.
+            </summary>  
+            <remarks>
+            This is used to locate and de-serialize the <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest file on 
+            the remote <see cref="T:XLAutoDeploy.Mage.FileHost"/>. If the <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest has been updated 
+            to reflect a new Version of an add-in, the <see cref="T:System.Uri"/>(s) defined in the 
+            <see cref="P:XLAutoDeploy.Mage.AddIn.Dependencies"/>(s) and <see cref="P:XLAutoDeploy.Mage.AddIn.AssetFiles"/>(s) are used 
+            to locate the files so they can be downloaded onto the client. Once the update is complete, 
+            the <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest is saved to the client machine, effectively 
+            completing an update cycle. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.TargetOfficeInstallation">
+            <summary>
+            Specifies the "Bitness" (either 32 or 64) of the installation of Microsoft Office on which the add-in can run.
+            </summary>  
+            <remarks>
+            The physical add-in <see cref="T:XLAutoDeploy.Mage.AddIn"/> file must be compatible with this value. Note that 64 bit
+            operating systems are compatible with 32 bit installations of Microsoft Office. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.Description">
+            <summary>
+            Represents information pertaining to the application and its origin.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.Settings">
+            <summary>
+            Identifies the attributes used for the deployment of updates and exposure to the system.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.RequiredOperatingSystem">
+            <summary>
+            Represents the platform where an add-in can be installed and run.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.CompatibleFrameworks">
+            <summary>
+            Identifies the versions of the .NET Framework where the add-in can be loaded/installed and run.
+            </summary>  
+            <remarks>
+            Xml Node Type: Array <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Deployment.DigitalSignature">
+            <summary>
+            Specifies a Digital Signature that can be used to verify the authenticity of the Manifest.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.DeploymentRegistry">
+            <summary>
+            Represents the locations of all <see cref="T:XLAutoDeploy.Mage.Deployment"/>'s.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.DeploymentRegistry.PublishedDeployments">
+            <summary>
+            Represents the locations of one or more <see cref="T:XLAutoDeploy.Mage.PublishedDeployment"/>'s.
+            </summary>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.DeploymentSettings">
+            <summary>
+            Identifies the attributes used for the deployment of updates and exposure to the system.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.DeploymentSettings.DeploymentBasis">
+            <summary>
+            Indicates the basis (<see cref="F:XLAutoDeploy.Mage.DeploymentBasis.PerUser"/> or <see cref="F:XLAutoDeploy.Mage.DeploymentBasis.PerMachine"/>) 
+            for the deployment.
+            </summary> 
+            <remarks>
+            This is used to determined the pararent directory (on the client) to which the application 
+            is deployed. Admin privileges are required for <see cref="F:XLAutoDeploy.Mage.DeploymentBasis.PerMachine"/> deployment. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.DeploymentSettings.MinimumRequiredVersion">
+            <summary>
+            Specifies the minimum version of the application that can run on the client.
+            </summary>  
+            <remarks>
+            the default version check on the client. If If the minimum version number of the application (located on the client) is less than the version number supplied in the deployment manifest, 
+            the application will not run. Otherwise Version numbers must be specified in the format major.minor.build.revision, where each (decimal separated) number
+            is an unsigned integer. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.DeploymentSettings.MapFileExtensions">
+            <summary>
+            Specifies that all files in the <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest associated with a 
+            <see cref="T:XLAutoDeploy.Mage.Deployment"/> must have a .xlautodeploy file extension. 
+            </summary>  
+            <remarks>
+            The extension allows all the files within a deployment to be downloaded from a 
+            Web server that blocks transmission of files ending in "unsafe" extensions such as 
+            .exe. This extension will be stripped off of the files Uri(s) as soon as they are 
+            downloaded them from the Web server. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.DeploymentSettings.LoadBehavior">
+            <summary>
+            Controls how the application is loaded on a client machine.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.DeploymentSettings.UpdateBehavior">
+            <summary>
+            Controls how updates are processed on a client machine.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.Description">
+            <summary>
+            Represents information pertaining to the add-in and its origin.
+            </summary> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Description.Publisher">
+            <summary>
+            Name of the party that published the add-in.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Description.Manufacturer">
+            <summary>
+            Name of the company that built the add-in.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Description.Product">
+            <summary>
+            Identifies the full product name.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: N 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Description.SupportUri">
+            <summary>
+            Specifies a file path or Url where production information regarding the add-in can be 
+            accessed.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N 
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.FileHost">
+            <summary>
+            Information about the location on which a <see cref="T:XLAutoDeploy.Mage.Deployment"/> and its associated 
+            <see cref="T:XLAutoDeploy.Mage.AddIn"/> is stored.
+            </summary>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.FileHost.HostType">
+            <inheritdoc cref = "T:XLAutoDeploy.Mage.FileHostType"/>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.FileHost.RequiresAuthentication">
+            <summary>
+            Indicates if authentication is required to access the <see cref="T:XLAutoDeploy.Mage.FileHostType"/>.
+            </summary>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.FileHostType">
+            <summary>
+            Represents the kind of host on which a <see cref="T:XLAutoDeploy.Mage.Deployment"/> and its associated 
+            <see cref="T:XLAutoDeploy.Mage.AddIn"/> are stored.
+            </summary>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.FilePlacement">
+            <summary>
+            Represents the physical file location on client machine to which supporting files 
+            (i.e. <see cref="T:XLAutoDeploy.Mage.Dependency"/>(s) and <see cref="T:XLAutoDeploy.Mage.AssetFile"/>(s)) are deployed. 
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.FilePlacement.NextToAddIn">
+            <summary>
+            Specifies whether this file is placed next to the add-in when downloaded on the client. 
+            </summary>  
+            <remarks>
+            This is particularly useful .dna for xll's deployed as un-packed. The dna file can redirect to 
+            sub-directory(s) that contains another .dna file. This secondary dna file should point to the 
+            <see cref="T:XLAutoDeploy.Mage.Dependency"/>(s) and <see cref="T:XLAutoDeploy.Mage.AssetFile"/>(s) in said sub-directory. 
+            See <see href="https://stackoverflow.com/a/30377635/9743237"/> for more information. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.FilePlacement.SubDirectory">
+            <summary>
+            The name or path of the SubDirectory to which this file belongs.
+            </summary>  
+            <remarks>
+            If <see cref="P:XLAutoDeploy.Mage.FilePlacement.NextToAddIn"/> is true, then this value will be ignored.
+            This would be the sub-directory in which the file would downloaded on the client if 
+            the add-in redirects it references. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: N
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.Hash">
+            <summary>
+            Represents a cryptographic hash that can be used to verify the authenticity of a file.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Hash.Algorithm">
+            <summary>
+            The algorithm used to compute the hash value. 
+            </summary>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.Hash.Value">
+            <summary>
+            Hash value of the file.
+            </summary>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.LoadBehavior">
+            <summary>
+            Defines how an add-in is loaded on the client's excel instance.
+            </summary>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.LoadBehavior.Install">
+            <summary>
+            Specifies whether the add-in should be installed when it is loaded.
+            </summary>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.LoadBehavior.LoadOrder">
+            <summary>
+            Specifies the order in which an add-in is loaded in relation to 
+            other add-ins if one or more is being loaded. 
+            </summary>
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N 
+            </remarks>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.PublishedDeployment">
+            <summary>
+            Represents the location of a <see cref="T:XLAutoDeploy.Mage.Deployment"/> manifest.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.PublishedDeployment.ManifestUri">
+            <summary>
+            Specifies the Uri of a <see cref="T:XLAutoDeploy.Mage.Deployment"/> manifest.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.PublishedDeployment.FileHost">
+            <summary>
+            Information about the location on which a <see cref="T:XLAutoDeploy.Mage.Deployment"/> and its associated 
+            <see cref="T:XLAutoDeploy.Mage.AddIn"/> is stored.
+            </summary>
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Mage.RequiredOperatingSystem">
+            <summary>
+            Represents the platform where an application can be installed and run.
+            </summary>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.RequiredOperatingSystem.SupportUrl">
+            <summary>
+            Specifies a support URL for the dependent platform.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.RequiredOperatingSystem.PlatformId">
+            <summary>
+            Gets the enumeration value that identifies the platform of the target OS.
+            </summary>  
+            <remarks>
+            The value of this property will always be <see cref="F:System.PlatformID.Win32NT"/> because this application or (any that it loads/installs) must target the Windows OS.
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.RequiredOperatingSystem.PlatformName">
+            <summary>
+            Gets common name of the target OS.
+            </summary>  
+            <remarks>
+            The value of this property will always be Windows because this application or (any that 
+            it loads/installs) must target the Windows OS.
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.RequiredOperatingSystem.Version">
+            <summary>
+            Specifies the version of the target OS.
+            </summary>  
+            <remarks>
+            If the OS version number of the application (located on the client) is less than the version number supplied in the deployment manifest, 
+            the application will not run. Version numbers must be specified in the format major.minor.build.revision, where each (decimal separated) number
+            is an unsigned integer. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.RequiredOperatingSystem.Bitness">
+            <summary>
+            Specifies the "Bitness" (either 32 or 64) of the target operating system.
+            </summary>  
+            <remarks>
+            All <see cref="T:XLAutoDeploy.Mage.Dependency"/>(s) must be compatible with this value. Note that 64 bit
+            systems can run 32 bit assemblies. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Mage.UpdateBehavior">
+            <summary>
+            Controls how add-in updates are processed on a client machine.
+            </summary>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateBehavior.Mode">
+            <summary>
+            Specifies if the update is required and if so, how update notifications should
+            be displayed to the client.  
+            </summary>
+            <remarks>
+            If <see cref="F:XLAutoDeploy.Mage.UpdateMode.Forced"/> then the update will be processed regardless if 
+            the <see cref="P:XLAutoDeploy.Mage.AddInIdentity.Version"/> (of the <see cref="T:XLAutoDeploy.Mage.AddIn"/>) was incremented 
+            or not. When <see cref="P:XLAutoDeploy.Mage.UpdateBehavior.NotifyClient"/> is set to true updates will 
+            display a non-cancellable  dialog to the client that notifies them of a pending 
+            update. If <see cref="F:XLAutoDeploy.Mage.UpdateMode.Normal"/>, then, updates can be deferred until a 
+            later time. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateBehavior.RequiresRestart">
+            <summary>
+            Specifies whether the Excel Application shoud be restarted for the add-in update to take place. 
+            </summary>
+            <remarks>
+            This must be set to "true" for the following types of add-ins: 
+            1. Add-ins that use any of the COM features (e.g. Ribbon, CTP, RTD, etc.)
+            2. Add-ins that reference external assemblies.
+            See <see href="https://stackoverflow.com/questions/63117328/how-can-i-avoid-excel-dna-add-in-from-locking-external-library-dlls"/> for more information. <br/>
+            If the add-in is installed on the client's instance of Excel, Excel must be restarted 
+            regardless of the value of this property. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateBehavior.RemoveDeprecatedVersion">
+            <summary>
+            Idicates if the old version should be removed (deleted) from the client. 
+            </summary>
+            <remarks>
+            If true, the removal/deletion of the previously deployed version of the add-in would 
+            (including all of its supporting files) will be performed once the update is complete. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateBehavior.NotifyClient">
+            <summary>
+            Specifies whether or not update notifications should be displayed to the client. 
+            </summary>
+            <remarks>
+            If <see cref="P:RequiresRestart"/> is set to true, then this property will 
+            be ignored and the client will be notified regardless. <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateBehavior.DoInRealTime">
+            <summary>
+            Specifies whether the updates are pushed to the client machine in realtime.  
+            </summary>
+            <remarks>
+            When set to true, updates will be pushed to the client as they occur on the remote 
+            host. This only applies to remote hosts of type <see cref="P:XLAutoDeploy.Mage.FileHost.HostType"/> 
+            equal to <see cref="F:XLAutoDeploy.Mage.FileHostType.FileServer"/>  <br/> <br/>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateBehavior.Expiration">
+            <summary>
+            Represents how old the current update can become before the application will perform 
+            the next update check. 
+            </summary> 
+            <remarks>
+            If <see cref="P:XLAutoDeploy.Mage.UpdateBehavior.DoInRealTime"/> is set to true, then the value of this 
+            property will be ignored. 
+            Xml Node Type: Element <br/>
+            Xml Required: N
+            </remarks>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.UpdateMode">
+            <summary>
+            Represents how update notifications are displayed to the client.
+            </summary>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.UpdateExpiration">
+            <summary>
+            Represents how old the current update can become before the application will perform the 
+            next update check. 
+            </summary>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateExpiration.Description">
+            <summary>
+            Represents a human-readable description of an <see cref="T:XLAutoDeploy.Mage.UpdateExpiration"/>.
+            </summary>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateExpiration.MaximumAge">
+            <summary>
+            Identifies how old the current update should become before the application performs an 
+            update check. The unit of time is determined by the <see cref="P:UnitOfTime"/>.
+            </summary>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateExpiration.UnitOfTime">
+            <summary>
+            Identifies the unit of time for the <see cref="P:MaximumAge"/>. Valid units are hours, 
+            days, and weeks.
+            </summary>
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y 
+            </remarks>
+        </member>
+        <member name="T:XLAutoDeploy.Mage.UpdateQueryInfo">
+            <summary>
+            Represents information regarding an update coming from a remote <see cref="T:XLAutoDeploy.Mage.FileHost"/>.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.AvailableVersion">
+            <summary>
+            The version of the incoming update.
+            </summary>  
+            <remarks>
+            The <see cref="P:XLAutoDeploy.Mage.AddInIdentity.Version"/> listed in the <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest on the
+            remote <see cref="T:XLAutoDeploy.Mage.FileHost"/>. 
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.MinimumRequiredVersion">
+            <summary>
+            Specifies the minimum version of the application that can run on the client.
+            </summary>  
+            <remarks>
+            This is used to determine if an incoming update is mandatory.
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.DeployedVersion">
+            <summary>
+            The version currently deployed on the client.
+            </summary>  
+            <remarks>
+            The <see cref="P:XLAutoDeploy.Mage.AddInIdentity.Version"/> listed in the <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest 
+            on the client machine. 
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.UpdateAvailable">
+            <summary>
+            Indicates whether an update exists on the remote <see cref="T:XLAutoDeploy.Mage.FileHost"/>
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.IsMandatoryUpdate">
+            <summary>
+            Indicates whether or not to the incoming update is mandatory.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.IsRestartRequired">
+            <summary>
+            Indicates whether or not to the incoming update requires a resart of Excel.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.Size">
+            <summary>
+            Specifies the toal size (in bytes) of all files in the incoming update.
+            </summary>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.LastChecked">
+            <summary>
+            The last time an update check was performed.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y 
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.FirstNotified">
+            <summary>
+            The first time a user was notified that an update was avaliable.
+            </summary>  
+            <remarks>
+            This should only be set (or re-set) if the incoming <see cref="P:XLAutoDeploy.Mage.UpdateQueryInfo.AvailableVersion"/> 
+            differs from the deployed <see cref="P:XLAutoDeploy.Mage.UpdateQueryInfo.AvailableVersion"/>, AFTER a user has been 
+            notified that the incoming update is available, for the first time. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: If <see cref="P:XLAutoDeploy.Mage.UpdateBehavior.NotifyClient"/> is set to true.  
+            </remarks>  
+        </member>
+        <member name="P:XLAutoDeploy.Mage.UpdateQueryInfo.LastNotified">
+            <summary>
+            The last time a user was notified that an update was avaliable.
+            </summary>  
+            <remarks>
+            This should only be set (or re-set) after a user has been notified that an 
+            update is available. If this is the first time the user is being notified, then
+            then this should the same value as the <see cref="P:XLAutoDeploy.Mage.UpdateQueryInfo.FirstNotified"/>. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: If <see cref="P:XLAutoDeploy.Mage.UpdateBehavior.NotifyClient"/> is set to true. 
+            </remarks>  
+        </member>
+        <member name="M:XLAutoDeploy.Mage.Utilities.AddInExtensions.GetTotalSize(XLAutoDeploy.Mage.AddIn)">
+            <summary>
+            Returns the sum total of bytes in an <see cref="T:XLAutoDeploy.Mage.AddIn"/> manifest from the 
+            <see cref="T:XLAutoDeploy.Mage.Dependency"/>(s) and <see cref="T:XLAutoDeploy.Mage.AssetFile"/>(s), excluding the size of add-in file itself.
+            </summary>  
+        </member>
+    </members>
+</doc>
