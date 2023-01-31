@@ -1,0 +1,276 @@
+// ------------------------------------------------------------------------------------------------------------------------------------
+// Ideas
+// ------------------------------------------------------------------------------------------------------------------------------------    
+Add Timming property to UpdateBehavior to represent when the update check should be performed (before application starts or after). Should be an enum 
+display changes in notification UI?
+user install statistics?
+Zip file support?
+inject Excel instance into?
+Post Build event to sign files and update manifests?
+Write Console app to do this???   
+    Sign xml manifests
+    SignAssemblies Also
+    
+    
+ValidateSignature // If exists; separate for license??? 
+XmlSignature.ValidateForSignatureElement
+ValidateDepedencies // i.e. Hash values and processor architecure (i.e. Bitness); need to find a way to detect .net core versions installed
+ValidateHash
+
+Need to know ahead of time what the bitness of installation of Office is on the client machine
+
+Each Assembly Needs to have a Bitness associated with it
+
+    
+for first download updateQueryInfo will not be be found, b/c it will not exist at that point
+
+    1. Download and serialize DeploymentRepository
+    2. Download and serialize Deployment Manifests
+    3. Check for updates
+    4. Display updates to user if found
+    5. process updates
+        delete old old stuff if deployment settings say so 
+        
+RootDirectory\Manufacturer\Product\SomeAdd-in.xll
+RootDirectory\Manufacturer\Product\SomeAdd-in.Manifest.xml
+RootDirectory\Manufacturer\Product\SomeAdd-in.dna
+RootDirectory\Manufacturer\Product\Version\SomeAdd-inImpl.dna
+
+AssertApplicationRequirements
+        
+File Names
+    Dependency.AssemblyId.Name
+    AssetFile.Name
+
+
+webUrl = webUrl.EndsWith("/") ? webUrl.Substring(0, webUrl.Length - 1) : webUrl;
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+// Security
+// ------------------------------------------------------------------------------------------------------------------------------------
+For Licensing: 
+When Application is originally downloaded
+1. Generates a unique hardware ID (ClientId) based on information gathered from the machine
+2. ClientId is persited to remote store. 
+3. Signed Application Files are downloaded. 
+4. When the application is opened, the license should be validated. You should also be able to poll the remote resource at specified time intervals to validate 
+the license, b/c depending on the application, users could keep it open for extended periods of time
+
+Send ClientId to remote location and retreive the deployment file 
+
+
+C:\ProgramData\Microsoft\Crypto
+Windows DPAPI
+    
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+// COM Add-ins Guide
+// ------------------------------------------------------------------------------------------------------------------------------------
+    com addins need to supply a ProgID 
+    this would be used in place of the title
+    a com addin would have to already be registered in the windows registry
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+// XlAutoDeploy Guide
+// ------------------------------------------------------------------------------------------------------------------------------------
+CANNOT CHANGE FILE NAMES OR ADDIN TITLES
+
+unloading of the COM server is not currently supported.
+# How to Use it
+1. Determine where you want to host the ExcelAddInAutoUpdater application. Below are the 2 options available: 
+    a. Distribute the add-in to client machine(s). This is limiting because currently, there is no way for the `ExcelAddInAutoUpdater` to automatically update itself, so you would have to manually distribute updates to the client(s).
+    b. Host the add-in on a shared network drive and make updates there if needed. This is not always an option, but this is the best solution unill a 
+
+Configure a log target in the NLog.Config file. This will be where all log files for the application are written to.
+2. 
+
+Deployment Strategies: 
+    1.  Packed Xll    
+        This should included all dependencies and Assets
+            Updates: 
+                Silent: Add-in would have to be loaded and unloaded by an External Loader add-in. 
+                        It cannot be installed, because the xll is locked when excel is opened, which would require a 
+                        a restart (which is obviously not silent)
+                        Install Allowed: N
+                        
+                Explicit: Add-in would have to be loaded and unloaded by an External Loader add-in. 
+                          If installed, a restart is required.
+                          Install Allowed: Y       
+                          
+    2.  Unpacked xll 
+        Download all files that the add-in requires.
+            Updates: Download only the files required for the update. 
+            a. .Dll Update: Excel-DNA supports loading the .dll library files without locking the .dll. For this 
+                Silent: This would require a parent .dna file that has an <ExternalLibrary> reference to the .dll(s). 
+                        The child dna file should be stored in a sub-directory of the parent. The Sub-directory would ideally
+                        identify the current version of the add-in. The parent .dna file is not locked so it can be updated 
+                        (while the add-in is loaded) to point to the child .dna file in the desired sub-directory. For the update
+                        to take effect, Application.RegisterXLL would have to be called. You could use the Update monitor to see if the 
+                        parent dna file was updated in real time to call Application.RegisterXLL. Otherwise, the check would have to be performed
+                        everytime the add-in is loaded. 
+                        Install Allowed: Y; The packed xll file itself could NOT ever be updated (unless it is first uninstalled), b/c the it would always be locked by Excel. 
+                        
+                        Required .dna File Layout: ShadowCopyFiles="true", (should prevent locking of <reference>(s)) so they can be updated while the application is running
+                        
+                Explicit: Add-in would have to be loaded and unloaded by an External Loader add-in that would notify the user,
+                          download the required files to a version specific directory, point to the new directory, and restart excel.  
+                          Install Allowed: Y; The packed xll file itself could NOT ever be updated (unless it is first uninstalled), b/c the it would always be locked by Excel. 
+                          
+            b. .Dna File Update: This would point to the new updated .dll(s)
+                Silent: This would require a parent .dna file that has an <ExternalLibrary> reference to a child .dna file. 
+                        The child dna file should be stored in a sub-directory of the parent. The Sub-directory would ideally
+                        identify the current version of the add-in. The parent .dna file is not locked so it can be updated 
+                        (while the add-in is loaded) to point to the child .dna file in the desired sub-directory. For the update
+                        to take effect, Application.RegisterXLL would have to be called. You could use the Update monitor to see if the 
+                        parent dna file was updated in real time to call Application.RegisterXLL. Otherwise, the check would have to be performed
+                        everytime the add-in is loaded. 
+                        Install Allowed: Y; The packed xll file itself could NOT ever be updated (unless it is first uninstalled), b/c the it would always be locked by Excel. 
+                        
+                        Required .dna File Layout: ShadowCopyFiles="true", (should prevent locking of <reference>(s)) so they can be updated while the application is running
+                        
+                Explicit: Add-in would have to be loaded and unloaded by an External Loader add-in that would notify the user,
+                          download the required files to a version specific directory, point to the new directory, and restart excel.  
+                          Install Allowed: Y; The packed xll file itself could NOT ever be updated (unless it is first uninstalled), b/c the it would always be locked by Excel. 
+                
+https://groups.google.com/g/exceldna/c/sl3qe-EMw88/m/ZqIHpvM4CQAJ
+* The .dna file must either be next to the .xll with the same name, or it must be packed inside the .xll file.
+
+* The .dna file can be packed inside the .xll file with nothing else being packed (if you have not ExternalLibrary or Reference with Pack="true", that's what you'll get - check the output from the ExcelDnaPack run when you build).
+
+* The .dna file can refer to another .dna file which will be relative to the location of the .xll file. So you can have this in your "main" .dna file:
+    <ExternalLibrary Path="..\..\MyAddIn\TheRealDnaFile.dna" />
+Then put the rest in the external .dna file.
+
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+// Informational Links
+// ------------------------------------------------------------------------------------------------------------------------------------
+// ClickOnce Functionality
+https://docs.microsoft.com/en-us/visualstudio/deployment/clickonce-security-and-deployment?view=vs-2022
+https://docs.microsoft.com/en-us/visualstudio/deployment/clickonce-reference?view=vs-2022
+https://www.add-in-express.com/docs/net-deploy-office-addin.php
+https://docs.microsoft.com/en-us/dotnet/framework/tools/mageui-exe-manifest-generation-and-editing-tool-graphical-client
+https://docs.microsoft.com/en-us/previous-versions/dotnet/articles/aa480721(v=msdn.10)?redirectedfrom=MSDN
+https://www.codemag.com/article/0601041/ClickOnce-Bringing-Ease-and-Reliability-to-Smart-Client-Deployment
+https://github.com/ONLYOFFICE/OneClickInstall
+https://github.com/mansellan/clickonce
+
+	// Deployment Stored on Protected Server (i.e. requires authentication)
+	https://github.com/NKnusperer/ClickOnceWithProxySupport
+	https://www.codeproject.com/Articles/24519/Make-ClickOnce-Work-With-ASP-NET-Forms-Authenticat
+
+// COM Registration
+https://www.codestack.net/solidworks-api/deployment/manual/
+
+// System.Application.Deployment
+https://docs.microsoft.com/en-us/dotnet/api/system.deployment.application?view=netframework-4.8
+
+// Load Unmanaged DLL
+https://stackoverflow.com/questions/64035439/excel-dna-addins-how-pack-unmanaged-dll-in-xll-file
+https://stackoverflow.com/questions/189549/embedding-dlls-in-a-compiled-executable
+https://stackoverflow.com/questions/72264/how-can-a-c-windows-dll-be-merged-into-a-c-sharp-application-exe
+https://stackoverflow.com/questions/47079595/costura-fody-for-a-dll-that-references-another-dll
+
+// XML Schema Creation Info
+https://stackoverflow.com/questions/3965357/xml-how-to-reference-a-xsd-file-at-xml-file
+https://stackoverflow.com/questions/38264066/how-to-reference-local-xsd-from-xml-file
+https://stackoverflow.com/questions/35411871/how-to-link-xml-to-xsd-using-schemalocation-or-nonamespaceschemalocation
+https://stackoverflow.com/questions/19253402/how-to-reference-a-local-xml-schema-file-correctly
+
+// Handling Xml Data
+https://stackoverflow.com/questions/919645/how-to-delete-node-from-xml-file-using-c-sharp
+
+// Notes on DbProviderFactories on different .Net platforms (Core, Framework, Standard)
+https://editor.datatables.net/manual/net/core
+https://stackoverflow.com/questions/52007836/dbproviderfactories-getfactoryclasses-returns-no-results-after-installing-net-s
+
+// MS Sharepoint Office Applications Automated Deployment
+https://docs.microsoft.com/en-us/deployoffice/readiness-toolkit-application-compatibility-microsoft-365-apps#BKMK_Enterprise
+https://docs.microsoft.com/en-us/deployoffice/deployment-guide-microsoft-365-apps
+https://docs.microsoft.com/en-us/deployoffice/deploy-microsoft-365-apps-cloud
+https://docs.microsoft.com/en-us/deployoffice/overview-office-deployment-tool
+
+// Digital signiture
+https://www.trentonsystems.com/blog/symmetric-vs-asymmetric-encryption
+https://stackoverflow.com/questions/59160463/verifying-digital-signature
+https://www.scottbrady91.com/c-sharp/xml-signing-dotnet; https://github.com/scottbrady91/Blog-Example-Classes/blob/master/XmlSigning/Program.cs
+https://www.codeproject.com/Articles/20950/Using-RSA-Public-Key-Encryption-in-a-Shared-Web-Ho
+https://stackoverflow.com/questions/17128038/c-sharp-rsa-encryption-decryption-with-transmission
+
+// Truster Publisher
+
+// Key Storage
+https://stackoverflow.com/questions/14047532/get-the-public-key-from-rsacryptoserviceprovider
+https://dotnetcodr.com/2016/10/26/how-to-store-the-asymmetric-keys-in-the-windows-key-store-with-c/
+
+// Certificates
+https://stackoverflow.com/questions/22230745/generate-a-self-signed-certificate-on-the-fly
+https://stackoverflow.com/questions/48196350/generate-and-sign-certificate-request-using-pure-net-framework
+
+// User Licensing
+https://www.reddit.com/r/csharp/comments/8vrt34/working_in_security_for_a_licensing_system/
+https://stackoverflow.com/questions/3624149/license-for-c-sharp-desktop-application
+https://github.com/jshergal/Standard.Licensing-5.0/blob/master/src/Standard.Licensing/License.cs
+
+// .Net Framework Installs & Assembly Info
+https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
+https://stackoverflow.com/questions/270531/how-can-i-determine-if-a-net-assembly-was-built-for-x86-or-x64
+    
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+// Code Notes
+// ------------------------------------------------------------------------------------------------------------------------------------
+//Accessing Remote Fileshare
+https://stackoverflow.com/questions/3700871/connect-to-network-drive-with-user-name-and-password/22378883
+NetworkCredential credential = new NetworkCredential(@"domain\username", "password");
+CredentialCache cache = new CredentialCache();
+cache.Add(new Uri(@"\\computer"), "Basic", credential);
+string[] directories = Directory.GetDirectories(@"\\computer\share");
+
+var credential = new NetworkCredential("username", "password", "AAWH");
+var cache = new CredentialCache();
+cache.Add(new Uri(@"\\s-hdqfp03"), "Basic", credential);
+string[] directories = Directory.GetDirectories(@"\\computer\share");
+
+// Digital signiture
+// ECDSA using P-256 and SHA-256
+var cert = CreateSelfSignedCertificate(@"AAWH\ARickman", 365);
+var signedXml = SignXml(xml.DocumentElement, cert, AlgorithmUri);
+
+xml.DocumentElement?.AppendChild(signedXml);
+
+var publicCert = new X509Certificate2(cert.Export(X509ContentType.Cert)); 
+ValidateSignature(xml.DocumentElement, publicCert))
+
+// Decompress Zip File
+using System.IO;
+using System.IO.Compression;
+static void Unzip(string sourceZip, string targetPath)
+{
+    using (var z = ZipFile.OpenRead(sourceZip))
+    {
+        foreach (var entry in z.Entries)
+        {                    
+            using (var r = new StreamReader(entry.Open()))
+            {
+                string uncompressedFile = Path.Combine(targetPath, entry.Name);
+                File.WriteAllText(uncompressedFile,r.ReadToEnd());
+            }
+        }
+    }
+
+}
+
+// Uri mapping
+Uri fileSourceUri = DownloadManager.MapFileSourceUri(deployManifest, sourceUriBase, dependentAssembly.Codebase);
+
+public static Uri MapFileSourceUri(
+  AssemblyManifest deployManifest,
+  Uri sourceUriBase,
+  string fileName)
+{
+  return UriHelper.UriFromRelativeFilePath(sourceUriBase, deployManifest.Deployment.MapFileExtensions ? fileName + ".deploy" : fileName);
+}
+
+public static Uri MapManifestUri(DeploymentSettings deploymentSettings, Uri uri, )

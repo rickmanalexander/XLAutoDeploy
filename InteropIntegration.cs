@@ -207,7 +207,7 @@ namespace XLAutoDeploy
 
         public static void CloseExcelApp(Microsoft.Office.Interop.Excel.Application excelApp)
         {
-            GetExcelApplication().Quit();
+            excelApp.Quit();
         }
 
         public static Microsoft.Office.Interop.Excel.Application GetExcelApplication()

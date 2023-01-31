@@ -71,7 +71,7 @@ namespace XLAutoDeploy.Deployments
                     {
                         if (payload.Deployment.Settings.UpdateBehavior.DoInRealTime)
                         {
-                            var filePath = payload.AddIn.DeploymentUriString; 
+                            var filePath = payload.AddIn.DeploymentUriString;
 
                             var directory = Path.GetDirectoryName(filePath);
 
@@ -131,7 +131,7 @@ namespace XLAutoDeploy.Deployments
         private void AutoUpdateAddIn(string filePath, DeploymentPayload payload)
         {
             //use copy/clone, mutate, and replace to avoid threading issues
-            var notificationClone = _deploymentFilePathNotificationCounts; 
+            var notificationClone = _deploymentFilePathNotificationCounts;
 
             if (!notificationClone.ContainsKey(filePath))
             {
@@ -140,16 +140,16 @@ namespace XLAutoDeploy.Deployments
 
             if (notificationClone[filePath] <= _sessionNotificationLimit)
             {
-                if(DeploymentService.TryGetUpdate(payload, out CheckedUpdate update))
+                if (DeploymentService.TryGetUpdate(payload, out CheckedUpdate update))
                 {
-                    if(UpdateService.CanProceedWithUpdate(update, _updateCoordinator))
+                    if (UpdateService.CanProceedWithUpdate(update, _updateCoordinator))
                         DeploymentService.ProcessUpdate(update, _updateCoordinator, _remoteFileDowloader);
                 }
             }
 
             notificationClone[filePath] = notificationClone[filePath]++;
 
-            _deploymentFilePathNotificationCounts = notificationClone; 
+            _deploymentFilePathNotificationCounts = notificationClone;
         }
 
         ~UpdateMonitor()

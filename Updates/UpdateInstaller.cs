@@ -35,17 +35,17 @@ namespace XLAutoDeploy.Updates
             }
         }
 
-        public bool TryInstall(string addinTitle, string filePath)
+        public void TryInstall(string addinTitle, string filePath, out bool success)
         {
             try
             {
                 InteropIntegration.InstallAddIn(addinTitle, filePath);
-                return true;
+                success = true;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File Install Failed for file: {filePath}");
-                return false;
+                success = false;
             }
         }
 
@@ -62,17 +62,17 @@ namespace XLAutoDeploy.Updates
             }
         }
 
-        public bool TryUninstall(string addinTitle, string filePath)
+        public void TryUninstall(string addinTitle, string filePath, out bool success)
         {
             try
             {
                 InteropIntegration.UninstallAddIn(addinTitle);
-                return true;
+                success = true;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File Un-install Failed for file: {filePath}");
-                return false;
+                success = false;
             }
         }
     }

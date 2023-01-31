@@ -45,16 +45,16 @@ namespace XLAutoDeploy.Updates
             await fileDownloader.DownloadAsync(remoteFilePath, targetFilePath, true);
         }
 
-        public bool TryDownload(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath)
+        public void TryDownload(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, out bool success)
         {
             try
             {
                 Download(fileDownloader, remoteFilePath, targetFilePath);
-                return true;
+                success = true;
             }
             catch
             {
-                return false;
+                success = false;
             }
         }
 
@@ -75,16 +75,16 @@ namespace XLAutoDeploy.Updates
             await fileDownloader.DownloadAsync(webClient, address, targetFilePath, true);
         }
 
-        public bool TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath)
+        public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath, out bool success)
         {
             try
             {
                 Download(fileDownloader, webClient, address, targetFilePath);
-                return true;
+                success = true;
             }
             catch
             {
-                return false;
+                success = false;
             }
         }
 
@@ -107,16 +107,16 @@ namespace XLAutoDeploy.Updates
             await fileDownloader.DownloadAsync(webClient, uri, targetFilePath, true);
         }
 
-        public bool TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath)
+        public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath, out bool success)
         {
             try
             {
                 Download(fileDownloader, webClient, uri, targetFilePath);
-                return true;
+                success = true;
             }
             catch
             {
-                return false;
+                success = false;
             }
         }
     }

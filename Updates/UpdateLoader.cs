@@ -36,17 +36,17 @@ namespace XLAutoDeploy.Updates
             }
         }
 
-        public bool TryLoad(string filePath)
+        public void TryLoad(string filePath, out bool success)
         {
             try
             {
                 InteropIntegration.LoadAddIn(filePath);
-                return true;
+                success = true;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File Load Failed for file: {filePath}");
-                return false;
+                success = false;
             }
         }
 
@@ -63,17 +63,17 @@ namespace XLAutoDeploy.Updates
             }
         }
 
-        public bool TryUnload(string filePath)
+        public void TryUnload(string filePath, out bool success)
         {
             try
             {
                 InteropIntegration.UnloadAddIn(filePath);
-                return true;
+                success = true;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, $"File Un-load Failed for file: {filePath}");
-                return false;
+                success = false;
             }
         }
     }

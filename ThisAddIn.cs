@@ -133,7 +133,7 @@ namespace XLAutoDeploy
 
             if ( _deploymentPayloads == null || _updateCoordinator == null || _logger == null)
             {
-                Debug.WriteLine("End Excel app shutdown: Early exit - One or more reuired objects are null.");
+                Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
                 return;
             }
 
