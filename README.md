@@ -1,6 +1,4 @@
 # XLAutoDeploy
 An Excel-DNA based application release automation tool.
 
-Planned Updates: 
-1. Modify configuration file and serialized classes to include [NetworkCredential](https://docs.microsoft.com/en-us/dotnet/api/system.net.networkcredential?view=netframework-4.8) for *RemoteAddIn*'s stored on a web server (create instance of [HttpClientHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler?view=netframework-4.8), supply [Credentials](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler.credentials?view=netframework-4.8) and then pass [HttpClientHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler?view=netframework-4.8) to an instance of an [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netframework-4.8)) OR a remote *WindowsFileServer*
-2. Implement UI display notifications for certain [Exceptions](https://docs.microsoft.com/en-us/dotnet/api/system.exception?view=netframework-4.8).
+This as a work-in-progress and open to suggestions.

@@ -84,6 +84,7 @@ namespace XLAutoDeploy.Deployments
         {
             Deployment deployment = null;
             AddIn addIn = null;
+            AddIn alternateAddIn = null;
             switch (publishedDeployment.FileHost.HostType)
             {
                 case FileHostType.FileServer:
@@ -102,7 +103,7 @@ namespace XLAutoDeploy.Deployments
 
                     deployment = GetDeploymentManifest(publishedDeployment.ManifestUriString);
                     addIn = GetAddInManifest(deployment.AddInUri.LocalPath);
-
+                    alternateAddIn = GetAddInManifest(deployment.AlternateAddInUri.LocalPath);
                     break;
 
                 case FileHostType.WebServer:
@@ -123,11 +124,11 @@ namespace XLAutoDeploy.Deployments
 
                     deployment = GetDeploymentManifest(webClient, publishedDeployment.ManifestUri);
                     addIn = GetAddInManifest(webClient, deployment.AddInUri);
-
+                    alternateAddIn = GetAddInManifest(deployment.AlternateAddInUri.LocalPath);
                     break;
             }
 
-            return new DeploymentPayload(publishedDeployment.FileHost, deployment, addIn);
+            return new DeploymentPayload(publishedDeployment.FileHost, deployment, addIn, alternateAddIn);
         }
 
         public void ProcessDeploymentPayloads(IEnumerable<DeploymentPayload> deploymentPayloads, IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
