@@ -8,8 +8,6 @@ using System.Linq;
 using ExcelDna.Integration;
 using ExcelDna.Logging;
 
-using XLAutoDeploy.Mage;
-
 using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.Logging;
 using XLAutoDeploy.Updates;
@@ -89,32 +87,7 @@ namespace XLAutoDeploy
             // unexpected (and/or fatal) errors
             // var method = new ThreadStart(() =>
             // {
-            //     try
-            //     {
-            //         var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
-            //         var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
-            //         var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
-            // 
-            //         // multiple parameter options: choose based on the FileHost(s)
-            //         var registry = DeploymentService.GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
-            // 
-            //         // multiple parameter options: choose based on the FileHost(s) 
-            //         _deploymentPayloads = DeploymentService.GetDeploymentPayloads(registry);
-            // 
-            //         if (_deploymentPayloads?.Any() == true)
-            //         {
-            //             Debug.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
-            //             return;
-            //         }
-            // 
-            //         DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
-            //         DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         _logger.Fatal(ex, "Failed application startup.");
-            //         LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
-            //     }
+            //  code
             // });
             // 
             // var thread = new Thread(method);
@@ -147,17 +120,11 @@ namespace XLAutoDeploy
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
             }
 
+            // This would possibly access excel COM objects from another thread which could lead to 
+            // unexpected (and/or fatal) errors
             // var method = new ThreadStart(() =>
             // {
-            //     try
-            //     {
-            //         UpdateService.UnloadAddIns(_deploymentPayloads, _updateCoordinator);
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         _logger.Fatal(ex, "Failed application shutdown.");
-            //         LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
-            //     }
+            //  code
             // });
             // 
             // var thread = new Thread(method);

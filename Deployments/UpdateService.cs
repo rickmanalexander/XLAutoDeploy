@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 
-using XLAutoDeploy.Mage;
-using XLAutoDeploy.Mage.Utilities;
+using XLAutoDeploy.Manifests;
+using XLAutoDeploy.Manifests.Utilities;
 
 using XLAutoDeploy.FileSystem.Access;
 
@@ -288,9 +288,9 @@ namespace XLAutoDeploy.Deployments
 
                     var expectedHash = System.Text.Encoding.UTF8.GetBytes(file.Hash.Value);
 
-                    using (var algorithm = Mage.DigSig.Hashing.CreateHashAlgorithm(file.Hash.Algorithm))
+                    using (var algorithm = Manifests.DigSig.Hashing.CreateHashAlgorithm(file.Hash.Algorithm))
                     {
-                        var actualHash = Mage.DigSig.Hashing.ComputeHash(algorithm, fileBytes);
+                        var actualHash = Manifests.DigSig.Hashing.ComputeHash(algorithm, fileBytes);
 
                         if (!FileSystem.Comparison.ByteArraysEqualUnsafe(expectedHash, actualHash))
                         {
@@ -325,9 +325,9 @@ namespace XLAutoDeploy.Deployments
 
                     var expectedHash = System.Text.Encoding.UTF8.GetBytes(file.Hash.Value);
 
-                    using (var algorithm = Mage.DigSig.Hashing.CreateHashAlgorithm(file.Hash.Algorithm))
+                    using (var algorithm = Manifests.DigSig.Hashing.CreateHashAlgorithm(file.Hash.Algorithm))
                     {
-                        var actualHash = Mage.DigSig.Hashing.ComputeHash(algorithm, fileBytes);
+                        var actualHash = Manifests.DigSig.Hashing.ComputeHash(algorithm, fileBytes);
 
                         if (!FileSystem.Comparison.ByteArraysEqualUnsafe(expectedHash, actualHash))
                         {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-using XLAutoDeploy.Mage;
+using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy.Deployments
 {

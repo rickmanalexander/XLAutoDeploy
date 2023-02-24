@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DnaLibrary Name="XLAutoDeploy Add-In" RuntimeVersion="v4.0" ShadowCopyFiles="true" xmlns="http://schemas.excel-dna.net/addin/2018/05/dnalibrary">
 	<ExternalLibrary Path="XLAutoDeploy.dll" ExplicitExports="true" LoadFromBytes="true" Pack="true" IncludePdb="false" />
-	<Reference Path="XLAutoDeploy.Mage.dll" Pack="true" />
-	<Reference Path="XLAutoDeploy.Mage.XmlSerializers.dll" Pack="true" />
+	<Reference Path="XLAutoDeploy.Manifests.dll" Pack="true" />
+	<Reference Path="XLAutoDeploy.Manifests.XmlSerializers.dll" Pack="true" />
 	<Reference Path="NLog.dll" Pack="true" />
   <!--
        The RuntimeVersion attribute above allows two settings:

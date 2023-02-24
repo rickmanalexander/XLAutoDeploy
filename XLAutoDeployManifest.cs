@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Xml.Serialization;
 
-using XLAutoDeploy.Mage;
+using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy
 {

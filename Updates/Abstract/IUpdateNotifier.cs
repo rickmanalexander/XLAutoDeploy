@@ -1,4 +1,4 @@
-﻿using XLAutoDeploy.Mage;
+﻿using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy.Updates
 {

@@ -5,7 +5,7 @@ using System.Linq;
 
 using XLAutoDeploy.Logging;
 
-using XLAutoDeploy.Mage;
+using XLAutoDeploy.Manifests;
 using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.FileSystem.Monitoring;
 using XLAutoDeploy.Updates;

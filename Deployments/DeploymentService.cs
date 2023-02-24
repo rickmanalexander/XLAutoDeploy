@@ -5,8 +5,8 @@ using System.IO;
 using System.Net;
 using System.Linq;
 
-using XLAutoDeploy.Mage;
-using XLAutoDeploy.Mage.Utilities;
+using XLAutoDeploy.Manifests;
+using XLAutoDeploy.Manifests.Utilities;
 
 using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.Updates;
@@ -448,12 +448,12 @@ namespace XLAutoDeploy.Deployments
 
             var addInTitle = deploymentPayload.AddIn.Identity.Title;
 
-            if (deploymentPayload.Deployment.TargetOfficeInstallation != msOfficeBitness)
-            {
-                throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-                    $"The {nameof(deploymentPayload.Deployment.TargetOfficeInstallation)} is not correct.",
-                    $"The {nameof(deploymentPayload.Deployment.TargetOfficeInstallation)} should be {Enum.GetName(typeof(MicrosoftOfficeBitness), msOfficeBitness)}."));
-            }
+            // if (deploymentPayload.Deployment.TargetOfficeInstallation != msOfficeBitness)
+            // {
+            //     throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage// ($"Deploying add-in titled {addInTitle} to client.",
+            //         $"The {nameof(deploymentPayload.Deployment.TargetOfficeInstallation)} is / not/ correct.",
+            //         $"The {nameof(deploymentPayload.Deployment.TargetOfficeInstallation)} / should/ be {Enum.GetName(typeof(MicrosoftOfficeBitness), msOfficeBitness)}."));
+            // }
 
             if (requiredOs.Bitness != osBitness)
             {

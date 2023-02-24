@@ -6,7 +6,7 @@ using System.Security;
 using ExcelDna.Logging;
 
 using XLAutoDeploy.Logging;
-using XLAutoDeploy.Mage.Utilities;
+using XLAutoDeploy.Manifests.Utilities;
 
 namespace XLAutoDeploy.Deployments
 {

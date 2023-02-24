@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using XLAutoDeploy.Mage;
+using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy.Updates
 {

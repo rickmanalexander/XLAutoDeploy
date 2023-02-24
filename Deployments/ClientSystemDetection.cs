@@ -5,7 +5,7 @@ using System.Security.Principal;
 
 using Microsoft.Win32;
 
-using XLAutoDeploy.Mage;
+using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy.Deployments
 {
