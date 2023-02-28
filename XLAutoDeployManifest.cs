@@ -1,8 +1,8 @@
-﻿using System;
+﻿using XLAutoDeploy.Manifests;
+
+using System;
 using System.ComponentModel;
 using System.Xml.Serialization;
-
-using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy
 {

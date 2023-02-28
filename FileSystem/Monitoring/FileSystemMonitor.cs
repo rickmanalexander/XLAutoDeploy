@@ -4,7 +4,7 @@ using System.IO;
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public sealed class FileSystemMonitor : IFileSystemMonitor
+    internal sealed class FileSystemMonitor : IFileSystemMonitor
     {
         public IFileSystemWatcherEventProvider Events => _eventAggregator;
 

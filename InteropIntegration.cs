@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ExcelDna.Integration;
+using Microsoft.Office.Interop.Excel;
+
+using System;
 using System.IO;
 using System.Linq;
-
-using ExcelDna.Integration;
-using Microsoft.Office.Interop.Excel;
 
 namespace XLAutoDeploy
 {
@@ -12,7 +12,7 @@ namespace XLAutoDeploy
     /// by interacting directly with the Excel Application using <see cref="Microsoft.Office.Interop"/> 
     /// and <see cref="ExcelDna.Integration"/>.
     /// </summary>
-    public static class InteropIntegration
+    internal static class InteropIntegration
     {
         public static void LoadAddIn(string filePath)
         {

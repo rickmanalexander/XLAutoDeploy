@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.FileSystem.Access
 {
-    public sealed class RemoteFileDownloaderFactory : IRemoteFileDownloaderFactory
+    internal sealed class RemoteFileDownloaderFactory : IRemoteFileDownloaderFactory
     {
         public IRemoteFileDownloader Create()
         {

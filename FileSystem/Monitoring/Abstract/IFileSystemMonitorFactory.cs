@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public interface IFileSystemMonitorFactory
+    internal interface IFileSystemMonitorFactory
     {
         IFileSystemMonitor Create(FileSystemWatcher watcher, IFileSystemWatcherEventAggregator eventAggregator);
     }

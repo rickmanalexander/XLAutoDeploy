@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Logging
 {
-    public interface INLoggerProxyFactory
+    internal interface INLoggerProxyFactory
     {
         ILogger Create(Type type); 
     }

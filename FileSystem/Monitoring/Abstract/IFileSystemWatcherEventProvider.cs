@@ -3,7 +3,7 @@ using System.IO;
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public interface IFileSystemWatcherEventProvider
+    internal interface IFileSystemWatcherEventProvider
     {
         event EventHandler<FileSystemEventArgs> Changed;
         event EventHandler<FileSystemEventArgs> Created;

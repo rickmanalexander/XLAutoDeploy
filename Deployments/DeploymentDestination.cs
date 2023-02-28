@@ -8,7 +8,7 @@ namespace XLAutoDeploy.Deployments
     /// <summary>
     /// Represents the physical file location on client machine to which a application update will be deployed.
     /// </summary>
-    public sealed class UpdateDeploymentDestination
+    internal sealed class DeploymentDestination
     {
         /// <summary>
         /// Windows specific file directory based on the specified <see cref="DeploymentBasis"/>.
@@ -20,16 +20,18 @@ namespace XLAutoDeploy.Deployments
         public string Manufacturer => _manufacturer;
         public string Product => _product;
 
+        public string OfficeBitness => _officeBittness;
+
         /// <summary>
-        /// A sub-directory comprised of the <see cref="RootDirectory"/>, <see cref="Manufacturer"/>, and 
-        /// <see cref="Product"/> in the following format: <br/>
-        /// RootDirectory\Manufacturer\Product\
+        /// A sub-directory comprised of the <see cref="RootDirectory"/>, <see cref="Manufacturer"/>, <see cref="Product"/>, and <see cref="OfficeBitness"/>
+        /// in the following format: <br/>
+        /// RootDirectory\Manufacturer\Product\OfficeBitness\
         /// </summary>
         /// <remarks>
         /// This is the primary directory for the add-in. Both the add-in, and the <see cref="AddIn"/> 
         /// manifest should always be placed here.
         /// </remarks> 
-        public string ParentDirectory => System.IO.Path.Combine(RootDirectory, Manufacturer, Product);
+        public string ParentDirectory => System.IO.Path.Combine(RootDirectory, Manufacturer, Product, OfficeBitness);
 
 
         public string AddInFileName => _addInFileName;
@@ -70,13 +72,15 @@ namespace XLAutoDeploy.Deployments
         private readonly DeploymentBasis _deploymentBasis;
         private readonly string _manufacturer;
         private readonly string _product;
+        private readonly string _officeBittness;
+
         private readonly string _version;
         private readonly string _addInFileName;
 
-        public UpdateDeploymentDestination(DeploymentBasis deploymentBasis, string manufacturer, 
-            string product, System.Version version, string addInName, AddInFileExtensionType fileExtension)
+        public DeploymentDestination(DeploymentBasis deploymentBasis, string manufacturer, 
+            string product, MicrosoftOfficeBitness officeBitness, System.Version version, string addInName, AddInFileExtensionType fileExtension)
         {
-            var typeName = typeof(UpdateDeploymentDestination).Name;
+            var typeName = typeof(DeploymentDestination).Name;
         
             if (String.IsNullOrEmpty(manufacturer) || String.IsNullOrWhiteSpace(manufacturer))
             {
@@ -109,6 +113,7 @@ namespace XLAutoDeploy.Deployments
             _deploymentBasis = deploymentBasis; 
             _manufacturer = manufacturer;
             _product = product;
+            _officeBittness = Enum.GetName(typeof(MicrosoftOfficeBitness), officeBitness);
             _version = version.ToString();
             _addInFileName = String.Concat(addInName, ".", Enum.GetName(typeof(AddInFileExtensionType), fileExtension).ToLower());
         

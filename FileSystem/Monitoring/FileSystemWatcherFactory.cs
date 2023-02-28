@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public sealed class FileSystemWatcherFactory : IFileSystemWatcherFactory
+    internal sealed class FileSystemWatcherFactory : IFileSystemWatcherFactory
     {
         public FileSystemWatcher Create(string directory, NotifyFilters notifyFilters, bool monitorSubdirectories = false)
         {

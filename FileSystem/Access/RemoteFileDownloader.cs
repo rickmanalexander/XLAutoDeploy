@@ -1,14 +1,14 @@
-﻿using System;
+﻿using XLAutoDeploy.Logging;
+
+using System;
 using System.IO;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
 
-using XLAutoDeploy.Logging;
-
 namespace XLAutoDeploy.FileSystem.Access
 {
-    public sealed class RemoteFileDownloader : IRemoteFileDownloader
+    internal sealed class RemoteFileDownloader : IRemoteFileDownloader
     {
         public ILogger Logger => _logger;
 

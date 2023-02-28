@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Updates
 {
-    public interface IUpdateCoordinatorFactory
+    internal interface IUpdateCoordinatorFactory
     {
         IUpdateCoordinator Create(INLoggerProxyFactory loggerProxyFactory);
     }

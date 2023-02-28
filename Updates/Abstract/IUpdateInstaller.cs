@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Updates
 {
-    public interface IUpdateInstaller
+    internal interface IUpdateInstaller
     {
         ILogger Logger { get; }
 

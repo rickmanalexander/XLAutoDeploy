@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Updates
 {
-    public sealed class UpdateNotificationEventArgs : EventArgs
+    internal sealed class UpdateNotificationEventArgs : EventArgs
     {
         public bool DoUpdate => _doUpdate;
 

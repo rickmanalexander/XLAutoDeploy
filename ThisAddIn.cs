@@ -1,17 +1,20 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-// using System.Threading;
+﻿using XLAutoDeploy.FileSystem.Access;
+using XLAutoDeploy.Logging;
+using XLAutoDeploy.Updates;
+using XLAutoDeploy.Deployments;
+
+using XLAutoDeploy.Manifests;
 
 using ExcelDna.Integration;
 using ExcelDna.Logging;
 
-using XLAutoDeploy.FileSystem.Access;
-using XLAutoDeploy.Logging;
-using XLAutoDeploy.Updates;
-using XLAutoDeploy.Deployments;
+using System;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+// using System.Threading;
 
 namespace XLAutoDeploy
 {

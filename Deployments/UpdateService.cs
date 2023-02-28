@@ -18,11 +18,8 @@ namespace XLAutoDeploy.Deployments
     /// A set of methods for automatically deploying and updating Excel add-ins on client machines using 
     /// configuration(s) defined in an instances of the <see cref="DeploymentPayload"/>'s.
     /// </summary>
-    public static class UpdateService
+    internal static class UpdateService
     {
-        public const string AddInManifestParameterizedFileName = "{0}-AddIn.manifest.xml";
-        public const string UpdateQueryInfoManifestParameterizedFileName = "{0}-UpdateQueryInfo.manifest.xml";
-
         public static void UpdateAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader) =>
             UpdateAddInFromFileServer(deploymentPayload, updateService, fileDownloader);
 
@@ -273,7 +270,7 @@ namespace XLAutoDeploy.Deployments
         }
 
         private static void DownloadAssetFilesFromWebServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,
-            WebClient webClient, UpdateDeploymentDestination destination)
+            WebClient webClient, DeploymentDestination destination)
         {
             if (assetFiles?.Any() == false)
                 return;
@@ -310,7 +307,7 @@ namespace XLAutoDeploy.Deployments
         }
 
         private static void DownloadAssetFilesFromFileServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,
-            UpdateDeploymentDestination destination)
+            DeploymentDestination destination)
         {
             if (assetFiles?.Any() == false)
                 return;
@@ -382,7 +379,7 @@ namespace XLAutoDeploy.Deployments
         {
             var updateBehavior = checkedUpdate.Payload.Deployment.Settings.UpdateBehavior;
 
-            if ((checkedUpdate.Info.IsMandatoryUpdate && checkedUpdate.Info.IsRestartRequired) 
+            if ((checkedUpdate.Info.IsMandatoryUpdate && checkedUpdate.Info.IsRestartRequired)
                 || updateBehavior.NotifyClient)
             {
                 updateService.Notifier.Notify(checkedUpdate.GetDescription(),
@@ -394,11 +391,6 @@ namespace XLAutoDeploy.Deployments
 
             // Silent Update
             return true;
-        }
-
-        public static bool IsAddInDeployed(UpdateDeploymentDestination deploymentDestination)
-        {
-            return File.Exists(deploymentDestination.AddInPath);
         }
 
         public static bool IsMandatoryUpdate(System.Version deployedAddInVersion, DeploymentSettings deploymentSettings)
@@ -418,6 +410,12 @@ namespace XLAutoDeploy.Deployments
                 || InteropIntegration.IsAddInInstalled(deploymentPayload.AddIn.Identity.Title));
         }
 
+        public static bool PersistedUpdateQueryInfoExists(DeploymentPayload deploymentPayload)
+        {
+            var filePath = GetUpdateQueryInfoManifestFilePath(deploymentPayload);
+
+            return File.Exists(filePath);
+        }
 
         public static string GetAddInManifestFilePath(DeploymentPayload deploymentPayload)
         {
@@ -426,7 +424,7 @@ namespace XLAutoDeploy.Deployments
 
         public static string GetAddInManifestFileName(DeploymentPayload deploymentPayload)
         {
-            return String.Format(AddInManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
+            return String.Format(Constants.AddInManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
         }
 
         public static string GetUpdateQueryInfoManifestFilePath(DeploymentPayload deploymentPayload)
@@ -436,10 +434,10 @@ namespace XLAutoDeploy.Deployments
 
         public static string GetUpdateQueryInfoManifestFileName(DeploymentPayload deploymentPayload)
         {
-            return String.Format(UpdateQueryInfoManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
+            return String.Format(Constants.UpdateQueryInfoManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
         }
 
-        public static string GetDependencyFilePath(Dependency dependency, UpdateDeploymentDestination destination)
+        public static string GetDependencyFilePath(Dependency dependency, DeploymentDestination destination)
         {
             string fileName = dependency.AssemblyIdentity.Name.AppendFileExtension(Common.DllFileExtension);
 
@@ -457,7 +455,7 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
-        public static string GetAssetFileFilePath(AssetFile assetFile, UpdateDeploymentDestination destination)
+        public static string GetAssetFileFilePath(AssetFile assetFile, DeploymentDestination destination)
         {
             if (assetFile.FilePlacement.NextToAddIn)
             {

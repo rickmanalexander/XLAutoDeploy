@@ -1,13 +1,13 @@
-﻿using System;
+﻿using XLAutoDeploy.Logging;
+using XLAutoDeploy.FileSystem.Access;
+
+using System;
 using System.Net;
 using System.Threading.Tasks;
 
-using XLAutoDeploy.Logging;
-using XLAutoDeploy.FileSystem.Access;
-
 namespace XLAutoDeploy.Updates
 {
-    public interface IUpdateDownloader
+    internal interface IUpdateDownloader
     {
         ILogger Logger { get; }
 

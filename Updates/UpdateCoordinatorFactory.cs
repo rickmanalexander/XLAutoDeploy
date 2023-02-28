@@ -1,10 +1,10 @@
-﻿using System;
+﻿using XLAutoDeploy.Logging;
 
-using XLAutoDeploy.Logging;
+using System;
 
 namespace XLAutoDeploy.Updates
 {
-    public class UpdateCoordinatorFactory : IUpdateCoordinatorFactory
+    internal class UpdateCoordinatorFactory : IUpdateCoordinatorFactory
     {
         public IUpdateCoordinator Create(INLoggerProxyFactory loggerProxyFactory)
         {

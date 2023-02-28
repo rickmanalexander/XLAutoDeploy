@@ -1,14 +1,14 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-
-using XLAutoDeploy.Logging;
+﻿using XLAutoDeploy.Logging;
 
 using XLAutoDeploy.FileSystem.Access;
 
+using System;
+using System.Net;
+using System.Threading.Tasks;
+
 namespace XLAutoDeploy.Updates
 {
-    public sealed class UpdateDownloader : IUpdateDownloader
+    internal sealed class UpdateDownloader : IUpdateDownloader
     {
         public ILogger Logger => _logger;
 
@@ -32,7 +32,7 @@ namespace XLAutoDeploy.Updates
         {
             lock (_threadLock)
             {
-                FileSystem.Utilities.CreateHiddenDirectory(targetFilePath, _logger);
+                FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
 
                 fileDownloader.Download(remoteFilePath, targetFilePath, true);
             }
@@ -40,7 +40,7 @@ namespace XLAutoDeploy.Updates
 
         public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath)
         {
-            FileSystem.Utilities.CreateHiddenDirectory(targetFilePath, _logger);
+            FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
 
             await fileDownloader.DownloadAsync(remoteFilePath, targetFilePath, true);
         }
@@ -62,7 +62,7 @@ namespace XLAutoDeploy.Updates
         {
             lock (_threadLock)
             {
-                FileSystem.Utilities.CreateHiddenDirectory(targetFilePath, _logger);
+                FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
 
                 fileDownloader.Download(webClient, address, targetFilePath, true);
             }
@@ -70,7 +70,7 @@ namespace XLAutoDeploy.Updates
 
         public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath)
         {
-            FileSystem.Utilities.CreateHiddenDirectory(targetFilePath, _logger);
+            FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
 
             await fileDownloader.DownloadAsync(webClient, address, targetFilePath, true);
         }
@@ -92,7 +92,7 @@ namespace XLAutoDeploy.Updates
         {
             lock (_threadLock)
             {
-                FileSystem.Utilities.CreateHiddenDirectory(targetFilePath, _logger);
+                FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
 
                 //??what if targetFilePath != local prod file path becuase it was changed remotely?
                 fileDownloader.Download(webClient, uri, targetFilePath, true);
@@ -101,7 +101,7 @@ namespace XLAutoDeploy.Updates
 
         public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath)
         {
-            FileSystem.Utilities.CreateHiddenDirectory(targetFilePath, _logger);
+            FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
 
             //?? if targetFilePath != local prod file path becuase it was changed remotely?
             await fileDownloader.DownloadAsync(webClient, uri, targetFilePath, true);

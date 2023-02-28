@@ -1,10 +1,10 @@
-﻿using System;
+﻿using XLAutoDeploy.Logging;
 
-using XLAutoDeploy.Logging;
+using System;
 
 namespace XLAutoDeploy.Updates
 {
-    public sealed class UpdateInstaller : IUpdateInstaller
+    internal sealed class UpdateInstaller : IUpdateInstaller
     {
         public ILogger Logger => _logger;
 

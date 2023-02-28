@@ -10,7 +10,7 @@ namespace XLAutoDeploy.Deployments
     /// <summary>
     /// Method(s) to creates instances of a <see cref="UpdateMonitor"/>.
     /// </summary>
-    public sealed class UpdateMonitorFactory
+    internal sealed class UpdateMonitorFactory
     {
         public static UpdateMonitor Create(IEnumerable<DeploymentPayload> deploymentPayloads,
                 IUpdateCoordinator updateService, IRemoteFileDownloader remoteFileDowloader,

@@ -97,7 +97,7 @@
     <Compile Include="FileSystem\Monitoring\FileSystemWatcherEventAggregator.cs" />
     <Compile Include="FileSystem\Monitoring\FileSystemWatcherFactory.cs" />
     <Compile Include="FileSystem\Access\FileNetworkConnection.cs" />
-    <Compile Include="FileSystem\Utilities.cs" />
+    <Compile Include="FileSystem\FileUtilities.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="InteropIntegration.cs" />
     <Compile Include="Logging\Abstract\ILogger.cs" />
@@ -107,7 +107,7 @@
     <Compile Include="Deployments\ManifestSerialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThisAddIn.cs" />
-    <Compile Include="Deployments\UpdateDeploymentDestination.cs" />
+    <Compile Include="Deployments\DeploymentDestination.cs" />
     <Compile Include="Updates\Abstract\IUpdateDownloader.cs" />
     <Compile Include="Updates\Abstract\IUpdateInstaller.cs" />
     <Compile Include="Updates\Abstract\IUpdateLoader.cs" />

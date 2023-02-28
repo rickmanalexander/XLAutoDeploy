@@ -1,10 +1,10 @@
-﻿using System;
+﻿using XLAutoDeploy.Manifests;
 
-using XLAutoDeploy.Manifests;
+using System;
 
 namespace XLAutoDeploy.Updates
 {
-    public sealed class UpdateNotifier : IUpdateNotifier
+    internal sealed class UpdateNotifier : IUpdateNotifier
     {
         public event EventHandler<UpdateNotificationEventArgs> NotificationComplete;
 

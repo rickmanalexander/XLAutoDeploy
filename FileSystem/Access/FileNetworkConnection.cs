@@ -1,11 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using XLAutoDeploy.FileSystem.Access;
 
-using XLAutoDeploy.FileSystem.Access;
+using System;
+using System.Net;
 
 namespace XLAutoDeploy.FileSystem
 {
-    public sealed class FileNetworkConnection : IFileNetworkConnection
+    internal sealed class FileNetworkConnection : IFileNetworkConnection
     {
         public NetworkCredential NetworkCredential => _networkCredential;
         public string RemoteServerName => _remoteServerName;

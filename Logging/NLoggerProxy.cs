@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NLog;
 
-using NLog;
+using System;
 
 namespace XLAutoDeploy.Logging
 {
-    public sealed class NLoggerProxy<T> : XLAutoDeploy.Logging.ILogger
+    internal sealed class NLoggerProxy<T> : XLAutoDeploy.Logging.ILogger
     {
         private static readonly NLog.ILogger _logger =
                      LogManager.GetLogger(typeof(T).FullName);

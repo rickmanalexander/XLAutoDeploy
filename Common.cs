@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace XLAutoDeploy
 {
-    public static class Common
+    internal static class Common
     {
         //Defined in XLAutoDeploy-AddIn.xll.config file
         public const string NLoggerTargetName = "file"; 

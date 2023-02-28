@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Logging
 {
-    public interface ILogger
+    internal interface ILogger
     {
         bool IsTraceEnabled { get; }
 

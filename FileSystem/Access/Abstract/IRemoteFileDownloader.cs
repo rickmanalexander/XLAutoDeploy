@@ -1,13 +1,13 @@
-﻿using System;
+﻿using XLAutoDeploy.Logging;
+
+using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-using XLAutoDeploy.Logging;
-
 namespace XLAutoDeploy.FileSystem.Access
 {
-    public interface IRemoteFileDownloader
+    internal interface IRemoteFileDownloader
     {
         ILogger Logger { get; }
 

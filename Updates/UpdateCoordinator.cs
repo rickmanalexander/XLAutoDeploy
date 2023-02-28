@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Updates
 {
-    public sealed class UpdateCoordinator : IUpdateCoordinator
+    internal sealed class UpdateCoordinator : IUpdateCoordinator
     {
         public IUpdateNotifier Notifier { get; }
         public IUpdateDownloader Deployer { get; }

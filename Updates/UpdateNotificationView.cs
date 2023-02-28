@@ -5,7 +5,7 @@ using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy.Updates
 {
-    public partial class UpdateNotificationView : Form
+    internal partial class UpdateNotificationView : Form
     {
         public event EventHandler<UpdateNotificationEventArgs> NotificationComplete;
 

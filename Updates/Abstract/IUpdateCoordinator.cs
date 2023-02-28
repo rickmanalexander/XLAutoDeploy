@@ -1,6 +1,6 @@
 ﻿namespace XLAutoDeploy.Updates
 {
-    public interface IUpdateCoordinator
+    internal interface IUpdateCoordinator
     {
         IUpdateNotifier Notifier { get; }
         IUpdateDownloader Deployer { get; }

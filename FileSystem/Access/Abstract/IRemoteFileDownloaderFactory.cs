@@ -1,6 +1,6 @@
 ﻿namespace XLAutoDeploy.FileSystem.Access
 {
-    public interface IRemoteFileDownloaderFactory
+    internal interface IRemoteFileDownloaderFactory
     {
         IRemoteFileDownloader Create();
     }

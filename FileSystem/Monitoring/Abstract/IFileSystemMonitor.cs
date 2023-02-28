@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public interface IFileSystemMonitor : IDisposable
+    internal interface IFileSystemMonitor : IDisposable
     {
         IFileSystemWatcherEventProvider Events { get; }
 

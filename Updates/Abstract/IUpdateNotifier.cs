@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Updates
 {
-    public interface IUpdateNotifier
+    internal interface IUpdateNotifier
     {
         bool DoUpdate { get; }
 

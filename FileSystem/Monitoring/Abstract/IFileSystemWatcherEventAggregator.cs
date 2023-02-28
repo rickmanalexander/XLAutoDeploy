@@ -3,7 +3,7 @@ using System.IO;
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public interface IFileSystemWatcherEventAggregator : IFileSystemWatcherEventProvider
+    internal interface IFileSystemWatcherEventAggregator : IFileSystemWatcherEventProvider
     {
         void RaiseWatcherChanged(FileSystemWatcher watcher, WatcherChangeTypes changeType, string fullPath, string name, DateTime timeStamp);
         void RaiseWatcherCreated(FileSystemWatcher watcher, WatcherChangeTypes changeType, string fullPath, string name, DateTime timeStamp);

@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.FileSystem.Monitoring
 {
-    public sealed class FileSystemMonitorFactory: IFileSystemMonitorFactory
+    internal sealed class FileSystemMonitorFactory: IFileSystemMonitorFactory
     {
         public IFileSystemMonitor Create(FileSystemWatcher watcher, IFileSystemWatcherEventAggregator eventAggregator)
         {

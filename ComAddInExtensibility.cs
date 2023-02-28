@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-using ExcelDna.Integration;
+﻿using ExcelDna.Integration;
 using ExcelDna.Integration.Extensibility;
+
+using System;
+using System.Runtime.InteropServices;
 
 namespace XLAutoDeploy
 {

@@ -3,7 +3,7 @@ using System.Net;
 
 namespace XLAutoDeploy.FileSystem.Access
 {
-    public interface IFileNetworkConnection : IDisposable
+    internal interface IFileNetworkConnection : IDisposable
     {
         NetworkCredential NetworkCredential { get; }
         string RemoteServerName { get; }
@@ -14,7 +14,7 @@ namespace XLAutoDeploy.FileSystem.Access
         void Close();
     }
 
-    public enum FileNetworkConnectionState
+    internal enum FileNetworkConnectionState
     {
         Closed,
         Open

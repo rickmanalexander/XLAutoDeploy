@@ -4,7 +4,7 @@ using System.Text;
 
 namespace XLAutoDeploy.FileSystem
 {
-    public static class Comparison
+    internal static class Comparison
     {
         public static bool BytesEqual(string filePath1, string filePath2)
         {

@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Logging
 {
-    public sealed class NLoggerProxyFactory : INLoggerProxyFactory
+    internal sealed class NLoggerProxyFactory : INLoggerProxyFactory
     {
         public ILogger Create(Type type)
         {

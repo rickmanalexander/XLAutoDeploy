@@ -10,7 +10,7 @@ using XLAutoDeploy.Manifests.Utilities;
 
 namespace XLAutoDeploy.Deployments
 {
-    public static class ManifestSerialization
+    internal static class ManifestSerialization
     {
         public static bool TryDeserializeManifestFile<T>(string filePath, ILogger logger, bool displayErrorMessage, out T obj)
         {
@@ -81,6 +81,37 @@ namespace XLAutoDeploy.Deployments
         public static T DeserializeManifestFile<T>(WebClient webClient, Uri uri)
         {
             return XmlConversion.DeserializeFromXml<T>(webClient, uri, System.Xml.ConformanceLevel.Fragment);
+        }
+
+        public static bool TrySerializeToXmlFile<T>(T obj, string filePath, ILogger logger, bool displayErrorMessage)
+        {
+            try
+            {
+                XmlConversion.SerializeToXmlFile<T>(obj, filePath); 
+
+                return true;
+            }
+            catch (IOException ex)
+            {
+                logger.Error(ex, $"Invalid configuration file location for type '{nameof(T)}' to file path '{filePath}'.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                logger.Error(ex, $"Inaccessible configuration file location for type '{nameof(T)}' to file path '{filePath}'.");
+            }
+            catch (SecurityException ex)
+            {
+                logger.Error(ex, $"Inaccessible configuration file location for type '{nameof(T)}' to file path '{filePath}'.");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"Error serializing for type '{nameof(T)}' to file path '{filePath}'.");
+            }
+
+            if (displayErrorMessage)
+                LogDisplay.WriteLine($"{Common.GetAppName()} - Error serializing required configuration file to client.");
+
+            return false;
         }
     }
 }

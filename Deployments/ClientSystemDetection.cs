@@ -9,7 +9,7 @@ using XLAutoDeploy.Manifests;
 
 namespace XLAutoDeploy.Deployments
 {
-    public class ClientSystemDetection
+    internal class ClientSystemDetection
     {
         public const string V1To4SubKey32Bit = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\";
         public const string V1To4SubKey64Bit = @"SOFTWARE\Wow6432Node\Microsoft\NET Framework Setup\NDP\";

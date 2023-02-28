@@ -1,12 +1,12 @@
-﻿using System;
+﻿using XLAutoDeploy.Logging;
+
+using System;
 using System.IO;
 using System.Security;
 
-using XLAutoDeploy.Logging;
-
 namespace XLAutoDeploy.FileSystem
 {
-    public static class Utilities
+    internal static class FileUtilities
     {
         public const string CouldNotCreateHiddenDirectoryErrorMessage = "Could not create create hidden directory";
 

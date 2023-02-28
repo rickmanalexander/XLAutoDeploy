@@ -2,7 +2,7 @@
 
 namespace XLAutoDeploy.Deployments
 {
-    public sealed class CheckedUpdate
+    internal sealed class CheckedUpdate
     {
         public UpdateQueryInfo Info => _info;
         public DeploymentPayload Payload => _payload;

@@ -39,17 +39,6 @@
             Xml Required: Y
             </remarks> 
         </member>
-        <member name="P:XLAutoDeploy.Manifests.AddIn.TargetOfficeInstallation">
-            <summary>
-            Specifies the "Bitness" (either 32 or 64) of the installation of Microsoft Office /on/ which the add-in can run.
-            </summary>  
-            <remarks>
-            The physical add-in <see cref="T:XLAutoDeploy.Manifests.AddIn"/> file must be compatible with this value. //Note that 64 bit
-            operating systems are compatible with 32 bit installations of Microsoft Office.  <br/> <br/>
-            Xml Node Type: Element <br/>
-            Xml Required: Y
-            </remarks> 
-        </member>
         <member name="P:XLAutoDeploy.Manifests.AddIn.Identity">
             <summary>
             Identifies the attributes associated with a physical add-in file.
@@ -366,35 +355,6 @@
             Xml Required: N 
             </remarks>  
         </member>
-        <member name="T:XLAutoDeploy.Manifests.UnitOfTime">
-            <summary>
-            Represents an interval of time. 
-            </summary>
-        </member>
-        <member name="T:XLAutoDeploy.Manifests.MicrosoftOfficeBitness">
-            <summary>
-            Represents the bits-per-word (i.e. "Bitness", either 32 or 64) of the installation of Microsoft Office targeted by the add-in.
-            </summary> 
-            <remarks>
-            Note that 64 bit operating systems are compatible with 32 bit installations of Microsoft Office.
-            </remarks>  
-        </member>
-        <member name="T:XLAutoDeploy.Manifests.OperatingSystemBitness">
-            <summary>
-            Represents the bits-per-word (i.e. "Bitness", either 32 or 64) of the platform targeted by 
-            an assembly.
-            </summary> 
-            <remarks>
-            For unmanaged assemblies that do not target the .Net framework, or are native 
-            (e.g. written C, assembler, or similar), <see cref="F:XLAutoDeploy.Manifests.OperatingSystemBitness.None"/> should 
-            be used.
-            </remarks>  
-        </member>
-        <member name="T:XLAutoDeploy.Manifests.NetClrVersion">
-            <summary>
-            Represents all .Net Framework CLR versions published and deployed by Microsoft.
-            </summary> 
-        </member>
         <member name="T:XLAutoDeploy.Manifests.CompatibleFramework">
             <summary>
             Represents a version of the .NET Framework where an application can be installed and run.
@@ -428,6 +388,35 @@
             Xml Node Type: Element <br/>
             Xml Required: Y
             </remarks> 
+        </member>
+        <member name="T:XLAutoDeploy.Manifests.UnitOfTime">
+            <summary>
+            Represents an interval of time. 
+            </summary>
+        </member>
+        <member name="T:XLAutoDeploy.Manifests.MicrosoftOfficeBitness">
+            <summary>
+            Represents the bits-per-word (i.e. "Bitness", either 32 or 64) of the installation of Microsoft Office targeted by the add-in.
+            </summary> 
+            <remarks>
+            Note that 64 bit operating systems are compatible with 32 bit installations of Microsoft Office.
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Manifests.OperatingSystemBitness">
+            <summary>
+            Represents the bits-per-word (i.e. "Bitness", either 32 or 64) of the platform targeted by 
+            an assembly.
+            </summary> 
+            <remarks>
+            For unmanaged assemblies that do not target the .Net framework, or are native 
+            (e.g. written C, assembler, or similar), <see cref="F:XLAutoDeploy.Manifests.OperatingSystemBitness.None"/> should 
+            be used.
+            </remarks>  
+        </member>
+        <member name="T:XLAutoDeploy.Manifests.NetClrVersion">
+            <summary>
+            Represents all .Net Framework CLR versions published and deployed by Microsoft.
+            </summary> 
         </member>
         <member name="T:XLAutoDeploy.Manifests.Dependency">
             <summary>
@@ -537,12 +526,13 @@
             Xml Required: Y
             </remarks> 
         </member>
-        <member name="P:XLAutoDeploy.Manifests.Deployment.AlternateAddInUri">
+        <member name="P:XLAutoDeploy.Manifests.Deployment.TargetOfficeInstallation">
             <summary>
-            Specifies an alternate Uri of the associated <see cref="T:XLAutoDeploy.Manifests.AddIn"/>.
+            Specifies the "Bitness" (either 32 or 64) of the installation of Microsoft Office on which the add-in can run.
             </summary>  
             <remarks>
-            The functionality for this property is the same as the <see cref="P:XLAutoDeploy.Manifests.Deployment.AddInUri"/> except in the event the <see cref="P:XLAutoDeploy.Manifests.AddIn.TargetOfficeInstallation"/> defined for the first <see cref="P:XLAutoDeploy.Manifests.Deployment.AddInUri"/>, this Uri will be used to pull an <see cref="T:XLAutoDeploy.Manifests.AddIn"/> with a different <see cref="P:XLAutoDeploy.Manifests.AddIn.TargetOfficeInstallation"/> that will hopefully be compatible with the client's office instance. <br/> <br/>
+            The physical add-in <see cref="T:XLAutoDeploy.Manifests.AddIn"/> file must be compatible with this value. Note that 64 bit
+            operating systems are compatible with 32 bit installations of Microsoft Office.  <br/> <br/>
             Xml Node Type: Element <br/>
             Xml Required: Y
             </remarks> 

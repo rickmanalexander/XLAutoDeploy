@@ -18,7 +18,7 @@ namespace XLAutoDeploy.Deployments
     /// is raised that then queues an update action based on the <see cref="UpdateBehavior"/> 
     /// set in the <see cref="Deployment"/>.
     /// </summary>
-    public sealed class UpdateMonitor : IDisposable
+    internal sealed class UpdateMonitor : IDisposable
     {
         private readonly IFileSystemWatcherFactory _watcherFactory;
         private readonly IFileSystemWatcherEventAggregator _watcherEventAggregator;
@@ -140,10 +140,15 @@ namespace XLAutoDeploy.Deployments
 
             if (notificationClone[filePath] <= _sessionNotificationLimit)
             {
-                if (DeploymentService.TryGetUpdate(payload, out CheckedUpdate update))
+                var deployedAddInManifestFilePath = UpdateService.GetAddInManifestFilePath(payload);
+
+                var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
+
+                var update = DeploymentService.GetUpdate(payload, deployedAddInVersion);
+
+                if (UpdateService.CanProceedWithUpdate(update, _updateCoordinator))
                 {
-                    if (UpdateService.CanProceedWithUpdate(update, _updateCoordinator))
-                        DeploymentService.ProcessUpdate(update, _updateCoordinator, _remoteFileDowloader);
+                    DeploymentService.ProcessUpdate(update, _updateCoordinator, _remoteFileDowloader);
                 }
             }
 
