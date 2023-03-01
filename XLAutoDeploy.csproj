@@ -81,6 +81,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Deployments\DeploymentPayload.cs" />
     <Compile Include="Deployments\DeploymentService.cs" />
+    <Compile Include="Deployments\DeployedFileUtilities.cs" />
     <Compile Include="FileSystem\Access\Abstract\IRemoteFileDownloader.cs" />
     <Compile Include="FileSystem\Access\Abstract\IRemoteFileDownloaderFactory.cs" />
     <Compile Include="FileSystem\Access\Abstract\IFileNetworkConnection.cs" />

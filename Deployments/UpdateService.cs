@@ -78,7 +78,7 @@ namespace XLAutoDeploy.Deployments
 
             try
             {
-                var addInManifestTargetFilePath = GetAddInManifestFilePath(deploymentPayload);
+                var addInManifestTargetFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
 
                 UpdateAddInFromFileServerImpl(deploymentPayload, updateService, fileDownloader, addInManifestTargetFilePath);
             }
@@ -120,7 +120,7 @@ namespace XLAutoDeploy.Deployments
                         $"Supply a valid instance of {webClient.Credentials.GetType().Name} to the {nameof(webClient)}."));
             }
 
-            var addInManifestTargetFilePath = GetAddInManifestFilePath(deploymentPayload);
+            var addInManifestTargetFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
 
             try
             {
@@ -411,32 +411,13 @@ namespace XLAutoDeploy.Deployments
 
         public static bool PersistedUpdateQueryInfoExists(DeploymentPayload deploymentPayload)
         {
-            var filePath = GetUpdateQueryInfoManifestFilePath(deploymentPayload);
+            var filePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(deploymentPayload);
 
             return File.Exists(filePath);
         }
 
-        public static string GetAddInManifestFilePath(DeploymentPayload deploymentPayload)
-        {
-            return Path.Combine(deploymentPayload.Destination.ParentDirectory, GetAddInManifestFileName(deploymentPayload));
-        }
 
-        public static string GetAddInManifestFileName(DeploymentPayload deploymentPayload)
-        {
-            return String.Format(Constants.AddInManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
-        }
-
-        public static string GetUpdateQueryInfoManifestFilePath(DeploymentPayload deploymentPayload)
-        {
-            return Path.Combine(deploymentPayload.Destination.ParentDirectory, GetUpdateQueryInfoManifestFileName(deploymentPayload));
-        }
-
-        public static string GetUpdateQueryInfoManifestFileName(DeploymentPayload deploymentPayload)
-        {
-            return String.Format(Constants.UpdateQueryInfoManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
-        }
-
-        public static string GetDependencyFilePath(Dependency dependency, DeploymentDestination destination)
+        private static string GetDependencyFilePath(Dependency dependency, DeploymentDestination destination)
         {
             string fileName = dependency.AssemblyIdentity.Name.AppendFileExtension(Common.DllFileExtension);
 
@@ -454,7 +435,7 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
-        public static string GetAssetFileFilePath(AssetFile assetFile, DeploymentDestination destination)
+        private static string GetAssetFileFilePath(AssetFile assetFile, DeploymentDestination destination)
         {
             if (assetFile.FilePlacement.NextToAddIn)
             {

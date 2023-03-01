@@ -71,7 +71,6 @@ namespace XLAutoDeploy.Deployments
         }
 
  
-
         public static void ProcessDeploymentPayloads(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator,
             IRemoteFileDownloader remoteFileDownloader, IFileNetworkConnection fileNetworkConnection = null,
             WebClient webClient = null)
@@ -82,7 +81,7 @@ namespace XLAutoDeploy.Deployments
                 if (IsAddInDeployed(payload.Destination))
                 {
                     // get deployed version from add-in manifest file
-                    var deployedAddInManifestFilePath = UpdateService.GetAddInManifestFilePath(payload);
+                    var deployedAddInManifestFilePath = DeployedFileUtilities.GetAddInManifestFilePath(payload);
 
                     var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
@@ -157,7 +156,7 @@ namespace XLAutoDeploy.Deployments
             }
 
             // Save UpdateQueryInfo
-            var updateQueryInfoFilePath = UpdateService.GetUpdateQueryInfoManifestFilePath(payload);
+            var updateQueryInfoFilePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(payload);
 
             XmlConversion.SerializeToXmlFile<UpdateQueryInfo>(update.Info, updateQueryInfoFilePath);
         }
@@ -189,7 +188,7 @@ namespace XLAutoDeploy.Deployments
             {
                 if (UpdateService.PersistedUpdateQueryInfoExists(deploymentPayload))
                 {
-                    var persistedUpdateQueryInfoFilePath = UpdateService.GetUpdateQueryInfoManifestFilePath(deploymentPayload);
+                    var persistedUpdateQueryInfoFilePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(deploymentPayload);
 
                     var persistedUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(persistedUpdateQueryInfoFilePath);
 
@@ -278,7 +277,7 @@ namespace XLAutoDeploy.Deployments
             ValidateOfficeBitnessAndOsRequirements(deploymentPayload);
             ValidateCompatibleFrameworks(deploymentPayload, _installedClrAndNetFrameworks);
 
-            var addInManifestFilePath = UpdateService.GetAddInManifestFilePath(deploymentPayload);
+            var addInManifestFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
 
             switch (deploymentPayload.FileHost.HostType)
             {
