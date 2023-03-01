@@ -1,16 +1,15 @@
-﻿using System;
+﻿using XLAutoDeploy.FileSystem.Access;
+using XLAutoDeploy.Updates;
+
+using XLAutoDeploy.Manifests;
+using XLAutoDeploy.Manifests.Utilities;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-
-using XLAutoDeploy.Manifests;
-using XLAutoDeploy.Manifests.Utilities;
-
-using XLAutoDeploy.FileSystem.Access;
-
-using XLAutoDeploy.Updates;
 
 namespace XLAutoDeploy.Deployments
 {

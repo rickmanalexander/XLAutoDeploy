@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Security;
+﻿using XLAutoDeploy.Logging;
+using XLAutoDeploy.Manifests.Utilities;
 
 using ExcelDna.Logging;
 
-using XLAutoDeploy.Logging;
-using XLAutoDeploy.Manifests.Utilities;
+using System;
+using System.IO;
+using System.Net;
+using System.Security;
 
 namespace XLAutoDeploy.Deployments
 {

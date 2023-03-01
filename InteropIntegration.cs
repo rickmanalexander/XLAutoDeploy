@@ -19,7 +19,7 @@ namespace XLAutoDeploy
             LoadAddIn(GetExcelApplication(), filePath);
         }
 
-        public static void LoadAddIn(Microsoft.Office.Interop.Excel.Application excelApp, string filePath)
+        public static void LoadAddIn(Application excelApp, string filePath)
         {
             ThrowIsNotAddInFileExeption("load", filePath);
 
@@ -42,7 +42,7 @@ namespace XLAutoDeploy
             UnloadAddIn(GetExcelApplication(), filePath);
         }
 
-        public static void UnloadAddIn(Microsoft.Office.Interop.Excel.Application excelApp, string filePath)
+        public static void UnloadAddIn(Application excelApp, string filePath)
         {
             ThrowIsNotAddInFileExeption("unload", filePath);
 
@@ -67,7 +67,7 @@ namespace XLAutoDeploy
             InstallAddIn(GetExcelApplication(), addInTitle, filePath);
         }
 
-        public static void InstallAddIn(Microsoft.Office.Interop.Excel.Application excelApp, string addInTitle, string filePath)
+        public static void InstallAddIn(Application excelApp, string addInTitle, string filePath)
         {
             ThrowIsNotAddInFileExeption("install", filePath);
 
@@ -83,7 +83,7 @@ namespace XLAutoDeploy
             UninstallAddIn(GetExcelApplication(), addInTitle);
         }
 
-        public static void UninstallAddIn(Microsoft.Office.Interop.Excel.Application excelApp, string addInTitle)
+        public static void UninstallAddIn(Application excelApp, string addInTitle)
         {
             if (IsAddInInstalled(excelApp, addInTitle))
             {
@@ -119,7 +119,7 @@ namespace XLAutoDeploy
             return IsAddInInstalled(GetExcelApplication(), addInTitle);
         }
 
-        public static bool IsAddInInstalled(Microsoft.Office.Interop.Excel.Application excelApp, string addInTitle)
+        public static bool IsAddInInstalled(Application excelApp, string addInTitle)
         {
             if (AddInExists(excelApp, addInTitle))
             {
@@ -136,11 +136,11 @@ namespace XLAutoDeploy
             return AddInExists(GetExcelApplication(), addInTitle);
         }
 
-        public static bool AddInExists(Microsoft.Office.Interop.Excel.Application excelApp, string addInTitle)
+        public static bool AddInExists(Application excelApp, string addInTitle)
         {
             var addinTitleLocal = addInTitle.Trim();
 
-            return excelApp.AddIns2.Cast<Microsoft.Office.Interop.Excel.AddIn>()
+            return excelApp.AddIns2.Cast<AddIn>()
                 .Any(a => a.Title.Trim().Equals(addinTitleLocal, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -150,11 +150,11 @@ namespace XLAutoDeploy
             return IsWorkbookOpen(GetExcelApplication(), filePath);
         }
 
-        public static bool IsWorkbookOpen(Microsoft.Office.Interop.Excel.Application excelApp, string filePath)
+        public static bool IsWorkbookOpen(Application excelApp, string filePath)
         {
             var fileName = Path.GetFileName(filePath).Trim();
 
-            return excelApp.Workbooks.Cast<Microsoft.Office.Interop.Excel.Workbook>()
+            return excelApp.Workbooks.Cast<Workbook>()
                 .Any(w => w.Name.Trim().Equals(fileName, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -167,7 +167,7 @@ namespace XLAutoDeploy
         // Note: Based on testing in VBA, the first column in the array returns the full file
         // path to the xll add-in.
         // Also and xll being registered is equivalent to it being "Open" (i.e.  loaded) in Excel.
-        public static bool IsXllAddRegistered(Microsoft.Office.Interop.Excel.Application excelApp, string addInNameOrFileName)
+        public static bool IsXllAddRegistered(Application excelApp, string addInNameOrFileName)
         {
             var addInName = Path.GetFileNameWithoutExtension(addInNameOrFileName).Trim();
 
@@ -205,14 +205,14 @@ namespace XLAutoDeploy
             CloseExcelApp(GetExcelApplication());
         }
 
-        public static void CloseExcelApp(Microsoft.Office.Interop.Excel.Application excelApp)
+        public static void CloseExcelApp(Application excelApp)
         {
             excelApp.Quit();
         }
 
-        public static Microsoft.Office.Interop.Excel.Application GetExcelApplication()
+        public static Application GetExcelApplication()
         {
-            return (Microsoft.Office.Interop.Excel.Application)ExcelDnaUtil.Application;
+            return (Application)ExcelDnaUtil.Application;
         }
 
         public static bool TryRegisterXLLAddin(string filePath)

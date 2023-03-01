@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
+﻿using XLAutoDeploy.Manifests;
 
 using Microsoft.Win32;
 
-using XLAutoDeploy.Manifests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Principal;
 
 namespace XLAutoDeploy.Deployments
 {

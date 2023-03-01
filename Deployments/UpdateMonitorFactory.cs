@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-
-using XLAutoDeploy.FileSystem.Access;
+﻿using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.FileSystem.Monitoring;
 using XLAutoDeploy.Logging;
 using XLAutoDeploy.Updates;
+
+using System.Collections.Generic;
 
 namespace XLAutoDeploy.Deployments
 {

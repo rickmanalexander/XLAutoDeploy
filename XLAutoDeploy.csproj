@@ -140,16 +140,12 @@
     <None Include="Properties\ExcelDna.Build.props" />
     <None Include="README.md" />
     <None Include="XLAutoDeploy-AddIn.dna" />
-    <None Include="XLAutoDeploy-AddIn.xll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="XLAutoDeploy-AddIn64.xll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="XLAutoDeploy-AddIn.xll.config" />
+    <None Include="XLAutoDeploy-AddIn64.xll.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="XLAutoDeploy.Manifest.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

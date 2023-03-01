@@ -1,6 +1,5 @@
 ﻿using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.Updates;
-using XLAutoDeploy.Logging;
 
 using XLAutoDeploy.Manifests;
 using XLAutoDeploy.Manifests.Utilities;
@@ -35,23 +34,6 @@ namespace XLAutoDeploy.Deployments
         {
             return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(webClient, uri);
         }
-
-        // public static bool TryGetDeploymentRegistry(Uri uri, ILogger logger, out / DeploymentRegistry /deploymentRegistry)
-        // {
-        //     if (uri.IsFile || uri.IsUnc)
-        //     {
-        //         return ManifestSerialization.TryDeserializeManifestFile<DeploymentRegistry>// (uri.AsString(), logger, false, out deploymentRegistry);
-        //     }
-        //     else
-        //     {
-        //         return TryGetDeploymentRegistry(new WebClient(), uri, logger, out // deploymentRegistry);
-        //     }
-        // }
-        // 
-        // public static bool TryGetDeploymentRegistry(WebClient webClient, Uri uri, ILogger  logger, //out DeploymentRegistry deploymentRegistry)
-        // {
-        //     return ManifestSerialization.TryDeserializeManifestFile<DeploymentRegistry>/ (webClient, /uri, logger, false, out deploymentRegistry);
-        // }
 
         public static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloads(DeploymentRegistry registry)
         {

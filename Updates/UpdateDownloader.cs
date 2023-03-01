@@ -1,5 +1,4 @@
 ﻿using XLAutoDeploy.Logging;
-
 using XLAutoDeploy.FileSystem.Access;
 
 using System;

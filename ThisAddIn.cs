@@ -1,7 +1,7 @@
-﻿using XLAutoDeploy.FileSystem.Access;
+﻿using XLAutoDeploy.Deployments;
+using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.Logging;
 using XLAutoDeploy.Updates;
-using XLAutoDeploy.Deployments;
 
 using XLAutoDeploy.Manifests;
 
@@ -13,8 +13,6 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-// using System.Threading;
 
 namespace XLAutoDeploy
 {
@@ -88,12 +86,12 @@ namespace XLAutoDeploy
 
             // This would possibly access excel COM objects from another thread which could lead to 
             // unexpected (and/or fatal) errors
-            // var method = new ThreadStart(() =>
+            // var method = new System.Threading.ThreadStart(() =>
             // {
             //  code
             // });
             // 
-            // var thread = new Thread(method);
+            // var thread = new System.Threading.Thread(method);
             // thread.Start();
 
             Debug.WriteLine($"End {Common.GetAppName()} startup");
@@ -125,12 +123,12 @@ namespace XLAutoDeploy
 
             // This would possibly access excel COM objects from another thread which could lead to 
             // unexpected (and/or fatal) errors
-            // var method = new ThreadStart(() =>
+            // var method = new System.Threading.ThreadStart(() =>
             // {
             //  code
             // });
             // 
-            // var thread = new Thread(method);
+            // var thread = new System.Threading.Thread(method);
             // thread.Start();
 
             Debug.WriteLine("End Excel app shutdown");

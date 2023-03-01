@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
+﻿using XLAutoDeploy.FileSystem.Access;
+using XLAutoDeploy.FileSystem.Monitoring;
+using XLAutoDeploy.Updates;
 using XLAutoDeploy.Logging;
 
 using XLAutoDeploy.Manifests;
-using XLAutoDeploy.FileSystem.Access;
-using XLAutoDeploy.FileSystem.Monitoring;
-using XLAutoDeploy.Updates;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace XLAutoDeploy.Deployments
 {

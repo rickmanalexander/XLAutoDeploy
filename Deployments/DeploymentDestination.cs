@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using XLAutoDeploy.Manifests;
 
-using XLAutoDeploy.Manifests;
+using System;
+using System.IO;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -31,7 +31,7 @@ namespace XLAutoDeploy.Deployments
         /// This is the primary directory for the add-in. Both the add-in, and the <see cref="AddIn"/> 
         /// manifest should always be placed here.
         /// </remarks> 
-        public string ParentDirectory => System.IO.Path.Combine(RootDirectory, Manufacturer, Product, OfficeBitness);
+        public string ParentDirectory => Path.Combine(RootDirectory, Manufacturer, Product, OfficeBitness);
 
 
         public string AddInFileName => _addInFileName;
@@ -40,20 +40,20 @@ namespace XLAutoDeploy.Deployments
         /// The full file path of the add-in comprised of the <see cref="ParentDirectory"/> and
         /// the <see cref="AddInFileName"/>. 
         /// </summary>
-        public string AddInPath => System.IO.Path.Combine(ParentDirectory, AddInFileName);
+        public string AddInPath => Path.Combine(ParentDirectory, AddInFileName);
 
         /// <summary>
         /// A sub-directory comprised of the <see cref="ParentDirectory"/> named "Temp"
         /// in the following format: <br/>
         /// ParentDirectory\Temp\
         /// </summary>
-        public string TempAddInDirectory => System.IO.Path.Combine(ParentDirectory, "Temp");
+        public string TempAddInDirectory => Path.Combine(ParentDirectory, "Temp");
 
         /// <summary>
         /// The full temporary file path of the add-in comprised of the <see cref="TempAddInDirectory"/> 
         /// and the <see cref="AddInFileName"/>. 
         /// </summary>
-        public string TempAddInPath => System.IO.Path.Combine(TempAddInDirectory, AddInFileName);
+        public string TempAddInPath => Path.Combine(TempAddInDirectory, AddInFileName);
 
 
         public string Version => _version;
@@ -66,7 +66,7 @@ namespace XLAutoDeploy.Deployments
         /// <remarks>
         /// This is the parent directory for any dependencies and/or asset files.  
         /// </remarks> 
-        public string WorkingDirectory => System.IO.Path.Combine(ParentDirectory, Version);
+        public string WorkingDirectory => Path.Combine(ParentDirectory, Version);
 
 
         private readonly DeploymentBasis _deploymentBasis;
