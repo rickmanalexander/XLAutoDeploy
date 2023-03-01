@@ -140,6 +140,9 @@
     <None Include="packages.config" />
     <None Include="Properties\ExcelDna.Build.props" />
     <None Include="README.md" />
+    <None Include="Schemas\XLAutoDeployManifest.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="XLAutoDeploy-AddIn.dna" />
     <None Include="XLAutoDeploy-AddIn.xll.config" />
     <None Include="XLAutoDeploy-AddIn64.xll.config" />
