@@ -140,7 +140,7 @@ namespace XLAutoDeploy.Deployments
 
             if (notificationClone[filePath] <= _sessionNotificationLimit)
             {
-                var deployedAddInManifestFilePath = UpdateService.GetAddInManifestFilePath(payload);
+                var deployedAddInManifestFilePath = DeployedFileUtilities.GetAddInManifestFilePath(payload);
 
                 var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 

@@ -75,7 +75,7 @@ namespace XLAutoDeploy.Deployments
                                                 $"Supply a valid manifest {nameof(filePath)}"));
             }
 
-            return XmlConversion.DeserializeFromXml<T>(filePath, System.Xml.ConformanceLevel.Fragment);
+            return XmlConversion.DeserializeFromXml<T>(filePath, System.Xml.ConformanceLevel.Document);
         }
 
         public static T DeserializeManifestFile<T>(WebClient webClient, Uri uri)

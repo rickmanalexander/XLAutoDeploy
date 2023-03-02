@@ -50,8 +50,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>packages\NLog.5.1.1\lib\net46\NLog.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>packages\NLog.5.1.2\lib\net46\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -130,12 +129,10 @@
     <Compile Include="Updates\UpdateCoordinatorFactory.cs" />
     <Compile Include="Deployments\UpdateMonitor.cs" />
     <Compile Include="Deployments\UpdateMonitorFactory.cs" />
-    <Compile Include="XLAutoDeployManifest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\ExcelDna.Build.props" />

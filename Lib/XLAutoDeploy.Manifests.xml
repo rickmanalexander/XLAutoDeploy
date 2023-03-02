@@ -1088,5 +1088,6 @@
             <see cref="T:XLAutoDeploy.Manifests.Dependency"/>(s) and <see cref="T:XLAutoDeploy.Manifests.AssetFile"/>(s), excluding the size of add-in file itself.
             </summary>  
         </member>
+        <!-- Badly formed XML comment ignored for member "T:XLAutoDeploy.Manifests.XLAutoDeployManifest" -->
     </members>
 </doc>
