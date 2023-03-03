@@ -1,6 +1,5 @@
-﻿using XLAutoDeploy.Manifests;
+﻿using XLAutoDeploy.Manifests.Utilities;
 
-using System;
 using System.IO;
 
 namespace XLAutoDeploy.Deployments
@@ -14,7 +13,7 @@ namespace XLAutoDeploy.Deployments
 
         public static string GetAddInManifestFileName(DeploymentPayload deploymentPayload)
         {
-            return String.Format(Constants.AddInManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
+            return ManifestFileNaming.AddInManifestFileName(deploymentPayload.AddIn.Identity.Name);
         }
 
         public static string GetUpdateQueryInfoManifestFilePath(DeploymentPayload deploymentPayload)
@@ -24,7 +23,7 @@ namespace XLAutoDeploy.Deployments
 
         public static string GetUpdateQueryInfoManifestFileName(DeploymentPayload deploymentPayload)
         {
-            return String.Format(Constants.UpdateQueryInfoManifestParameterizedFileName, deploymentPayload.AddIn.Identity.Name);
+            return ManifestFileNaming.UpdateQueryInfoManifestFileName (deploymentPayload.AddIn.Identity.Name);
         }
     }
 }

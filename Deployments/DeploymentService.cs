@@ -158,7 +158,7 @@ namespace XLAutoDeploy.Deployments
             // Save UpdateQueryInfo
             var updateQueryInfoFilePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(payload);
 
-            XmlConversion.SerializeToXmlFile<UpdateQueryInfo>(update.Info, updateQueryInfoFilePath);
+            XmlConversion.SerializeToXmlFile(update.Info, updateQueryInfoFilePath);
         }
 
         // need to check if is deployed first
@@ -194,6 +194,11 @@ namespace XLAutoDeploy.Deployments
 
                     updateQueryInfo.FirstNotified = persistedUpdateQueryInfo.FirstNotified;
                     updateQueryInfo.LastNotified = persistedUpdateQueryInfo.LastNotified;
+                }
+                else
+                {
+                    updateQueryInfo.FirstNotified = DateTime.MinValue;
+                    updateQueryInfo.LastNotified = DateTime.MinValue;
                 }
             }
 
@@ -238,8 +243,8 @@ namespace XLAutoDeploy.Deployments
                     if (fileNetworkConnection.State == FileNetworkConnectionState.Closed)
                         fileNetworkConnection.Open();
 
-                    deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.LocalPath);
-                    addIn = GetAddInManifest(deployment.AddInUri.LocalPath);
+                    deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.AsString());
+                    addIn = GetAddInManifest(deployment.AddInUri.AsString());
 
                     if (fileNetworkConnection.State == FileNetworkConnectionState.Open)
                         fileNetworkConnection.Close();

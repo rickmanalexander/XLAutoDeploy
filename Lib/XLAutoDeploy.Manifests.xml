@@ -262,7 +262,7 @@
             <see href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.processorarchitecture?view=netframework-4.8"/> 
             for more information.<br/> <br/>
             Xml Node Type: Attribute <br/>
-            Xml Required: N
+            Xml Required: Y
             </remarks> 
         </member>
         <member name="P:XLAutoDeploy.Manifests.AssemblyIdentity.Culture">
@@ -591,6 +591,10 @@
             <summary>
             Represents the locations of one or more <see cref="T:XLAutoDeploy.Manifests.PublishedDeployment"/>'s.
             </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
         </member>
         <member name="T:XLAutoDeploy.Manifests.DeploymentSettings">
             <summary>
@@ -682,7 +686,7 @@
             </summary>  
             <remarks>
             Xml Node Type: Attribute <br/>
-            Xml Required: N 
+            Xml Required: Y 
             </remarks>  
         </member>
         <member name="P:XLAutoDeploy.Manifests.Description.SupportUri">
@@ -1089,5 +1093,16 @@
             </summary>  
         </member>
         <!-- Badly formed XML comment ignored for member "T:XLAutoDeploy.Manifests.XLAutoDeployManifest" -->
+        <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.DeploymentRegistryUri">
+            <summary>
+            Specifies the Uri of the associated <see cref="T:XLAutoDeploy.Manifests.DeploymentRegistry"/>.
+            </summary>  
+            <remarks>
+            This is used to locate and de-serialize the <see cref="T:XLAutoDeploy.Manifests.DeploymentRegistry"/> manifest file on 
+            the remote <see cref="T:XLAutoDeploy.Manifests.FileHost"/>. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
     </members>
 </doc>
