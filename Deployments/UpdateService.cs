@@ -239,7 +239,7 @@ namespace XLAutoDeploy.Deployments
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
             //overwrite existing file if found
-            XmlConversion.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
+            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
         }
 
         public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
@@ -265,7 +265,7 @@ namespace XLAutoDeploy.Deployments
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
             //overwrite existing file if found
-            XmlConversion.SerializeToXmlFile<AddIn>(deploymentPayload.AddIn, addInManifestFilePath, true);
+            Serialization.SerializeToXmlFile<AddIn>(deploymentPayload.AddIn, addInManifestFilePath, true);
         }
 
         private static void DownloadAssetFilesFromWebServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,
