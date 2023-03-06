@@ -75,19 +75,19 @@ namespace XLAutoDeploy.Deployments
                                                 $"Supply a valid manifest {nameof(filePath)}"));
             }
 
-            return XmlConversion.DeserializeFromXml<T>(filePath, System.Xml.ConformanceLevel.Document);
+            return Serialization.DeserializeFromXml<T>(filePath);
         }
 
         public static T DeserializeManifestFile<T>(WebClient webClient, Uri uri)
         {
-            return XmlConversion.DeserializeFromXml<T>(webClient, uri, System.Xml.ConformanceLevel.Fragment);
+            return Serialization.DeserializeFromXml<T>(webClient, uri);
         }
 
         public static bool TrySerializeToXmlFile<T>(T obj, string filePath, ILogger logger, bool displayErrorMessage)
         {
             try
             {
-                XmlConversion.SerializeToXmlFile<T>(obj, filePath); 
+                Serialization.SerializeToXmlFile<T>(obj, filePath); 
 
                 return true;
             }

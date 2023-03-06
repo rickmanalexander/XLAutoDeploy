@@ -158,7 +158,7 @@ namespace XLAutoDeploy.Deployments
             // Save UpdateQueryInfo
             var updateQueryInfoFilePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(payload);
 
-            XmlConversion.SerializeToXmlFile(update.Info, updateQueryInfoFilePath);
+            Serialization.SerializeToXmlFile(update.Info, updateQueryInfoFilePath);
         }
 
         // need to check if is deployed first
