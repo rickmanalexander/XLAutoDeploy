@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<XLAutoDeployManifest   xmlns:ns="https://github.com/XLAutoDeploy.Manifests/Schemas/XLAutoDeployManifest.xsd"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://www.w3schools.com file://s-hdqfp03/publicshare/TechOps/Business Intelligence Applications/Core APIs/Excel AddIns/Production/XLAutoDeploy/XLAutoDeployManifest.xsd">
-	<DeploymentRegistryUri>\\s-hdqfp03\publicshare\TechOps\Business Intelligence Applications\Core APIs\Excel AddIns\Production\XLAutoDeploy\32Bit\XLAutoDeploy.DeploymentRegistry.xml</DeploymentRegistryUri>
-</XLAutoDeployManifest>

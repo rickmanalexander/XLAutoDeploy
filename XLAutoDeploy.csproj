@@ -142,11 +142,6 @@
     <None Include="XLAutoDeploy-AddIn64.xll.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="XLAutoDeploy.Manifest.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Updates\UpdateNotificationView.resx">
       <DependentUpon>UpdateNotificationView.cs</DependentUpon>
     </EmbeddedResource>
