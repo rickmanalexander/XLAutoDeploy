@@ -131,6 +131,7 @@
     <Compile Include="Deployments\UpdateMonitorFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -138,8 +139,6 @@
     <None Include="Properties\ExcelDna.Build.props" />
     <None Include="README.md" />
     <None Include="XLAutoDeploy-AddIn.dna" />
-    <None Include="XLAutoDeploy-AddIn.xll.config" />
-    <None Include="XLAutoDeploy-AddIn64.xll.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Updates\UpdateNotificationView.resx">
@@ -155,6 +154,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\XLAutoDeploy.Manifests.XmlSerializers.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLAutoDeploy.manifest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

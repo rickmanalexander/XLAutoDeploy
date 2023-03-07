@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<DnaLibrary Name="XLAutoDeploy Add-In" RuntimeVersion="v4.0" ShadowCopyFiles="true" xmlns="http://schemas.excel-dna.net/addin/2018/05/dnalibrary">
+<DnaLibrary Name="XLAutoDeploy" RuntimeVersion="v4.0" ShadowCopyFiles="true" xmlns="http://schemas.excel-dna.net/addin/2018/05/dnalibrary">
 	<ExternalLibrary Path="XLAutoDeploy.dll" ExplicitExports="false" LoadFromBytes="true" Pack="true" IncludePdb="false" />
 	<Reference Path="XLAutoDeploy.Manifests.dll" Pack="true" />
 	<Reference Path="XLAutoDeploy.Manifests.XmlSerializers.dll" Pack="true" />

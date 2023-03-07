@@ -110,17 +110,24 @@ namespace XLAutoDeploy.Deployments
                     $"Supply a valid {nameof(addInName)}."));
             }
 
+            if (System.IO.Path.Combine(manufacturer, product, version.ToString()).IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
+            {
+                throw new ArgumentException(Common.GetFormatedErrorMessage($"Constructing type {typeName}",
+                    $"The {nameof(manufacturer)}, {nameof(product)}, and//or {nameof(version)} parameter(s) contain one or more invalid characters.",
+                    $"Supply valid {nameof(manufacturer)}, {nameof(product)}, and//or {nameof(version)}."));
+            }
+
             _deploymentBasis = deploymentBasis; 
             _manufacturer = manufacturer;
             _product = product;
             _officeBittness = Enum.GetName(typeof(MicrosoftOfficeBitness), officeBitness);
             _version = version.ToString();
             _addInFileName = String.Concat(addInName, ".", Enum.GetName(typeof(AddInFileExtensionType), fileExtension).ToLower());
-        
-            if (System.IO.Path.Combine(_manufacturer, _product, _version, _addInFileName).IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
+            
+            if (_addInFileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
             {
                 throw new ArgumentException(Common.GetFormatedErrorMessage($"Constructing type {typeName}",
-                    $"Either the {nameof(addInName)} parameter, {nameof(fileExtension)} parameter (or both) contain one or more invalid characters.",
+                    $"The {nameof(addInName)} parameter contains one or more invalid characters.",
                     $"Supply a valid {nameof(addInName)} and {nameof(fileExtension)}."));
             }
         }

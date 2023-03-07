@@ -5,10 +5,6 @@ namespace XLAutoDeploy
 {
     internal static class Common
     {
-        //Defined in XLAutoDeploy-AddIn.xll.config file
-        public const string NLoggerTargetName = "file"; 
-        public const string NLoggerDebugTargetName = "debugfile";
-
         //Same name as this assembly
         public const string XLAutoDeployAssemblyName = "XLAutoDeploy";
 

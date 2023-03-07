@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -42,6 +43,35 @@ namespace XLAutoDeploy.Deployments
             [MsOfficeVersionBaseKey + @"16.0\Outlook"] = 16.0   // 2016, 2019; Note that office 2019 uses the same version key
         };
 
+        [DllImport("ntdll.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern NTSTATUS RtlGetVersion(ref OSVERSIONINFOEX versionInfo);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct OSVERSIONINFOEX
+        {
+            // The OSVersionInfoSize field must be set to Marshal.SizeOf(typeof(OSVERSIONINFOEX))
+            internal int OSVersionInfoSize;
+            internal int MajorVersion;
+            internal int MinorVersion;
+            internal int BuildNumber;
+            internal int PlatformId;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            internal string CSDVersion;
+            internal ushort ServicePackMajor;
+            internal ushort ServicePackMinor;
+            internal short SuiteMask;
+            internal byte ProductType;
+            internal byte Reserved;
+        }
+
+        private enum NTSTATUS : uint
+        {
+            /// <summary>
+            /// The operation completed successfully. 
+            /// </summary>
+            STATUS_SUCCESS = 0x00000000
+        }
+
         public static bool IsWindowsAdmin()
         {
             var identity = WindowsIdentity.GetCurrent();
@@ -55,6 +85,18 @@ namespace XLAutoDeploy.Deployments
             }
 
             return false;
+        }
+
+        public static System.Version GetOsVersion()
+        {
+            var osVersionInfo = new OSVERSIONINFOEX { OSVersionInfoSize = Marshal.SizeOf(typeof(OSVERSIONINFOEX)) };
+
+            if (RtlGetVersion(ref osVersionInfo) != NTSTATUS.STATUS_SUCCESS)
+                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Retrieving System Version Info.",
+                            $"Could not retrive system version info.",
+                            $"N/A."));
+
+            return new System.Version(osVersionInfo.MajorVersion, osVersionInfo.MinorVersion, osVersionInfo.BuildNumber); 
         }
 
         public static OperatingSystemBitness GetOsBitness()

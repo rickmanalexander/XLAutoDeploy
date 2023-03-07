@@ -69,18 +69,20 @@ namespace XLAutoDeploy
                 // multiple parameter options: choose based on the FileHost(s) 
                 _deploymentPayloads = DeploymentService.GetDeploymentPayloads(registry);
 
-                if (_deploymentPayloads?.Any() == true)
+                if (_deploymentPayloads?.Any() == false)
                 {
                     Debug.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
                     return;
                 }
 
+                // Failing here
                 DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
                 DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
             }
             catch (Exception ex)
             {
                 _logger.Fatal(ex, "Failed application startup.");
+                Debug.WriteLine(ex.ToString());
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
             }
 
@@ -132,6 +134,9 @@ namespace XLAutoDeploy
             // thread.Start();
 
             Debug.WriteLine("End Excel app shutdown");
+
+            // Flush and close down internal threads and timers
+            NLog.LogManager.Shutdown();
         }
     }
 }

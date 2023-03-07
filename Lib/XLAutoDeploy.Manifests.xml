@@ -860,7 +860,7 @@
             it loads/installs) must target the Windows OS.
             </remarks> 
         </member>
-        <member name="P:XLAutoDeploy.Manifests.RequiredOperatingSystem.Version">
+        <member name="P:XLAutoDeploy.Manifests.RequiredOperatingSystem.MinimumVersion">
             <summary>
             Specifies the version of the target OS.
             </summary>  

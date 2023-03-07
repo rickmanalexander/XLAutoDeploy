@@ -22,7 +22,7 @@ namespace XLAutoDeploy.Deployments
         {
             if (uri.IsFile || uri.IsUnc)
             {
-                return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(uri.AsString());
+                return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(uri.LocalPath);
             }
             else
             {
@@ -238,17 +238,21 @@ namespace XLAutoDeploy.Deployments
                                 $"The {nameof(fileNetworkConnection)} is null, but it is required.",
                                 $"Supply a valid {nameof(fileNetworkConnection)}."));
                         }
+
+                        if (fileNetworkConnection.State == FileNetworkConnectionState.Closed)
+                            fileNetworkConnection.Open();
+
+                        deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.LocalPath);
+                        addIn = GetAddInManifest(deployment.AddInUri.LocalPath);
+
+                        if (fileNetworkConnection.State == FileNetworkConnectionState.Open)
+                            fileNetworkConnection.Close();
                     }
-
-                    if (fileNetworkConnection.State == FileNetworkConnectionState.Closed)
-                        fileNetworkConnection.Open();
-
-                    deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.AsString());
-                    addIn = GetAddInManifest(deployment.AddInUri.AsString());
-
-                    if (fileNetworkConnection.State == FileNetworkConnectionState.Open)
-                        fileNetworkConnection.Close();
-
+                    else
+                    {
+                        deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.LocalPath);
+                        addIn = GetAddInManifest(deployment.AddInUri.LocalPath);
+                    }
                     break;
 
                 case FileHostType.WebServer:
@@ -370,6 +374,16 @@ namespace XLAutoDeploy.Deployments
                     $"The {nameof(requiredOs.Bitness)} should be {Enum.GetName(typeof(OperatingSystemBitness), osBitness)}."));
             }
 
+            var osVersion = ClientSystemDetection.GetOsVersion();
+
+            if (osVersion.CompareTo(requiredOs.MinimumVersion) >= 0)
+            {
+                throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
+                    $"The {nameof(requiredOs.MinimumVersion)} (i.e. {osVersion}) is not correct.",
+                    $"The {nameof(requiredOs.MinimumVersion)} should be {requiredOs.MinimumVersion}."));
+            }
+
+            /*
             var os = Environment.OSVersion;
 
             if (os.Platform != requiredOs.PlatformId)
@@ -379,13 +393,13 @@ namespace XLAutoDeploy.Deployments
                     $"The {nameof(requiredOs.Bitness)} should be {Enum.GetName(typeof(OperatingSystemBitness), osBitness)}."));
             }
 
-            //must be exact version
-            if (os.Version.CompareTo(requiredOs.Version) != 0)
+            if (os.Version.CompareTo(requiredOs.MinimumVersion) <= 0)
             {
                 throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-                    $"The {nameof(requiredOs.Version)} is not correct.",
-                    $"The {nameof(requiredOs.Version)} should be {requiredOs.Version}."));
+                    $"The {nameof(requiredOs.MinimumVersion)} (i.e. {os.Version}) is not correct.",
+                    $"The {nameof(requiredOs.MinimumVersion)} should be {requiredOs.MinimumVersion}."));
             }
+            */
         }
 
         private static void ValidateCompatibleFrameworks(DeploymentPayload deploymentPayload, IDictionary<NetClrVersion, HashSet<System.Version>> installedClrAndNetFrameworks)

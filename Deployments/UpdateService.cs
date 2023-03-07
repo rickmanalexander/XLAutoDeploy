@@ -40,23 +40,23 @@ namespace XLAutoDeploy.Deployments
                     $"The {nameof(deploymentPayload.FileHost.HostType)} should be {nameof(FileHostType.FileServer)} and {nameof(deploymentPayload.FileHost.RequiresAuthentication)} should be set to true."));
             }
 
-            if (fileNetworkConnection == null)
+            if (deploymentPayload.FileHost.RequiresAuthentication)
             {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from protected file server.",
-                    $"The {nameof(fileNetworkConnection)} parameter is null.",
-                    $"Supply a valid instance of a {fileNetworkConnection.GetType().Name}."));
-            }
+                if (fileNetworkConnection == null)
+                {
+                    throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from protected file server.",
+                        $"The {nameof(fileNetworkConnection)} parameter is null.",
+                        $"Supply a valid instance of a {fileNetworkConnection.GetType().Name}."));
+                }
 
-            try
-            {
                 if (fileNetworkConnection.State == FileNetworkConnectionState.Closed)
                     fileNetworkConnection.Open();
 
                 UpdateAddInFromFileServer(deploymentPayload, updateService, fileDownloader);
             }
-            catch
+            else
             {
-                throw;
+                UpdateAddInFromFileServer(deploymentPayload, updateService, fileDownloader);
             }
         }
 
@@ -122,14 +122,7 @@ namespace XLAutoDeploy.Deployments
 
             var addInManifestTargetFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
 
-            try
-            {
-                UpdateAddInFromWebServerImpl(deploymentPayload, updateService, fileDownloader, webClient, addInManifestTargetFilePath);
-            }
-            catch
-            {
-                throw;
-            }
+            UpdateAddInFromWebServerImpl(deploymentPayload, updateService, fileDownloader, webClient, addInManifestTargetFilePath);
         }
 
         private static void UpdateAddInFromFileServerImpl(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
@@ -218,7 +211,7 @@ namespace XLAutoDeploy.Deployments
 
         public static void DownloadAddInFromFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
         {
-            var task = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.Deployment.AddInUriString, deploymentPayload.Destination.AddInPath);
+            var task = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.Deployment.AddInUri.LocalPath, deploymentPayload.Destination.AddInPath);
 
             task.Wait();
 
@@ -228,7 +221,7 @@ namespace XLAutoDeploy.Deployments
                 {
                     string filePath = GetDependencyFilePath(dependency, deploymentPayload.Destination);
 
-                    updateService.Deployer.Download(fileDownloader, dependency.UriString, filePath);
+                    updateService.Deployer.Download(fileDownloader, dependency.Uri.LocalPath, filePath);
 
                     DownloadAssetFilesFromFileServer(dependency.AssetFiles, fileDownloader, deploymentPayload.Destination);
                 }
@@ -239,7 +232,7 @@ namespace XLAutoDeploy.Deployments
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
             //overwrite existing file if found
-            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
+            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath);
         }
 
         public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
@@ -317,7 +310,7 @@ namespace XLAutoDeploy.Deployments
 
                 if (file.Hash != null)
                 {
-                    var fileBytes = fileDownloader.DownloadBytes(file.Uri.AsString());
+                    var fileBytes = fileDownloader.DownloadBytes(file.Uri.LocalPath);
 
                     var expectedHash = System.Text.Encoding.UTF8.GetBytes(file.Hash.Value);
 
@@ -337,7 +330,7 @@ namespace XLAutoDeploy.Deployments
                 }
                 else
                 {
-                    fileDownloader.Download(file.Uri.AsString(), targetFilePath);
+                    fileDownloader.Download(file.Uri.LocalPath, targetFilePath);
                 }
             }
         }
