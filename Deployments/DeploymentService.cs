@@ -388,7 +388,8 @@ namespace XLAutoDeploy.Deployments
 
             var osVersion = ClientSystemDetection.GetOsVersion();
 
-            if (osVersion.CompareTo(requiredOs.MinimumVersion) >= 0)
+            // if osVersion preceeds requiredOs.MinimumVersion
+            if (osVersion.CompareTo(requiredOs.MinimumVersion) < 0)
             {
                 throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
                     $"The {nameof(requiredOs.MinimumVersion)} (i.e. {osVersion}) is not correct.",
