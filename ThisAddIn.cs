@@ -82,19 +82,8 @@ namespace XLAutoDeploy
             catch (Exception ex)
             {
                 _logger.Fatal(ex, "Failed application startup.");
-                LogDisplay.WriteLine(ex.ToString());
-                //LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
+                LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
             }
-
-            // This would possibly access excel COM objects from another thread which could lead to 
-            // unexpected (and/or fatal) errors
-            // var method = new System.Threading.ThreadStart(() =>
-            // {
-            //  code
-            // });
-            // 
-            // var thread = new System.Threading.Thread(method);
-            // thread.Start();
 
             Debug.WriteLine($"End {Common.GetAppName()} startup");
         }
@@ -122,16 +111,6 @@ namespace XLAutoDeploy
                 _logger.Fatal(ex, "Failed application shutdown.");
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
             }
-
-            // This would possibly access excel COM objects from another thread which could lead to 
-            // unexpected (and/or fatal) errors
-            // var method = new System.Threading.ThreadStart(() =>
-            // {
-            //  code
-            // });
-            // 
-            // var thread = new System.Threading.Thread(method);
-            // thread.Start();
 
             Debug.WriteLine("End Excel app shutdown");
 

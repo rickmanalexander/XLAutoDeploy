@@ -23,7 +23,7 @@ namespace XLAutoDeploy
         {
             ThrowIsNotAddInFileExeption("load", filePath);
 
-            //If addin is installed, then it is already "loaded"
+            // If addin is installed, then it is already "loaded"
             if (IsXllAddInFile(filePath))
             {
                 ExcelIntegration.RegisterXLL(filePath);
@@ -48,7 +48,10 @@ namespace XLAutoDeploy
 
             if (IsXllAddInFile(filePath))
             {
-                ExcelIntegration.UnregisterXLL(filePath);
+                if(IsXllAddRegistered(excelApp, filePath))
+                {
+                    ExcelIntegration.UnregisterXLL(filePath);
+                }
             }
             else if (IsXlamAddInFile(filePath) || IsXlaAddInFile(filePath))
             {
@@ -174,7 +177,7 @@ namespace XLAutoDeploy
         {
             var addInName = Path.GetFileNameWithoutExtension(addInNameOrFileName).Trim();
 
-            var registeredFunctions = excelApp.RegisteredFunctions();
+            var registeredFunctions = excelApp.RegisteredFunctions;
 
             if (registeredFunctions != null)
             {

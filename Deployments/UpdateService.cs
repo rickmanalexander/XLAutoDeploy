@@ -224,14 +224,8 @@ namespace XLAutoDeploy.Deployments
 
         public static void DownloadAddInFromFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
         {
-            // download the add-in manifest and the actual add-in file
-            string addInManifestTargetFilePath = Path.Combine(deploymentPayload.Destination.ParentDirectory, Path.GetFileName(deploymentPayload.Deployment.AddInUri.LocalPath));
-
-            var getAddInManifestTask = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.Deployment.AddInUri.LocalPath, addInManifestTargetFilePath, overwrite: true);
-
             var getAddInTask = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.AddIn.Uri.LocalPath, deploymentPayload.Destination.AddInPath, overwrite: true);
-
-            Task.WaitAll(getAddInManifestTask, getAddInTask);
+            getAddInTask.Wait();
 
             if (deploymentPayload.AddIn.Dependencies?.Any() == true)
             {
@@ -256,8 +250,8 @@ namespace XLAutoDeploy.Deployments
         public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
             string addInManifestFilePath)
         {
-            var task = updateService.Deployer.DownloadAsync(fileDownloader, webClient, deploymentPayload.Deployment.AddInUriString, deploymentPayload.Destination.AddInPath);
-            task.Wait();
+            var getAddInTask = updateService.Deployer.DownloadAsync(fileDownloader, webClient, deploymentPayload.AddIn.Uri, deploymentPayload.Destination.AddInPath, overwrite: true);
+            getAddInTask.Wait();
 
             if (deploymentPayload.AddIn.Dependencies?.Any() == true)
             {
@@ -265,7 +259,7 @@ namespace XLAutoDeploy.Deployments
                 {
                     string filePath = GetDependencyFilePath(dependency, deploymentPayload.Destination);
 
-                    updateService.Deployer.Download(fileDownloader, webClient, dependency.Uri, filePath);
+                    updateService.Deployer.Download(fileDownloader, webClient, dependency.Uri, filePath, overwrite: true);
 
                     DownloadAssetFilesFromWebServer(dependency.AssetFiles, fileDownloader, webClient, deploymentPayload.Destination);
                 }
@@ -276,7 +270,7 @@ namespace XLAutoDeploy.Deployments
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
             //overwrite existing file if found
-            Serialization.SerializeToXmlFile<AddIn>(deploymentPayload.AddIn, addInManifestFilePath, true);
+            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
         }
 
         private static void DownloadAssetFilesFromWebServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,
@@ -306,12 +300,13 @@ namespace XLAutoDeploy.Deployments
                                 "Update file with the correct hash or change the file."));
                         }
 
+                        // overwrites if exists
                         File.WriteAllBytes(targetFilePath, fileBytes);
                     }
                 }
                 else
                 {
-                    fileDownloader.Download(webClient, file.Uri, targetFilePath);
+                    fileDownloader.Download(webClient, file.Uri, targetFilePath, overwrite: true);
                 }
             }
         }
@@ -343,60 +338,61 @@ namespace XLAutoDeploy.Deployments
                                 "Update file with the correct hash or change the file."));
                         }
 
+                        // overwrites if exists
                         File.WriteAllBytes(targetFilePath, fileBytes);
                     }
                 }
                 else
                 {
-                    fileDownloader.Download(file.Uri.LocalPath, targetFilePath);
+                    fileDownloader.Download(file.Uri.LocalPath, targetFilePath, overwrite: true);
                 }
             }
         }
 
-        public static void LoadOrInstallAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService)
+        public static void LoadOrInstallAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
         {
-            UnLoadOrUnInstallAddIn(deploymentPayload, updateService);
+            UnLoadOrUnInstallAddIn(deploymentPayload, updateCoordinator);
 
             if (deploymentPayload.Deployment.Settings.LoadBehavior.Install)
             {
-                updateService.Installer.Install(deploymentPayload.AddIn.Identity.Title, deploymentPayload.Destination.AddInPath);
+                updateCoordinator.Installer.Install(deploymentPayload.AddIn.Identity.Title, deploymentPayload.Destination.AddInPath);
             }
             else
             {
-                updateService.Loader.Load(deploymentPayload.Destination.AddInPath);
+                updateCoordinator.Loader.Load(deploymentPayload.Destination.AddInPath);
             }
         }
 
-        public static void UnloadAddIns(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateService)
+        public static void UnloadAddIns(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator)
         {
             foreach (var payload in deploymentPayloads)
             {
                 if (!payload.Deployment.Settings.LoadBehavior.Install)
                 {
-                    UnLoadOrUnInstallAddIn(payload, updateService);
+                    UnLoadOrUnInstallAddIn(payload, updateCoordinator);
                 }
             }
         }
 
-        public static void UnLoadOrUnInstallAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService)
+        public static void UnLoadOrUnInstallAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
         {
-            updateService.Installer.Uninstall(deploymentPayload.Destination.AddInPath);
+            updateCoordinator.Installer.Uninstall(deploymentPayload.Destination.AddInPath);
 
-            updateService.Loader.Unload(deploymentPayload.Destination.AddInPath);
+            updateCoordinator.Loader.Unload(deploymentPayload.Destination.AddInPath);
         }
 
-        public static bool CanProceedWithUpdate(CheckedUpdate checkedUpdate, IUpdateCoordinator updateService)
+        public static bool CanProceedWithUpdate(CheckedUpdate checkedUpdate, IUpdateCoordinator updateCoordinator)
         {
             var updateBehavior = checkedUpdate.Payload.Deployment.Settings.UpdateBehavior;
 
             if ((checkedUpdate.Info.IsMandatoryUpdate && checkedUpdate.Info.IsRestartRequired)
                 || updateBehavior.NotifyClient)
             {
-                updateService.Notifier.Notify(checkedUpdate.GetDescription(),
+                updateCoordinator.Notifier.Notify(checkedUpdate.GetDescription(),
                     checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info,
                     !checkedUpdate.Info.IsMandatoryUpdate);
 
-                return updateService.Notifier.DoUpdate;
+                return updateCoordinator.Notifier.DoUpdate;
             }
 
             // Silent Update

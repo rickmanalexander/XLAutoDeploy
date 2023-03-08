@@ -87,7 +87,8 @@ namespace XLAutoDeploy.Deployments
 
                     var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
-                    CheckedUpdate checkedUpdate; 
+                    CheckedUpdate checkedUpdate;
+                    bool processUpdateCalled = false;
                     if (File.Exists(updateQueryInfoManifestFilePath))
                     {
                         var updateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
@@ -101,10 +102,11 @@ namespace XLAutoDeploy.Deployments
                                 if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                                 {
                                     ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
+
+                                    processUpdateCalled = true;
                                 }
                             }
                         }
-                       
                     }
                     else
                     {
@@ -113,7 +115,14 @@ namespace XLAutoDeploy.Deployments
                         if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                         {
                             ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
+
+                            processUpdateCalled = true;
                         }
+                    }
+
+                    if (!processUpdateCalled)
+                    {
+                        UpdateService.LoadOrInstallAddIn(payload, updateCoordinator);
                     }
                 }
                 else
@@ -218,6 +227,7 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
+        // should this also check for the add-in manifest??
         public static bool IsAddInDeployed(DeploymentDestination deploymentDestination)
         {
             return File.Exists(deploymentDestination.AddInPath);
