@@ -144,7 +144,7 @@ namespace XLAutoDeploy.Deployments
 
                 var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
-                var update = DeploymentService.GetUpdate(payload, deployedAddInVersion);
+                var update = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion);
 
                 if (UpdateService.CanProceedWithUpdate(update, _updateCoordinator))
                 {

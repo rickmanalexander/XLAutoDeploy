@@ -70,7 +70,7 @@ namespace XLAutoDeploy.Deployments
             return new ReadOnlyCollection<DeploymentPayload>(payloads);
         }
 
- 
+
         public static void ProcessDeploymentPayloads(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator,
             IRemoteFileDownloader remoteFileDownloader, IFileNetworkConnection fileNetworkConnection = null,
             WebClient webClient = null)
@@ -85,10 +85,36 @@ namespace XLAutoDeploy.Deployments
 
                     var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
-                    // get the incoming update
-                    CheckedUpdate checkedUpdate = GetUpdate(payload, deployedAddInVersion);
+                    var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
-                    ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
+                    CheckedUpdate checkedUpdate; 
+                    if (File.Exists(updateQueryInfoManifestFilePath))
+                    {
+                        var updateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
+
+                        if(!payload.Deployment.Settings.UpdateBehavior.DoInRealTime)
+                        {
+                            if(UpdateService.IsUpdateExpired(updateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, DateTime.UtcNow))
+                            {
+                                checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion);
+
+                                if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
+                                {
+                                    ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
+                                }
+                            }
+                        }
+                       
+                    }
+                    else
+                    {
+                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion); 
+
+                        if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
+                        {
+                            ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
+                        }
+                    }
                 }
                 else
                 {
@@ -100,6 +126,8 @@ namespace XLAutoDeploy.Deployments
         public static void ProcessUpdate(CheckedUpdate update, IUpdateCoordinator updateCoordinator, IRemoteFileDownloader remoteFileDownloader,
             IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
         {
+            update.Info.LastChecked = DateTime.UtcNow; 
+
             var payload = update.Payload;
 
             ValidateDeploymentBasis(payload);
@@ -156,15 +184,14 @@ namespace XLAutoDeploy.Deployments
             }
 
             // Save UpdateQueryInfo
+            update.Info.LastChecked = DateTime.UtcNow;
             var updateQueryInfoFilePath = payload.GetUpdateQueryInfoManifestFilePath();
-
             Serialization.SerializeToXmlFile(update.Info, updateQueryInfoFilePath);
         }
 
         // need to check if is deployed first
-        public static CheckedUpdate GetUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion)
+        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion)
         {
-            var now = DateTime.UtcNow;
             UpdateQueryInfo updateQueryInfo = new UpdateQueryInfo
             {
                 UpdateAvailable = UpdateService.IsNewVersionAvailable(deployedAddInVersion, deploymentPayload.AddIn.Identity.Version),
@@ -175,32 +202,7 @@ namespace XLAutoDeploy.Deployments
                 IsRestartRequired = UpdateService.IsRestartRequired(deploymentPayload),
 
                 Size = deploymentPayload.AddIn.GetTotalSize(),
-
-                LastChecked = now
             };
-
-            if (deploymentPayload.AddIn.Identity.Version.CompareTo(deployedAddInVersion) != 0)
-            {
-                updateQueryInfo.FirstNotified = now;
-                updateQueryInfo.LastNotified = now;
-            }
-            else
-            {
-                if (UpdateService.PersistedUpdateQueryInfoExists(deploymentPayload))
-                {
-                    var persistedUpdateQueryInfoFilePath = deploymentPayload.GetUpdateQueryInfoManifestFilePath();
-
-                    var persistedUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(persistedUpdateQueryInfoFilePath);
-
-                    updateQueryInfo.FirstNotified = persistedUpdateQueryInfo.FirstNotified;
-                    updateQueryInfo.LastNotified = persistedUpdateQueryInfo.LastNotified;
-                }
-                else
-                {
-                    updateQueryInfo.FirstNotified = DateTime.MinValue;
-                    updateQueryInfo.LastNotified = DateTime.MinValue;
-                }
-            }
 
             return new CheckedUpdate(updateQueryInfo, deploymentPayload);
         }
@@ -408,23 +410,38 @@ namespace XLAutoDeploy.Deployments
 
             var addInTitle = deploymentPayload.AddIn.Identity.Title;
 
+            int foundCount = 0; 
             foreach (var framework in compatibleFrameworks)
             {
                 if (installedClrAndNetFrameworks.TryGetValue(framework.SupportedRuntime, out HashSet<System.Version> versions))
                 {
                     if (!versions.Contains(framework.TargetVersion))
                     {
-                        throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-                            $"The {nameof(framework.TargetVersion)} could not be found.",
-                            $"Supply the correct {nameof(framework.TargetVersion)}."));
+                        if (framework.Required)
+                        {
+                            throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
+    $"The {nameof(framework.TargetVersion)} could not be found.",
+    $"Supply the correct {nameof(framework.TargetVersion)}."));
+                        }
+                    }
+                    else
+                    {
+                        foundCount++;
                     }
                 }
-                else
+                else if(framework.Required)
                 {
                     throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
                         $"The {nameof(framework.SupportedRuntime)} could not be found.",
                         $"Supply the correct {nameof(framework.TargetVersion)}."));
                 }
+            }
+
+            if(foundCount == 0)
+            {
+                throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
+                    $"None of the supplied {nameof(CompatibleFramework)}s could not be found on the client machine.",
+                    $"Supply one or more {nameof(CompatibleFramework)}s."));
             }
         }
 

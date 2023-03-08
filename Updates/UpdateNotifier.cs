@@ -12,19 +12,25 @@ namespace XLAutoDeploy.Updates
 
         private bool _doUpdate = false;
 
-        //Cannot use this method b/c the following build error is raised:
-        //"Cannot deserialize type 'XLAutoDeploy.UpdateDeployment.AddInUpdateNotifier'
-        //because it contains property 'DoUpdate' which has no public setter."
-        //public bool DoUpdate { get; private set; } = false;
-
+        /// <summary>
+        /// Notify a user of an available update. 
+        /// </summary>  
+        /// <remarks>
+        /// This method will automatically set the <see cref="UpdateQueryInfo.FirstNotified"/> and <see cref="UpdateQueryInfo.LastNotified"/> properties using the current UTC datetime. 
+        /// </remarks>
         public void Notify(string message, Description deploymentDescription, UpdateQueryInfo updateQueryInfo, bool allowSkip)
         {
             _doUpdate = false;
 
             using (var view = new UpdateNotificationView(message, deploymentDescription, updateQueryInfo, allowSkip))
             {
-                view.Show();
+                var now = DateTime.UtcNow;
 
+                updateQueryInfo.FirstNotified = updateQueryInfo.FirstNotified ?? now;
+                updateQueryInfo.LastNotified = now;
+
+                view.Show();
+                
                 view.NotificationComplete += View_NotificationComplete;
             }
         }

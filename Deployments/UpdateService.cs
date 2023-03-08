@@ -420,13 +420,33 @@ namespace XLAutoDeploy.Deployments
                 || InteropIntegration.IsAddInInstalled(deploymentPayload.AddIn.Identity.Title));
         }
 
-        public static bool PersistedUpdateQueryInfoExists(DeploymentPayload deploymentPayload)
+        public static bool IsUpdateExpired(UpdateQueryInfo updateQueryInfo, UpdateExpiration updateExpiration, DateTime currentUtcDateTime)
         {
-            var filePath = deploymentPayload.GetUpdateQueryInfoManifestFilePath();
+            if (updateQueryInfo.LastChecked != null)
+                return false;
 
-            return File.Exists(filePath);
+            DateTime lastChecked = (DateTime)updateQueryInfo.LastChecked; 
+
+            var difference = currentUtcDateTime.Subtract(lastChecked);
+
+            switch (updateExpiration.UnitOfTime)
+            {
+                case UnitOfTime.Minutes:
+                    return difference.Minutes >= updateExpiration.MaximumAge;
+
+                case UnitOfTime.Days:
+                    return difference.Days >= updateExpiration.MaximumAge;
+
+                case UnitOfTime.Weeks:
+                    return (difference.Days / 7) >= updateExpiration.MaximumAge;
+
+                case UnitOfTime.Months:
+                    return (((currentUtcDateTime.Year - lastChecked.Year) * 12) + currentUtcDateTime.Month - lastChecked.Month) >= updateExpiration.MaximumAge;
+
+                default:
+                    return false;
+            }
         }
-
 
         private static string GetDependencyFilePath(Dependency dependency, DeploymentDestination destination)
         {
