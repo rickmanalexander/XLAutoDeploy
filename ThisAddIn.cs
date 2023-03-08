@@ -82,8 +82,8 @@ namespace XLAutoDeploy
             catch (Exception ex)
             {
                 _logger.Fatal(ex, "Failed application startup.");
-                Debug.WriteLine(ex.ToString());
-                LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
+                LogDisplay.WriteLine(ex.ToString());
+                //LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
             }
 
             // This would possibly access excel COM objects from another thread which could lead to 

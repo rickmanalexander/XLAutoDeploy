@@ -1,8 +1,6 @@
 ﻿using XLAutoDeploy.Logging;
 using XLAutoDeploy.Manifests.Utilities;
 
-using ExcelDna.Logging;
-
 using System;
 using System.IO;
 using System.Net;
@@ -12,7 +10,7 @@ namespace XLAutoDeploy.Deployments
 {
     internal static class ManifestSerialization
     {
-        public static bool TryDeserializeManifestFile<T>(string filePath, ILogger logger, bool displayErrorMessage, out T obj)
+        public static bool TryDeserializeManifestFile<T>(string filePath, ILogger logger, out T obj)
         {
             obj = (T)Activator.CreateInstance(typeof(T)); //can't return null
 
@@ -39,13 +37,10 @@ namespace XLAutoDeploy.Deployments
                 logger.Error(ex, $"Error loading the configuration file for type '{nameof(T)}' from file path '{filePath}'.");
             }
 
-            if (displayErrorMessage)
-                LogDisplay.WriteLine($"{Common.GetAppName()} - Error loading and deserializing required configuration file from file server.");
-
             return false;
         }
 
-        public static bool TryDeserializeManifestFile<T>(WebClient webClient, Uri uri, ILogger logger, bool displayErrorMessage, out T obj)
+        public static bool TryDeserializeManifestFile<T>(WebClient webClient, Uri uri, ILogger logger, out T obj)
         {
             try
             {
@@ -57,9 +52,6 @@ namespace XLAutoDeploy.Deployments
             {
                 logger.Error(ex, $"Error loading the configuration file for type '{nameof(T)}' from file path '{uri}'.");
             }
-
-            if (displayErrorMessage)
-                LogDisplay.WriteLine($"{Common.GetAppName()} -Error loading and deserializing required configuration file from web server.");
 
             obj = (T)Activator.CreateInstance(typeof(T)); //can't return null
 
@@ -83,7 +75,7 @@ namespace XLAutoDeploy.Deployments
             return Serialization.DeserializeFromXml<T>(webClient, uri);
         }
 
-        public static bool TrySerializeToXmlFile<T>(T obj, string filePath, ILogger logger, bool displayErrorMessage)
+        public static bool TrySerializeToXmlFile<T>(T obj, string filePath, ILogger logger)
         {
             try
             {
@@ -107,9 +99,6 @@ namespace XLAutoDeploy.Deployments
             {
                 logger.Error(ex, $"Error serializing for type '{nameof(T)}' to file path '{filePath}'.");
             }
-
-            if (displayErrorMessage)
-                LogDisplay.WriteLine($"{Common.GetAppName()} - Error serializing required configuration file to client.");
 
             return false;
         }

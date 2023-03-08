@@ -27,24 +27,24 @@ namespace XLAutoDeploy.Updates
         }
 
         //??what if targetFilePath != local prod file path becuase it was changed remotely?
-        public void Download(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath)
+        public void Download(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, bool overwrite = false)
         {
             lock (_threadLock)
             {
-                FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
+                FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
                 fileDownloader.Download(remoteFilePath, targetFilePath, true);
             }
         }
 
-        public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath)
+        public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, bool overwrite = false)
         {
-            FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
+            FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
             await fileDownloader.DownloadAsync(remoteFilePath, targetFilePath, true);
         }
 
-        public void TryDownload(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, out bool success)
+        public void TryDownload(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, out bool success, bool overwrite = false)
         {
             try
             {
@@ -57,24 +57,24 @@ namespace XLAutoDeploy.Updates
             }
         }
 
-        public void Download(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath)
+        public void Download(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath, bool overwrite = false)
         {
             lock (_threadLock)
             {
-                FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
+                FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
                 fileDownloader.Download(webClient, address, targetFilePath, true);
             }
         }
 
-        public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath)
+        public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath, bool overwrite = false)
         {
-            FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
+            FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
             await fileDownloader.DownloadAsync(webClient, address, targetFilePath, true);
         }
 
-        public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath, out bool success)
+        public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath, out bool success, bool overwrite = false)
         {
             try
             {
@@ -87,26 +87,26 @@ namespace XLAutoDeploy.Updates
             }
         }
 
-        public void Download(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath)
+        public void Download(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath, bool overwrite = false)
         {
             lock (_threadLock)
             {
-                FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
+                FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
                 //??what if targetFilePath != local prod file path becuase it was changed remotely?
                 fileDownloader.Download(webClient, uri, targetFilePath, true);
             }
         }
 
-        public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath)
+        public async Task DownloadAsync(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath, bool overwrite = false)
         {
-            FileSystem.FileUtilities.CreateHiddenDirectory(targetFilePath, _logger);
+            FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
             //?? if targetFilePath != local prod file path becuase it was changed remotely?
             await fileDownloader.DownloadAsync(webClient, uri, targetFilePath, true);
         }
 
-        public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath, out bool success)
+        public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath, out bool success, bool overwrite = false)
         {
             try
             {

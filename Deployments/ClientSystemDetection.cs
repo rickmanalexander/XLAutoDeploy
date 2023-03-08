@@ -72,6 +72,7 @@ namespace XLAutoDeploy.Deployments
             STATUS_SUCCESS = 0x00000000
         }
 
+
         public static bool IsWindowsAdmin()
         {
             var identity = WindowsIdentity.GetCurrent();

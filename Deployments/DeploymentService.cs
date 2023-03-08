@@ -81,7 +81,7 @@ namespace XLAutoDeploy.Deployments
                 if (IsAddInDeployed(payload.Destination))
                 {
                     // get deployed version from add-in manifest file
-                    var deployedAddInManifestFilePath = DeployedFileUtilities.GetAddInManifestFilePath(payload);
+                    var deployedAddInManifestFilePath = payload.GetAddInManifestFilePath();
 
                     var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
@@ -156,7 +156,7 @@ namespace XLAutoDeploy.Deployments
             }
 
             // Save UpdateQueryInfo
-            var updateQueryInfoFilePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(payload);
+            var updateQueryInfoFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
             Serialization.SerializeToXmlFile(update.Info, updateQueryInfoFilePath);
         }
@@ -188,7 +188,7 @@ namespace XLAutoDeploy.Deployments
             {
                 if (UpdateService.PersistedUpdateQueryInfoExists(deploymentPayload))
                 {
-                    var persistedUpdateQueryInfoFilePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(deploymentPayload);
+                    var persistedUpdateQueryInfoFilePath = deploymentPayload.GetUpdateQueryInfoManifestFilePath();
 
                     var persistedUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(persistedUpdateQueryInfoFilePath);
 
@@ -286,7 +286,7 @@ namespace XLAutoDeploy.Deployments
             ValidateOfficeBitnessAndOsRequirements(deploymentPayload);
             ValidateCompatibleFrameworks(deploymentPayload, _installedClrAndNetFrameworks);
 
-            var addInManifestFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
+            var addInManifestFilePath = deploymentPayload.GetAddInManifestFilePath();
 
             switch (deploymentPayload.FileHost.HostType)
             {

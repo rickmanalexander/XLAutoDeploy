@@ -93,25 +93,28 @@ namespace XLAutoDeploy
 
         public static bool IsXlamAddInFile(string filePath)
         {
-            return Path.GetExtension(filePath).Trim().Equals("xlam", StringComparison.OrdinalIgnoreCase);
+            return GetFileExtensionWithoutLeadingDot(filePath)
+                .Equals("xlam", StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsXlaAddInFile(string filePath)
         {
-            return Path.GetExtension(filePath).Trim().Equals("xla", StringComparison.OrdinalIgnoreCase);
+            return GetFileExtensionWithoutLeadingDot(filePath)
+                .Equals("xla", StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsXllAddInFile(string filePath)
         {
-            return Path.GetExtension(filePath).Trim().Equals("xll", StringComparison.OrdinalIgnoreCase);
+            return GetFileExtensionWithoutLeadingDot(filePath)
+                .Equals("xll", StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsExcelAddInFile(string filePath)
         {
-            var fileExtension = Path.GetExtension(filePath);
+            var fileExtension = GetFileExtensionWithoutLeadingDot(filePath);
 
             return ExcelAddInAvailableFileExtentions()
-                .Any(f => fileExtension.Trim().Equals(f, StringComparison.OrdinalIgnoreCase));
+                .Any(f => fileExtension.Equals(f, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool IsAddInInstalled(string addInTitle)
@@ -268,6 +271,12 @@ namespace XLAutoDeploy
                     $"Cannot {methodAction} file {filePath}, because is is not an Excel Add-In file.",
                     $"Supply a valid add-in {nameof(filePath)}."));
             }
+        }
+
+        private static string GetFileExtensionWithoutLeadingDot(string filePath)
+        {
+            return Path.GetExtension(filePath)
+                .TrimStart('.');
         }
     }
 }

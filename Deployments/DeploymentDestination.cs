@@ -28,7 +28,7 @@ namespace XLAutoDeploy.Deployments
         /// RootDirectory\Manufacturer\Product\OfficeBitness\
         /// </summary>
         /// <remarks>
-        /// This is the primary directory for the add-in. Both the add-in, and the <see cref="AddIn"/> 
+        /// This is the primary directory for the add-in file. Both the add-in, and the <see cref="AddIn"/> 
         /// manifest should always be placed here.
         /// </remarks> 
         public string ParentDirectory => Path.Combine(RootDirectory, Manufacturer, Product, OfficeBitness);

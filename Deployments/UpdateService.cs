@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -78,7 +79,7 @@ namespace XLAutoDeploy.Deployments
 
             try
             {
-                var addInManifestTargetFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
+                var addInManifestTargetFilePath = deploymentPayload.GetAddInManifestFilePath();
 
                 UpdateAddInFromFileServerImpl(deploymentPayload, updateService, fileDownloader, addInManifestTargetFilePath);
             }
@@ -120,7 +121,7 @@ namespace XLAutoDeploy.Deployments
                         $"Supply a valid instance of {webClient.Credentials.GetType().Name} to the {nameof(webClient)}."));
             }
 
-            var addInManifestTargetFilePath = DeployedFileUtilities.GetAddInManifestFilePath(deploymentPayload);
+            var addInManifestTargetFilePath = deploymentPayload.GetAddInManifestFilePath();
 
             UpdateAddInFromWebServerImpl(deploymentPayload, updateService, fileDownloader, webClient, addInManifestTargetFilePath);
         }
@@ -128,6 +129,9 @@ namespace XLAutoDeploy.Deployments
         private static void UpdateAddInFromFileServerImpl(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
         {
             UnLoadOrUnInstallAddIn(deploymentPayload, updateService);
+
+            var tempFileDirectory = deploymentPayload.Destination.TempAddInDirectory;
+            Directory.CreateDirectory(tempFileDirectory);
 
             var targetFilePath = deploymentPayload.Destination.AddInPath;
             var tempFilePath = deploymentPayload.Destination.TempAddInPath;
@@ -160,6 +164,9 @@ namespace XLAutoDeploy.Deployments
                     File.Move(tempFilePath, targetFilePath);
 
                     LoadOrInstallAddIn(deploymentPayload, updateService);
+
+                    if (Directory.Exists(tempFileDirectory))
+                        Directory.Delete(tempFileDirectory);
                 }
 
                 throw;
@@ -170,6 +177,9 @@ namespace XLAutoDeploy.Deployments
             string addInManifestFilePath)
         {
             UnLoadOrUnInstallAddIn(deploymentPayload, updateService);
+
+            var tempFileDirectory = deploymentPayload.Destination.TempAddInDirectory;
+            Directory.CreateDirectory(tempFileDirectory);
 
             var targetFilePath = deploymentPayload.Destination.AddInPath;
             var tempFilePath = deploymentPayload.Destination.TempAddInPath;
@@ -202,6 +212,9 @@ namespace XLAutoDeploy.Deployments
                     File.Move(tempFilePath, targetFilePath);
 
                     LoadOrInstallAddIn(deploymentPayload, updateService);
+
+                    if (Directory.Exists(tempFileDirectory))
+                        Directory.Delete(tempFileDirectory);
                 }
 
                 throw;
@@ -211,9 +224,14 @@ namespace XLAutoDeploy.Deployments
 
         public static void DownloadAddInFromFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
         {
-            var task = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.Deployment.AddInUri.LocalPath, deploymentPayload.Destination.AddInPath);
+            // download the add-in manifest and the actual add-in file
+            string addInManifestTargetFilePath = Path.Combine(deploymentPayload.Destination.ParentDirectory, Path.GetFileName(deploymentPayload.Deployment.AddInUri.LocalPath));
 
-            task.Wait();
+            var getAddInManifestTask = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.Deployment.AddInUri.LocalPath, addInManifestTargetFilePath, overwrite: true);
+
+            var getAddInTask = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.AddIn.Uri.LocalPath, deploymentPayload.Destination.AddInPath, overwrite: true);
+
+            Task.WaitAll(getAddInManifestTask, getAddInTask);
 
             if (deploymentPayload.AddIn.Dependencies?.Any() == true)
             {
@@ -404,7 +422,7 @@ namespace XLAutoDeploy.Deployments
 
         public static bool PersistedUpdateQueryInfoExists(DeploymentPayload deploymentPayload)
         {
-            var filePath = DeployedFileUtilities.GetUpdateQueryInfoManifestFilePath(deploymentPayload);
+            var filePath = deploymentPayload.GetUpdateQueryInfoManifestFilePath();
 
             return File.Exists(filePath);
         }
