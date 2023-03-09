@@ -3,6 +3,7 @@
 	<ExternalLibrary Path="XLAutoDeploy.dll" ExplicitExports="false" LoadFromBytes="true" Pack="true" IncludePdb="false" />
 	<Reference Path="XLAutoDeploy.Manifests.dll" Pack="true" />
 	<Reference Path="XLAutoDeploy.Manifests.XmlSerializers.dll" Pack="true" />
+	<Reference Path="System.Security.Cryptography.Xml.dll" Pack="true" />
 	<Reference Path="NLog.dll" Pack="true" />
   <!--
        The RuntimeVersion attribute above allows two settings:
