@@ -55,8 +55,6 @@ namespace XLAutoDeploy
         {
             Debug.WriteLine($"Begin {Common.GetAppName()} startup");
 
-            var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
-
             try
             {
                 var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
@@ -75,6 +73,8 @@ namespace XLAutoDeploy
                     return;
                 }
 
+                var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
+
                 // Failing here
                 DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
                 DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
@@ -82,6 +82,9 @@ namespace XLAutoDeploy
             catch (Exception ex)
             {
                 _logger.Fatal(ex, "Failed application startup.");
+                
+                Debug.WriteLine(ex.ToString());
+                
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
             }
 
@@ -109,6 +112,9 @@ namespace XLAutoDeploy
             catch (Exception ex)
             {
                 _logger.Fatal(ex, "Failed application shutdown.");
+
+                Debug.WriteLine(ex.ToString());
+
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
             }
 

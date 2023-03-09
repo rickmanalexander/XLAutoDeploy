@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -136,17 +135,17 @@ namespace XLAutoDeploy.Deployments
             var targetFilePath = deploymentPayload.Destination.AddInPath;
             var tempFilePath = deploymentPayload.Destination.TempAddInPath;
 
-            //If an addin is installed, then the physical file will be locked by Excel. 
-            //To update a locked addin file, do the following:
-            //1. Unload/Uninstall addin  
-            //2. Move local addin to a temp file path (this way it can be retrived in case of error).
+            // If an addin is installed, then the physical file will be locked by Excel. 
+            // To update a locked addin file, do the following:
+            // 1. Unload/Uninstall addin  
+            // 2. Move local addin to a temp file path (this way it can be retrived in case of  error).
 
-            //Delete existing temp file
+            // Delete existing temp file
             if (File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
 
-            //File should now be unlocked, so the FileCopy/FileDelete operations
-            //that occur as a result of File.Move() will succeed
+            // File should now be unlocked, so the FileCopy/FileDelete operations
+            // that occur as a result of File.Move() will succeed
             File.Move(targetFilePath, tempFilePath);
 
             try
@@ -155,7 +154,7 @@ namespace XLAutoDeploy.Deployments
             }
             catch
             {
-                //Re-Load/Install original addin
+                // Re-Load/Install original addin
                 if (File.Exists(tempFilePath))
                 {
                     if (File.Exists(targetFilePath))
@@ -184,17 +183,17 @@ namespace XLAutoDeploy.Deployments
             var targetFilePath = deploymentPayload.Destination.AddInPath;
             var tempFilePath = deploymentPayload.Destination.TempAddInPath;
 
-            //If an addin is installed, then the physical file will be locked by Excel. 
-            //To update a locked addin file, do the following:
-            //1. Unload/Uninstall addin  
-            //2. Move local addin to a temp file path (this way it can be retrived in case of error).
+            // If an addin is installed, then the physical file will be locked by Excel. 
+            // To update a locked addin file, do the following:
+            // 1. Unload/Uninstall addin  
+            // 2. Move local addin to a temp file path (this way it can be retrived in case of  error).
 
             //Delete existing temp file
             if (File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
 
-            //File should now be unlocked, so the FileCopy/FileDelete operations
-            //that occur as a result of File.Move() will succeed
+            // File should now be unlocked, so the FileCopy/FileDelete operations
+            // that occur as a result of File.Move() will succeed
             File.Move(targetFilePath, tempFilePath);
 
             try
@@ -243,8 +242,20 @@ namespace XLAutoDeploy.Deployments
 
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
-            //overwrite existing file if found
-            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath);
+            // must add the schema location from the existing file
+            if (File.Exists(addInManifestFilePath))
+            {
+                var schemaLocation = Serialization.GetSchemaLocationFromXmlFile(addInManifestFilePath);
+
+                // overwrites existing file
+                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
+
+                Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(schemaLocation));
+            }
+            else
+            {
+                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath);
+            }
         }
 
         public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
@@ -269,8 +280,20 @@ namespace XLAutoDeploy.Deployments
 
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
-            //overwrite existing file if found
-            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
+            // must add the schema location from the existing file
+            if (File.Exists(addInManifestFilePath))
+            {
+                var schemaLocation = Serialization.GetSchemaLocationFromXmlFile(addInManifestFilePath);
+
+                // overwrites existing file
+                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
+
+                Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(schemaLocation));
+            }
+            else
+            {
+                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath);
+            }
         }
 
         private static void DownloadAssetFilesFromWebServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,
