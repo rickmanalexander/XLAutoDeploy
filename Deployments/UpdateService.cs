@@ -242,20 +242,10 @@ namespace XLAutoDeploy.Deployments
 
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
-            // must add the schema location from the existing file
-            if (File.Exists(addInManifestFilePath))
-            {
-                var schemaLocation = Serialization.GetSchemaLocationFromXmlFile(addInManifestFilePath);
+            // overwrites existing file
+            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
 
-                // overwrites existing file
-                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
-
-                Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(schemaLocation));
-            }
-            else
-            {
-                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath);
-            }
+            Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(deploymentPayload.AddInSchemaLocation));
         }
 
         public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
@@ -280,20 +270,10 @@ namespace XLAutoDeploy.Deployments
 
             LoadOrInstallAddIn(deploymentPayload, updateService);
 
-            // must add the schema location from the existing file
-            if (File.Exists(addInManifestFilePath))
-            {
-                var schemaLocation = Serialization.GetSchemaLocationFromXmlFile(addInManifestFilePath);
+            // overwrites existing file
+            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
 
-                // overwrites existing file
-                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
-
-                Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(schemaLocation));
-            }
-            else
-            {
-                Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath);
-            }
+            Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(deploymentPayload.AddInSchemaLocation));
         }
 
         private static void DownloadAssetFilesFromWebServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,

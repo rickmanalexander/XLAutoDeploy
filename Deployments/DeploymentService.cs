@@ -70,7 +70,7 @@ namespace XLAutoDeploy.Deployments
             return new ReadOnlyCollection<DeploymentPayload>(payloads);
         }
 
-
+        // This is a mess and could use some cleaning up
         public static void ProcessDeploymentPayloads(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator,
             IRemoteFileDownloader remoteFileDownloader, IFileNetworkConnection fileNetworkConnection = null,
             WebClient webClient = null)
@@ -87,39 +87,48 @@ namespace XLAutoDeploy.Deployments
 
                     var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
+                    var currentDateTime = DateTime.UtcNow;
                     CheckedUpdate checkedUpdate;
                     bool processUpdateCalled = false;
                     if (File.Exists(updateQueryInfoManifestFilePath))
                     {
-                        var updateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
+                        var existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
 
-                        if(!payload.Deployment.Settings.UpdateBehavior.DoInRealTime)
+                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime && UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
                         {
-                            if(UpdateService.IsUpdateExpired(updateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, DateTime.UtcNow))
+                            checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
+                            checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo.FirstNotified;
+
+                            if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                             {
-                                checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion);
+                                ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
 
-                                if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
-                                {
-                                    ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
-
-                                    processUpdateCalled = true;
-                                }
+                                processUpdateCalled = true;
                             }
+
+                            Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
+                        }
+                        else
+                        {
+                            existingUpdateQueryInfo.LastChecked = currentDateTime;
+                            Serialization.SerializeToXmlFile(existingUpdateQueryInfo, updateQueryInfoManifestFilePath);
                         }
                     }
                     else
                     {
-                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion); 
+                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
 
-                        if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
+                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime && (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator)))
                         {
                             ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
 
                             processUpdateCalled = true;
                         }
+
+                        Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
                     }
 
+                    // ProcessUpdate calls LoadOrInstallAddIn so we don't need to call it again
                     if (!processUpdateCalled)
                     {
                         UpdateService.LoadOrInstallAddIn(payload, updateCoordinator);
@@ -135,8 +144,6 @@ namespace XLAutoDeploy.Deployments
         public static void ProcessUpdate(CheckedUpdate update, IUpdateCoordinator updateCoordinator, IRemoteFileDownloader remoteFileDownloader,
             IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
         {
-            update.Info.LastChecked = DateTime.UtcNow; 
-
             var payload = update.Payload;
 
             ValidateDeploymentBasis(payload);
@@ -191,18 +198,14 @@ namespace XLAutoDeploy.Deployments
             {
                 DeleteDeprecatedVersionFiles(update);
             }
-
-            // Save UpdateQueryInfo
-            update.Info.LastChecked = DateTime.UtcNow;
-            var updateQueryInfoFilePath = payload.GetUpdateQueryInfoManifestFilePath();
-            Serialization.SerializeToXmlFile(update.Info, updateQueryInfoFilePath);
         }
 
         // need to check if is deployed first
-        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion)
+        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion, DateTime checkedDate)
         {
             UpdateQueryInfo updateQueryInfo = new UpdateQueryInfo
             {
+                LastChecked = checkedDate,
                 UpdateAvailable = UpdateService.IsNewVersionAvailable(deployedAddInVersion, deploymentPayload.AddIn.Identity.Version),
                 AvailableVersion = deploymentPayload.AddIn.Identity.Version,
                 MinimumRequiredVersion = deploymentPayload.Deployment.Settings.MinimumRequiredVersion,
@@ -239,6 +242,7 @@ namespace XLAutoDeploy.Deployments
         {
             Deployment deployment = null;
             AddIn addIn = null;
+            string addInSchemaLocation = null; 
             switch (publishedDeployment.FileHost.HostType)
             {
                 case FileHostType.FileServer:
@@ -256,6 +260,7 @@ namespace XLAutoDeploy.Deployments
 
                         deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.LocalPath);
                         addIn = GetAddInManifest(deployment.AddInUri.LocalPath);
+                        addInSchemaLocation = Serialization.GetSchemaLocationFromXmlFile(deployment.AddInUri.LocalPath);
 
                         if (fileNetworkConnection.State == FileNetworkConnectionState.Open)
                             fileNetworkConnection.Close();
@@ -264,6 +269,7 @@ namespace XLAutoDeploy.Deployments
                     {
                         deployment = GetDeploymentManifest(publishedDeployment.ManifestUri.LocalPath);
                         addIn = GetAddInManifest(deployment.AddInUri.LocalPath);
+                        addInSchemaLocation = Serialization.GetSchemaLocationFromXmlFile(deployment.AddInUri.LocalPath);
                     }
                     break;
 
@@ -285,10 +291,11 @@ namespace XLAutoDeploy.Deployments
 
                     deployment = GetDeploymentManifest(webClient, publishedDeployment.ManifestUri);
                     addIn = GetAddInManifest(webClient, deployment.AddInUri);
+                    addInSchemaLocation = Serialization.GetSchemaLocationFromXmlFile(webClient, deployment.AddInUri);
                     break;
             }
 
-            return new DeploymentPayload(publishedDeployment.FileHost, deployment, addIn);
+            return new DeploymentPayload(publishedDeployment.FileHost, deployment, addIn, addInSchemaLocation);
         }
 
         private static void DeployAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator, IRemoteFileDownloader remoteFileDownloader,

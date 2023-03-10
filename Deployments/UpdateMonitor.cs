@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using XLAutoDeploy.Manifests.Utilities;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -130,7 +131,7 @@ namespace XLAutoDeploy.Deployments
 
         private void AutoUpdateAddIn(string filePath, DeploymentPayload payload)
         {
-            //use copy/clone, mutate, and replace to avoid threading issues
+            // use copy/clone, mutate, and replace to avoid threading issues
             var notificationClone = _deploymentFilePathNotificationCounts;
 
             if (!notificationClone.ContainsKey(filePath))
@@ -144,12 +145,24 @@ namespace XLAutoDeploy.Deployments
 
                 var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
-                var update = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion);
+                var currentDateTime = DateTime.UtcNow;
+                var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
-                if (UpdateService.CanProceedWithUpdate(update, _updateCoordinator))
+                UpdateQueryInfo existingUpdateQueryInfo = null;
+                if (File.Exists(updateQueryInfoManifestFilePath))
                 {
-                    DeploymentService.ProcessUpdate(update, _updateCoordinator, _remoteFileDowloader);
+                    existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
                 }
+
+                var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
+                checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
+
+                if (UpdateService.CanProceedWithUpdate(checkedUpdate, _updateCoordinator))
+                {
+                    DeploymentService.ProcessUpdate(checkedUpdate, _updateCoordinator, _remoteFileDowloader);
+                }
+
+                Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
             }
 
             notificationClone[filePath] = notificationClone[filePath]++;
