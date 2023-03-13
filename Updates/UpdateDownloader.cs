@@ -26,14 +26,22 @@ namespace XLAutoDeploy.Updates
             _logger = logger;
         }
 
-        //??what if targetFilePath != local prod file path becuase it was changed remotely?
+        // what if targetFilePath != local prod file path becuase it was changed remotely?
         public void Download(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, bool overwrite = false)
         {
             lock (_threadLock)
             {
                 FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
-                fileDownloader.Download(remoteFilePath, targetFilePath, true);
+                try
+                {
+                    fileDownloader.Download(remoteFilePath, targetFilePath, true);
+                }
+                catch(Exception ex)
+                {
+                    _logger.Error(ex, $"File download Failed for remote file: {remoteFilePath} to target file: {targetFilePath}");
+                    throw;
+                }
             }
         }
 
@@ -41,7 +49,15 @@ namespace XLAutoDeploy.Updates
         {
             FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
-            await fileDownloader.DownloadAsync(remoteFilePath, targetFilePath, true);
+            try
+            {
+                await fileDownloader.DownloadAsync(remoteFilePath, targetFilePath, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"File download Failed for remote file: {remoteFilePath} to target file: {targetFilePath}");
+                throw;
+            }
         }
 
         public void TryDownload(IRemoteFileDownloader fileDownloader, string remoteFilePath, string targetFilePath, out bool success, bool overwrite = false)
@@ -63,7 +79,15 @@ namespace XLAutoDeploy.Updates
             {
                 FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
-                fileDownloader.Download(webClient, address, targetFilePath, true);
+                try
+                {
+                    fileDownloader.Download(webClient, address, targetFilePath, true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, $"File download Failed for remote web file: {address} to target file: {targetFilePath}");
+                    throw;
+                }
             }
         }
 
@@ -71,7 +95,15 @@ namespace XLAutoDeploy.Updates
         {
             FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
-            await fileDownloader.DownloadAsync(webClient, address, targetFilePath, true);
+            try
+            {
+                await fileDownloader.DownloadAsync(webClient, address, targetFilePath, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"File download Failed for remote web file: {address} to target file: {targetFilePath}");
+                throw;
+            }
         }
 
         public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, string address, string targetFilePath, out bool success, bool overwrite = false)
@@ -93,8 +125,16 @@ namespace XLAutoDeploy.Updates
             {
                 FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
-                //??what if targetFilePath != local prod file path becuase it was changed remotely?
-                fileDownloader.Download(webClient, uri, targetFilePath, true);
+                try
+                {
+                    // what if targetFilePath != local prod file path becuase it was changed remotely?
+                    fileDownloader.Download(webClient, uri, targetFilePath, true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, $"File download Failed for remote web file: {uri.AbsoluteUri} to target file: {targetFilePath}");
+                    throw;
+                }
             }
         }
 
@@ -102,8 +142,16 @@ namespace XLAutoDeploy.Updates
         {
             FileSystem.FileUtilities.CreateDirectory(targetFilePath, _logger);
 
-            //?? if targetFilePath != local prod file path becuase it was changed remotely?
-            await fileDownloader.DownloadAsync(webClient, uri, targetFilePath, true);
+            try
+            {
+                // what if targetFilePath != local prod file path becuase it was changed remotely?
+                await fileDownloader.DownloadAsync(webClient, uri, targetFilePath, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"File download Failed for remote web file: {uri.AbsoluteUri} to target file: {targetFilePath}");
+                throw;
+            }
         }
 
         public void TryDownload(IRemoteFileDownloader fileDownloader, WebClient webClient, Uri uri, string targetFilePath, out bool success, bool overwrite = false)

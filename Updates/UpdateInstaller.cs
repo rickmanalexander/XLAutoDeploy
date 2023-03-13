@@ -27,6 +27,8 @@ namespace XLAutoDeploy.Updates
             try
             {
                 InteropIntegration.InstallAddIn(addinTitle, filePath);
+
+                _logger.Info($"Add-in titled {addinTitle} was installed at file path: {filePath}");
             }
             catch(Exception ex)
             {
@@ -41,6 +43,8 @@ namespace XLAutoDeploy.Updates
             {
                 InteropIntegration.InstallAddIn(addinTitle, filePath);
                 success = true;
+
+                _logger.Info($"Add-in titled {addinTitle} was un-installed at file path: {filePath}");
             }
             catch (Exception ex)
             {
@@ -54,6 +58,8 @@ namespace XLAutoDeploy.Updates
             try
             {
                 InteropIntegration.UninstallAddIn(filePath);
+
+                _logger.Info($"Add-in was installed at file path: {filePath}");
             }
             catch(Exception ex)
             {
@@ -68,6 +74,8 @@ namespace XLAutoDeploy.Updates
             {
                 InteropIntegration.UninstallAddIn(addinTitle);
                 success = true;
+
+                _logger.Info($"Add-in was un-installed at file path: {filePath}");
             }
             catch (Exception ex)
             {

@@ -57,6 +57,20 @@ namespace XLAutoDeploy
 
             try
             {
+                // Setup logger base directory
+                var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
+
+                if (officeBitness == MicrosoftOfficeBitness.X32)
+                {
+                    NLog.LogManager.Configuration.Variables["officeBitness"] = "32Bit";
+                }
+                else if (officeBitness == MicrosoftOfficeBitness.X64)
+                {
+                    NLog.LogManager.Configuration.Variables["officeBitness"] = "64Bit";
+                }
+                NLog.LogManager.ReconfigExistingLoggers();
+
+
                 var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
                 var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
                 var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
@@ -75,8 +89,8 @@ namespace XLAutoDeploy
 
                 var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
 
-                // Failing here
                 DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
+
                 DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
             }
             catch (Exception ex)

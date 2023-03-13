@@ -399,7 +399,7 @@ namespace XLAutoDeploy.Deployments
             }
 
             // Silent Update
-            return true;
+            return checkedUpdate.Info.IsMandatoryUpdate;
         }
 
         public static bool IsMandatoryUpdate(System.Version deployedAddInVersion, DeploymentSettings deploymentSettings)

@@ -94,12 +94,12 @@ namespace XLAutoDeploy.Deployments
                     {
                         var existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
 
-                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime && UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
+                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime & UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
                         {
                             checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
                             checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo.FirstNotified;
 
-                            if (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
+                            if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                             {
                                 ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
 
@@ -118,7 +118,7 @@ namespace XLAutoDeploy.Deployments
                     {
                         checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
 
-                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime && (checkedUpdate.Info.IsMandatoryUpdate || UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator)))
+                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime & (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator)))
                         {
                             ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
 

@@ -96,7 +96,7 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
-        //How to handle file rename?????
+        // How to handle file rename?????
         private void QueueUpdateAction(object sender, FileSystemEventArgs e)
         {
             if (e.ChangeType == WatcherChangeTypes.Changed)
