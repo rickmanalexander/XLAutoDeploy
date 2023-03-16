@@ -35,7 +35,7 @@ namespace XLAutoDeploy.Deployments
         //For every directory we watch, keep track of all the add-ins that have files in that directory
         private IDictionary<string, IFileSystemMonitor> _monitoredDirectories = new Dictionary<string, IFileSystemMonitor>();
 
-        private bool _disposed;
+        private bool _disposed = false;
 
         public UpdateMonitor(IFileSystemWatcherFactory watcherFactory, IFileSystemWatcherEventAggregator eventAggregator,
                 IFileSystemMonitorFactory monitorFactory, IEnumerable<DeploymentPayload> deploymentPayloads,

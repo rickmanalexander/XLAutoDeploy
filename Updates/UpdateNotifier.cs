@@ -6,11 +6,11 @@ namespace XLAutoDeploy.Updates
 {
     internal sealed class UpdateNotifier : IUpdateNotifier
     {
-        public event EventHandler<UpdateNotificationEventArgs> NotificationComplete;
-
         public bool DoUpdate => _doUpdate;
 
         private bool _doUpdate = false;
+
+        private UpdateNotificationView _view;
 
         /// <summary>
         /// Notify a user of an available update. 
@@ -22,34 +22,23 @@ namespace XLAutoDeploy.Updates
         {
             _doUpdate = false;
 
-            using (var view = new UpdateNotificationView(message, deploymentDescription, updateQueryInfo, allowSkip))
-            {
-                var now = DateTime.UtcNow;
+            _view = new UpdateNotificationView(message, deploymentDescription, updateQueryInfo, allowSkip); 
 
-                updateQueryInfo.FirstNotified = updateQueryInfo.FirstNotified ?? now;
-                updateQueryInfo.LastNotified = now;
+            var now = DateTime.UtcNow;
 
-                view.Show();
-                
-                view.NotificationComplete += View_NotificationComplete;
-            }
+            updateQueryInfo.FirstNotified = updateQueryInfo.FirstNotified ?? now;
+            updateQueryInfo.LastNotified = now;
+
+            _view.NotificationComplete += View_NotificationComplete;
+
+            _view.ShowDialog(); 
         }
 
         private void View_NotificationComplete(object sender, UpdateNotificationEventArgs e)
         {
             _doUpdate = e.DoUpdate;
-
-            RaiseNotificationCompleteEvent(e.DoUpdate);
-        }
-
-        private void RaiseNotificationCompleteEvent(bool doUpdate)
-        {
-            var handler = NotificationComplete;
-            if (handler != null)
-            {
-                var @event = new UpdateNotificationEventArgs(doUpdate);
-                handler(this, @event);
-            }
+            _view.Hide(); 
+            _view?.Dispose();
         }
     }
 }

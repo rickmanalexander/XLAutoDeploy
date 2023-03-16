@@ -61,11 +61,13 @@
             // 
             this.txtBxUpdateMessage.BackColor = System.Drawing.Color.WhiteSmoke;
             this.txtBxUpdateMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtBxUpdateMessage.Cursor = System.Windows.Forms.Cursors.Default;
             this.txtBxUpdateMessage.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtBxUpdateMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBxUpdateMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtBxUpdateMessage.Location = new System.Drawing.Point(0, 31);
             this.txtBxUpdateMessage.Multiline = true;
             this.txtBxUpdateMessage.Name = "txtBxUpdateMessage";
+            this.txtBxUpdateMessage.ReadOnly = true;
             this.txtBxUpdateMessage.Size = new System.Drawing.Size(521, 42);
             this.txtBxUpdateMessage.TabIndex = 1;
             this.txtBxUpdateMessage.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -151,6 +153,7 @@
             // 
             this.txtBxPublisher.Location = new System.Drawing.Point(146, 92);
             this.txtBxPublisher.Name = "txtBxPublisher";
+            this.txtBxPublisher.ReadOnly = true;
             this.txtBxPublisher.Size = new System.Drawing.Size(190, 20);
             this.txtBxPublisher.TabIndex = 5;
             // 
@@ -158,6 +161,7 @@
             // 
             this.txtBxAddIn.Location = new System.Drawing.Point(146, 118);
             this.txtBxAddIn.Name = "txtBxAddIn";
+            this.txtBxAddIn.ReadOnly = true;
             this.txtBxAddIn.Size = new System.Drawing.Size(190, 20);
             this.txtBxAddIn.TabIndex = 6;
             // 
@@ -165,6 +169,7 @@
             // 
             this.txtBxInstalledVersion.Location = new System.Drawing.Point(146, 143);
             this.txtBxInstalledVersion.Name = "txtBxInstalledVersion";
+            this.txtBxInstalledVersion.ReadOnly = true;
             this.txtBxInstalledVersion.Size = new System.Drawing.Size(119, 20);
             this.txtBxInstalledVersion.TabIndex = 7;
             // 
@@ -172,6 +177,7 @@
             // 
             this.txtBxNewVersion.Location = new System.Drawing.Point(146, 169);
             this.txtBxNewVersion.Name = "txtBxNewVersion";
+            this.txtBxNewVersion.ReadOnly = true;
             this.txtBxNewVersion.Size = new System.Drawing.Size(119, 20);
             this.txtBxNewVersion.TabIndex = 9;
             // 

@@ -85,6 +85,8 @@ namespace XLAutoDeploy.Deployments
 
                     var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
+                    System.Diagnostics.Debug.WriteLine($"Deployed Version: {deployedAddInVersion}");
+
                     var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
                     var currentDateTime = DateTime.UtcNow;
@@ -94,39 +96,42 @@ namespace XLAutoDeploy.Deployments
                     {
                         var existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
 
-                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime & UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
-                        {
-                            checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
-                            checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo.FirstNotified;
+                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
+                        checkedUpdate.Info.LastChecked = currentDateTime;
+                        checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo.FirstNotified;
 
+                        if (UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
+                        {
                             if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                             {
                                 ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
 
                                 processUpdateCalled = true;
                             }
-
-                            Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
                         }
-                        else
-                        {
-                            existingUpdateQueryInfo.LastChecked = currentDateTime;
-                            Serialization.SerializeToXmlFile(existingUpdateQueryInfo, updateQueryInfoManifestFilePath);
-                        }
-                    }
-                    else
-                    {
-                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
-
-                        if (!payload.Deployment.Settings.UpdateBehavior.DoInRealTime & (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator)))
+                        else if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                         {
                             ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
 
                             processUpdateCalled = true;
                         }
-
-                        Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
                     }
+                    else
+                    {
+                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
+                        checkedUpdate.Info.LastChecked = currentDateTime;
+
+                        if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
+                        {
+                            ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
+
+                            processUpdateCalled = true;
+                        }
+                    }
+
+                    System.Diagnostics.Debug.WriteLine($"Available Version: {checkedUpdate.Info.AvailableVersion}");
+
+                    Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
 
                     // ProcessUpdate calls LoadOrInstallAddIn so we don't need to call it again
                     if (!processUpdateCalled)
@@ -242,7 +247,7 @@ namespace XLAutoDeploy.Deployments
         {
             Deployment deployment = null;
             AddIn addIn = null;
-            string addInSchemaLocation = null; 
+            string addInSchemaLocation = null;
             switch (publishedDeployment.FileHost.HostType)
             {
                 case FileHostType.FileServer:
@@ -428,7 +433,7 @@ namespace XLAutoDeploy.Deployments
 
             var addInTitle = deploymentPayload.AddIn.Identity.Title;
 
-            int foundCount = 0; 
+            int foundCount = 0;
             foreach (var framework in compatibleFrameworks)
             {
                 if (installedClrAndNetFrameworks.TryGetValue(framework.SupportedRuntime, out HashSet<System.Version> versions))
@@ -447,7 +452,7 @@ namespace XLAutoDeploy.Deployments
                         foundCount++;
                     }
                 }
-                else if(framework.Required)
+                else if (framework.Required)
                 {
                     throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
                         $"The {nameof(framework.SupportedRuntime)} could not be found.",
@@ -455,7 +460,7 @@ namespace XLAutoDeploy.Deployments
                 }
             }
 
-            if(foundCount == 0)
+            if (foundCount == 0)
             {
                 throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
                     $"None of the supplied {nameof(CompatibleFramework)}s could not be found on the client machine.",

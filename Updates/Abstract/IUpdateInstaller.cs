@@ -6,10 +6,10 @@ namespace XLAutoDeploy.Updates
     {
         ILogger Logger { get; }
 
-        void Install(string addinTitle, string filePath);
-        void TryInstall(string addinTitle, string filePath, out bool success);
+        void Install(string addInTitle, string filePath);
+        void TryInstall(string addInTitle, string filePath, out bool success);
 
-        void Uninstall(string filePath);
-        void TryUninstall(string addinTitle, string filePath, out bool success);
+        void Uninstall(string addInTitle, string filePath);
+        void TryUninstall(string addInTitle, string filePath, out bool success);
     }
 }

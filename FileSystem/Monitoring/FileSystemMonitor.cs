@@ -14,7 +14,7 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         private IDictionary<string, string> _monitoredFiles = 
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        private bool _disposed;
+        private bool _disposed = false;
 
         public FileSystemMonitor(FileSystemWatcher watcher, IFileSystemWatcherEventAggregator eventAggregator)
         {

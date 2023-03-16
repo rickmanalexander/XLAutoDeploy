@@ -22,64 +22,76 @@ namespace XLAutoDeploy.Updates
             _logger = logger;
         }
 
-        public void Install(string addinTitle, string filePath)
+        public void Install(string addInTitle, string filePath)
         {
             try
             {
-                InteropIntegration.InstallAddIn(addinTitle, filePath);
+                if (!InteropIntegration.IsAddInInstalled(addInTitle))
+                {
+                    InteropIntegration.InstallAddIn(addInTitle, filePath);
 
-                _logger.Info($"Add-in titled {addinTitle} was installed at file path: {filePath}");
+                    _logger.Info($"Add-in titled {addInTitle} was installed at file path: {filePath}");
+                }
             }
             catch(Exception ex)
             {
-                _logger.Error(ex, $"File Install Failed for file: {filePath}");
+                _logger.Error(ex, $"Install failed for the add-in titled {addInTitle} from the following file path: {filePath}");
                 throw; 
             }
         }
 
-        public void TryInstall(string addinTitle, string filePath, out bool success)
+        public void TryInstall(string addInTitle, string filePath, out bool success)
         {
             try
             {
-                InteropIntegration.InstallAddIn(addinTitle, filePath);
-                success = true;
+                if (!InteropIntegration.IsAddInInstalled(addInTitle))
+                {
+                    InteropIntegration.InstallAddIn(addInTitle, filePath);
 
-                _logger.Info($"Add-in titled {addinTitle} was un-installed at file path: {filePath}");
+                    _logger.Info($"Add-in titled {addInTitle} was installed at file path: {filePath}");
+                }
+                success = true;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"File Install Failed for file: {filePath}");
+                _logger.Error(ex, $"Install failed for the add-in titled {addInTitle} from the following file path: {filePath}");
                 success = false;
             }
         }
 
-        public void Uninstall(string filePath)
+        public void Uninstall(string addInTitle, string filePath)
         {
             try
             {
-                InteropIntegration.UninstallAddIn(filePath);
+                if (InteropIntegration.IsAddInInstalled(addInTitle))
+                {
+                    InteropIntegration.UninstallAddIn(addInTitle);
 
-                _logger.Info($"Add-in was installed at file path: {filePath}");
+                    _logger.Info($"Add-in titled {addInTitle} was un-installed at file path: {filePath}");
+                }
             }
             catch(Exception ex)
             {
-                _logger.Error(ex, $"File Un-install Failed for file: {filePath}");
+                _logger.Error(ex, $"Un-install failed for the add-in titled {addInTitle} from the following file path: {filePath}");
                 throw;
             }
         }
 
-        public void TryUninstall(string addinTitle, string filePath, out bool success)
+        public void TryUninstall(string addInTitle, string filePath, out bool success)
         {
             try
             {
-                InteropIntegration.UninstallAddIn(addinTitle);
-                success = true;
+                if (InteropIntegration.IsAddInInstalled(addInTitle))
+                {
+                    InteropIntegration.UninstallAddIn(addInTitle);
 
-                _logger.Info($"Add-in was un-installed at file path: {filePath}");
+                    _logger.Info($"Add-in titled {addInTitle} was un-installed at file path: {filePath}");
+                }
+                success = true;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"File Un-install Failed for file: {filePath}");
+                _logger.Error(ex, $"Un-install failed for the add-in titled {addInTitle} from the following file path: {filePath}");
                 success = false;
             }
         }

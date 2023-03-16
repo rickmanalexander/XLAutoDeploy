@@ -15,7 +15,7 @@ namespace XLAutoDeploy.FileSystem
         private readonly string _remoteServerName;
 
         private FileNetworkConnectionState _state;
-        private bool _disposed;
+        private bool _disposed = false;
 
         private static readonly CredentialCache _cache = new CredentialCache();
 
