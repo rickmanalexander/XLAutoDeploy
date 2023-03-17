@@ -48,72 +48,78 @@ namespace XLAutoDeploy
         public void AutoClose()
         {
             if (!_hasExcelAppShutdownExecuted)
+            {
                 OnExcelAppShutdown();
+            }
         }
 
         private void OnExcelAppStartup()
         {
             Debug.WriteLine($"Begin {Common.GetAppName()} startup");
 
-            try
+            ExcelAsyncUtil.QueueAsMacro(delegate
             {
-                // Setup logger base directory
-                var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
-
-                if (officeBitness == MicrosoftOfficeBitness.X32)
+                try
                 {
-                    NLog.LogManager.Configuration.Variables["officeBitness"] = "32Bit";
+                    // Setup logger base directory
+                    var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
+
+                    if (officeBitness == MicrosoftOfficeBitness.X32)
+                    {
+                        NLog.LogManager.Configuration.Variables["officeBitness"] = "32Bit";
+                    }
+                    else if (officeBitness == MicrosoftOfficeBitness.X64)
+                    {
+                        NLog.LogManager.Configuration.Variables["officeBitness"] = "64Bit";
+                    }
+                    NLog.LogManager.ReconfigExistingLoggers();
+
+
+                    var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
+                    var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
+                    var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
+
+                    // multiple parameter options: choose based on the FileHost(s)
+                    var registry = DeploymentService.GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
+
+                    // multiple parameter options: choose based on the FileHost(s) 
+                    _deploymentPayloads = DeploymentService.GetDeploymentPayloads(registry);
+
+                    if (_deploymentPayloads?.Any() == false)
+                    {
+                        Debug.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
+                        return;
+                    }
+
+                    var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
+
+                    DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
+
+                    DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
                 }
-                else if (officeBitness == MicrosoftOfficeBitness.X64)
+                catch (Exception ex)
                 {
-                    NLog.LogManager.Configuration.Variables["officeBitness"] = "64Bit";
-                }
-                NLog.LogManager.ReconfigExistingLoggers();
+                    _logger.Fatal(ex, "Failed application startup.");
 
+                    Debug.WriteLine(ex.ToString());
 
-                var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
-                var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
-                var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
-
-                // multiple parameter options: choose based on the FileHost(s)
-                var registry = DeploymentService.GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
-
-                // multiple parameter options: choose based on the FileHost(s) 
-                _deploymentPayloads = DeploymentService.GetDeploymentPayloads(registry);
-
-                if (_deploymentPayloads?.Any() == false)
-                {
-                    Debug.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
-                    return;
+                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
                 }
 
-                var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
-
-                DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
-
-                DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
+                Debug.WriteLine($"End {Common.GetAppName()} startup");
             }
-            catch (Exception ex)
-            {
-                _logger.Fatal(ex, "Failed application startup.");
-                
-                Debug.WriteLine(ex.ToString());
-                
-                LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto load/install add-ins.");
-            }
-
-            Debug.WriteLine($"End {Common.GetAppName()} startup");
+            );
         }
 
         private void OnExcelAppShutdown()
         {
             _hasExcelAppShutdownExecuted = true;
 
-            Debug.WriteLine("Begin Excel app shutdown");
+            Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
             _updateMonitor?.Dispose();
 
-            if ( _deploymentPayloads == null || _updateCoordinator == null || _logger == null)
+            if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
             {
                 Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
                 return;
@@ -132,10 +138,10 @@ namespace XLAutoDeploy
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
             }
 
-            Debug.WriteLine("End Excel app shutdown");
-
             // Flush and close down internal threads and timers
             NLog.LogManager.Shutdown();
+
+            Debug.WriteLine($"End {Common.GetAppName()} shutdown");
         }
     }
 }

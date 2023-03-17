@@ -60,7 +60,7 @@ namespace XLAutoDeploy.FileSystem.Access
             {
                 using (var remoteStream = File.OpenRead(remoteFilePath))
                 {
-                    using (var targetStream = File.Create(targetFilePath)) //this always overwites the file if it exists
+                    using (var targetStream = File.Create(targetFilePath)) // this always overwites the file if it exists
                     {
                         await remoteStream.CopyToAsync(targetStream);
                     }
@@ -99,13 +99,13 @@ namespace XLAutoDeploy.FileSystem.Access
             await DownloadAsync(webClient, new Uri(url), targetFilePath, overwrite);
         }
 
-        //using separate methods for Uri, b/c Uri.ToString() can return control characters, which can corrupt the state of a console application. 
-        //Also, Uri.ToString() does not contain port information when the port is the default port for the scheme.
+        // using separate methods for Uri, b/c Uri.ToString() can return control characters, which can corrupt the state of a console application. 
+        // Also, Uri.ToString() does not contain port information when the port is the default port for the scheme.
         public void Download(WebClient webClient, Uri uri, string targetFilePath, bool overwrite = false)
         {
             try
             {
-                webClient.DownloadFile(uri, targetFilePath); //this always overwites the file if it exists
+                webClient.DownloadFile(uri, targetFilePath); // this always overwites the file if it exists
             }
             catch (IOException ex)
             {
@@ -200,7 +200,7 @@ namespace XLAutoDeploy.FileSystem.Access
                     if(index < (buffer.Length - 1))
                     {
                         byte[] result = new byte[index]; ;
-                        Array.Copy(ms.ToArray(), 0, result, 0, index + 1); //Get rid of empty bytes at end
+                        Array.Copy(ms.ToArray(), 0, result, 0, index + 1); // Get rid of empty bytes at end
 
                         return result;
                     }

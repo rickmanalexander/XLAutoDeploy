@@ -23,7 +23,7 @@ namespace XLAutoDeploy.Deployments
                 if (_info.IsRestartRequired)
                 {
                     return $"Please wait while the update is processed. " +
-                        $"{System.Environment.NewLine} Note: Once the update is complete, " +
+                        $"Once the update is complete, " +
                         $"you MUST restart Excel for it to take effect.";
                 }
                 else

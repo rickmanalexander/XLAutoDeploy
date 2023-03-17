@@ -17,123 +17,16 @@ namespace XLAutoDeploy.Deployments
     /// A set of methods for automatically deploying and updating Excel add-ins on client machines using 
     /// configuration(s) defined in an instances of the <see cref="DeploymentPayload"/>'s.
     /// </summary>
+    /// <remarks>
+    /// Minimal validation is performed here as the methods in this class were intended to be called from <see cref="DeploymentService"/> which performs the required validation.
+    /// </remarks>
     internal static class UpdateService
     {
-        public static void UpdateAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader) =>
-            UpdateAddInFromFileServer(deploymentPayload, updateService, fileDownloader);
-
-        public static void UpdateAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader,
-            IFileNetworkConnection fileNetworkConnection) => UpdateAddInFromProtectedFileServer(deploymentPayload, updateService, fileDownloader, fileNetworkConnection);
-
-        public static void UpdateAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient) =>
-            UpdateAddInFromWebServer(deploymentPayload, updateService, fileDownloader, webClient);
-
-
-        #region ImplAutoUpdateMethods
-        private static void UpdateAddInFromProtectedFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader,
-            IFileNetworkConnection fileNetworkConnection)
+        public static void StageUpdate(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
         {
-            if (!(deploymentPayload.FileHost.HostType == FileHostType.FileServer & deploymentPayload.FileHost.RequiresAuthentication))
-            {
-                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from protected file server.",
-                    $"The {nameof(deploymentPayload.FileHost)} for the DeploymentPayload is not correct.",
-                    $"The {nameof(deploymentPayload.FileHost.HostType)} should be {nameof(FileHostType.FileServer)} and {nameof(deploymentPayload.FileHost.RequiresAuthentication)} should be set to true."));
-            }
+            UnLoadOrUnInstallAddIn(deploymentPayload, updateCoordinator);
 
-            if (deploymentPayload.FileHost.RequiresAuthentication)
-            {
-                if (fileNetworkConnection == null)
-                {
-                    throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from protected file server.",
-                        $"The {nameof(fileNetworkConnection)} parameter is null.",
-                        $"Supply a valid instance of a {fileNetworkConnection.GetType().Name}."));
-                }
-
-                if (fileNetworkConnection.State == FileNetworkConnectionState.Closed)
-                    fileNetworkConnection.Open();
-
-                UpdateAddInFromFileServer(deploymentPayload, updateService, fileDownloader);
-            }
-            else
-            {
-                UpdateAddInFromFileServer(deploymentPayload, updateService, fileDownloader);
-            }
-        }
-
-        private static void UpdateAddInFromFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader)
-        {
-            if (deploymentPayload.Deployment.RequiredOperatingSystem.Bitness != ClientSystemDetection.GetOsBitness())
-            {
-                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from a file server.",
-                    $"The {nameof(deploymentPayload.Deployment.RequiredOperatingSystem.Bitness)} for the DeploymentPayload is not correct.",
-                    $"The {nameof(deploymentPayload.Deployment.RequiredOperatingSystem.Bitness)} should be {Enum.GetName(typeof(OperatingSystemBitness), ClientSystemDetection.GetOsBitness())}."));
-            }
-
-            if (deploymentPayload.FileHost.HostType != FileHostType.FileServer)
-            {
-                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from a file server.",
-                    $"The {nameof(deploymentPayload.FileHost)} for the DeploymentPayload is not correct.",
-                    $"The {nameof(deploymentPayload.FileHost.HostType)} should be {nameof(FileHostType.FileServer)}."));
-            }
-
-            try
-            {
-                var addInManifestTargetFilePath = deploymentPayload.GetAddInManifestFilePath();
-
-                UpdateAddInFromFileServerImpl(deploymentPayload, updateService, fileDownloader, addInManifestTargetFilePath);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        private static void UpdateAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader,
-            WebClient webClient)
-        {
-            if (deploymentPayload.Deployment.RequiredOperatingSystem.Bitness != ClientSystemDetection.GetOsBitness())
-            {
-                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from a web server.",
-                    $"The {nameof(deploymentPayload.Deployment.RequiredOperatingSystem.Bitness)} for the DeploymentPayload is not correct.",
-                    $"The {nameof(deploymentPayload.Deployment.RequiredOperatingSystem.Bitness)} should be {Enum.GetName(typeof(OperatingSystemBitness), ClientSystemDetection.GetOsBitness())}."));
-            }
-
-            if (deploymentPayload.FileHost.HostType != FileHostType.WebServer)
-            {
-                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from a web server.",
-                    $"The {nameof(deploymentPayload.FileHost)} for the DeploymentPayload is not correct.",
-                    $"The {nameof(deploymentPayload.FileHost.HostType)} should be {nameof(FileHostType.WebServer)}."));
-            }
-
-            if (webClient == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from a web server.",
-                    $"The {nameof(webClient)} parameter is null.",
-                    $"Supply a valid instance of a {webClient.GetType().Name}."));
-            }
-
-            if (deploymentPayload.FileHost.RequiresAuthentication)
-            {
-                if (webClient.Credentials == null)
-                    throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {deploymentPayload.AddIn.Identity.Title} from a protected web server.",
-                        $"The {nameof(webClient.Credentials)} property of the {nameof(webClient)} is null.",
-                        $"Supply a valid instance of {webClient.Credentials.GetType().Name} to the {nameof(webClient)}."));
-            }
-
-            var addInManifestTargetFilePath = deploymentPayload.GetAddInManifestFilePath();
-
-            UpdateAddInFromWebServerImpl(deploymentPayload, updateService, fileDownloader, webClient, addInManifestTargetFilePath);
-        }
-
-        private static void UpdateAddInFromFileServerImpl(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
-        {
-            UnLoadOrUnInstallAddIn(deploymentPayload, updateService);
-
-            var tempFileDirectory = deploymentPayload.Destination.TempAddInDirectory;
-            Directory.CreateDirectory(tempFileDirectory);
-
-            var targetFilePath = deploymentPayload.Destination.AddInPath;
-            var tempFilePath = deploymentPayload.Destination.TempAddInPath;
+            Directory.CreateDirectory(deploymentPayload.Destination.TempDirectory);
 
             // If an addin is installed, then the physical file will be locked by Excel. 
             // To update a locked addin file, do the following:
@@ -141,43 +34,98 @@ namespace XLAutoDeploy.Deployments
             // 2. Move local addin to a temp file path (this way it can be retrived in case of  error).
 
             // Delete existing temp file
-            if (File.Exists(tempFilePath))
+            if (File.Exists(deploymentPayload.Destination.TempAddInPath))
             {
-                File.Delete(tempFilePath);
+                File.Delete(deploymentPayload.Destination.TempAddInPath);
             }
 
             // File should now be unlocked, so the FileCopy/FileDelete operations
             // that occur as a result of File.Move() will succeed
-            File.Move(targetFilePath, tempFilePath);
+            File.Move(deploymentPayload.Destination.AddInPath, deploymentPayload.Destination.TempAddInPath);
 
+            // Move any files stored next to the add-in
+            var otherFilePaths = Directory.GetFiles(deploymentPayload.Destination.ParentDirectory); 
+
+            if (otherFilePaths != null || otherFilePaths.Length > 0)
+            {
+                for (int i = 0; i < otherFilePaths.Length; i++)
+                {
+                    var filePath = otherFilePaths[i];
+                    var fileName = Path.GetFileName(filePath);
+                    var newFilePath = Path.Combine(deploymentPayload.Destination.TempDirectory, fileName); ;
+
+                    // Delete existing temp file
+                    if (File.Exists(newFilePath))
+                    {
+                        File.Delete(newFilePath);
+                    }
+
+                    File.Move(filePath, newFilePath);
+                }
+            }
+        }
+
+        public static void RevertToOldAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
+        {
             try
             {
-                DownloadAddInFromFileServer(deploymentPayload, updateService, fileDownloader, addInManifestFilePath);
+                // if the original add-in exists in the temp path; this shoudl always be true 
+                if (File.Exists(deploymentPayload.Destination.TempAddInPath))
+                {
+                    // if the new add-in exists, then delete it 
+                    if (File.Exists(deploymentPayload.Destination.AddInPath))
+                    {
+                        File.Delete(deploymentPayload.Destination.AddInPath);
+                    }
+
+                    // move the original add-in back to the correct path 
+                    if (!File.Exists(deploymentPayload.Destination.AddInPath))
+                    {
+                        File.Move(deploymentPayload.Destination.TempAddInPath, deploymentPayload.Destination.AddInPath);
+                    }
+
+                    // move any other files and load the old add-in 
+                    if (File.Exists(deploymentPayload.Destination.AddInPath))
+                    {
+                        // Move any files stored next to the add-in
+                        var otherFilePaths = Directory.GetFiles(deploymentPayload.Destination.TempDirectory);
+
+                        if (otherFilePaths != null || otherFilePaths.Length > 0)
+                        {
+                            for (int i = 0; i < otherFilePaths.Length; i++)
+                            {
+                                var filePath = otherFilePaths[i];
+                                var fileName = Path.GetFileName(filePath);
+                                var newFilePath = Path.Combine(deploymentPayload.Destination.ParentDirectory, fileName); ;
+
+                                // Delete existing temp file
+                                if (File.Exists(newFilePath))
+                                {
+                                    File.Delete(newFilePath);
+                                }
+
+                                File.Move(filePath, newFilePath);
+                            }
+                        }
+
+                        LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
+                    }
+                }
+                else  // The new add-in was downloaded and placed in the correct directory, but something else failed
+                {
+
+                }
             }
             catch
             {
-                // Re-Load/Install original addin
-                if (File.Exists(tempFilePath))
-                {
-                    if (File.Exists(targetFilePath))
-                    {
-                        File.Delete(targetFilePath);
-                    }
-
-                    File.Move(tempFilePath, targetFilePath);
-
-                    LoadOrInstallAddIn(deploymentPayload, updateService);
-                }
-
-                throw;
             }
             finally
             {
                 try
                 {
-                    if (Directory.Exists(tempFileDirectory))
+                    if (Directory.Exists(deploymentPayload.Destination.TempDirectory))
                     {
-                        Directory.Delete(tempFileDirectory, true);
+                        Directory.Delete(deploymentPayload.Destination.TempDirectory, true);
                     }
                 }
                 catch
@@ -186,73 +134,11 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
-        private static void UpdateAddInFromWebServerImpl(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
-            string addInManifestFilePath)
+        // All download must be synchronous, otherwise excel will hang and eventually
+        // display the following message: "Microsoft excel waiting for another application to complete an ole action."
+        public static void DownloadAddInFromFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator, IRemoteFileDownloader fileDownloader)
         {
-            UnLoadOrUnInstallAddIn(deploymentPayload, updateService);
-
-            var tempFileDirectory = deploymentPayload.Destination.TempAddInDirectory;
-            Directory.CreateDirectory(tempFileDirectory);
-
-            var targetFilePath = deploymentPayload.Destination.AddInPath;
-            var tempFilePath = deploymentPayload.Destination.TempAddInPath;
-
-            // If an addin is installed, then the physical file will be locked by Excel. 
-            // To update a locked addin file, do the following:
-            // 1. Unload/Uninstall addin  
-            // 2. Move local addin to a temp file path (this way it can be retrived in case of  error).
-
-            // Delete existing temp file
-            if (File.Exists(tempFilePath))
-            {
-                File.Delete(tempFilePath);
-            }
-
-            // File should now be unlocked, so the FileCopy/FileDelete operations
-            // that occur as a result of File.Move() will succeed
-            File.Move(targetFilePath, tempFilePath);
-
-            try
-            {
-                DownloadAddInFromWebServer(deploymentPayload, updateService, fileDownloader, webClient, addInManifestFilePath);
-            }
-            catch
-            {
-                // Re-Load/Install original addin
-                if (File.Exists(tempFilePath))
-                {
-                    if (File.Exists(targetFilePath))
-                    {
-                        File.Delete(targetFilePath);
-                    }
-
-                    File.Move(tempFilePath, targetFilePath);
-
-                    LoadOrInstallAddIn(deploymentPayload, updateService);
-                }
-
-                throw;
-            }
-            finally
-            {
-                try
-                {
-                    if (Directory.Exists(tempFileDirectory))
-                    {
-                        Directory.Delete(tempFileDirectory, true);
-                    }
-                }
-                catch
-                {
-                }
-            }
-        }
-        #endregion
-
-        public static void DownloadAddInFromFileServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, string addInManifestFilePath)
-        {
-            var getAddInTask = updateService.Deployer.DownloadAsync(fileDownloader, deploymentPayload.AddIn.Uri.LocalPath, deploymentPayload.Destination.AddInPath, overwrite: true);
-            getAddInTask.Wait();
+            updateCoordinator.Deployer.Download(fileDownloader, deploymentPayload.AddIn.Uri.LocalPath, deploymentPayload.Destination.AddInPath, overwrite: true);
 
             if (deploymentPayload.AddIn.Dependencies?.Any() == true)
             {
@@ -260,27 +146,20 @@ namespace XLAutoDeploy.Deployments
                 {
                     string filePath = GetDependencyFilePath(dependency, deploymentPayload.Destination);
 
-                    updateService.Deployer.Download(fileDownloader, dependency.Uri.LocalPath, filePath);
+                    updateCoordinator.Deployer.Download(fileDownloader, dependency.Uri.LocalPath, filePath);
 
                     DownloadAssetFilesFromFileServer(dependency.AssetFiles, fileDownloader, deploymentPayload.Destination);
                 }
             }
 
             DownloadAssetFilesFromFileServer(deploymentPayload.AddIn.AssetFiles, fileDownloader, deploymentPayload.Destination);
-
-            LoadOrInstallAddIn(deploymentPayload, updateService);
-
-            // overwrites existing file
-            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
-
-            Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(deploymentPayload.AddInSchemaLocation));
         }
 
-        public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateService, IRemoteFileDownloader fileDownloader, WebClient webClient,
-            string addInManifestFilePath)
+        // All download must be synchronous, otherwise excel will hang and eventually
+        // display the following message: "Microsoft excel waiting for another application to complete an ole action."
+        public static void DownloadAddInFromWebServer(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator, IRemoteFileDownloader fileDownloader, WebClient webClient)
         {
-            var getAddInTask = updateService.Deployer.DownloadAsync(fileDownloader, webClient, deploymentPayload.AddIn.Uri, deploymentPayload.Destination.AddInPath, overwrite: true);
-            getAddInTask.Wait();
+            updateCoordinator.Deployer.Download(fileDownloader, webClient, deploymentPayload.AddIn.Uri, deploymentPayload.Destination.AddInPath, overwrite: true);
 
             if (deploymentPayload.AddIn.Dependencies?.Any() == true)
             {
@@ -288,20 +167,13 @@ namespace XLAutoDeploy.Deployments
                 {
                     string filePath = GetDependencyFilePath(dependency, deploymentPayload.Destination);
 
-                    updateService.Deployer.Download(fileDownloader, webClient, dependency.Uri, filePath, overwrite: true);
+                    updateCoordinator.Deployer.Download(fileDownloader, webClient, dependency.Uri, filePath, overwrite: true);
 
                     DownloadAssetFilesFromWebServer(dependency.AssetFiles, fileDownloader, webClient, deploymentPayload.Destination);
                 }
             }
 
             DownloadAssetFilesFromWebServer(deploymentPayload.AddIn.AssetFiles, fileDownloader, webClient, deploymentPayload.Destination);
-
-            LoadOrInstallAddIn(deploymentPayload, updateService);
-
-            // overwrites existing file
-            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
-
-            Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(deploymentPayload.AddInSchemaLocation));
         }
 
         private static void DownloadAssetFilesFromWebServer(IEnumerable<AssetFile> assetFiles, IRemoteFileDownloader fileDownloader,
@@ -407,7 +279,7 @@ namespace XLAutoDeploy.Deployments
 
         public static void UnLoadOrUnInstallAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
         {
-            updateCoordinator.Installer.Uninstall(deploymentPayload.AddIn.Identity.Title,  deploymentPayload.Destination.AddInPath);
+            updateCoordinator.Installer.Uninstall(deploymentPayload.AddIn.Identity.Title, deploymentPayload.Destination.AddInPath);
 
             updateCoordinator.Loader.Unload(deploymentPayload.Destination.AddInPath);
         }
@@ -416,8 +288,7 @@ namespace XLAutoDeploy.Deployments
         {
             var updateBehavior = checkedUpdate.Payload.Deployment.Settings.UpdateBehavior;
 
-            if ((checkedUpdate.Info.IsMandatoryUpdate && checkedUpdate.Info.IsRestartRequired)
-                || updateBehavior.NotifyClient)
+            if ((updateBehavior.NotifyClient && checkedUpdate.Info.UpdateAvailable) || (checkedUpdate.Info.IsMandatoryUpdate && checkedUpdate.Info.IsRestartRequired))
             {
                 updateCoordinator.Notifier.Notify(checkedUpdate.GetDescription(),
                     checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info,
@@ -452,7 +323,7 @@ namespace XLAutoDeploy.Deployments
             if (updateQueryInfo.LastChecked != null)
                 return false;
 
-            DateTime lastChecked = (DateTime)updateQueryInfo.LastChecked; 
+            DateTime lastChecked = (DateTime)updateQueryInfo.LastChecked;
 
             var difference = currentUtcDateTime.Subtract(lastChecked);
 

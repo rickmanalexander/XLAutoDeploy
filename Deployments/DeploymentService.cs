@@ -1,5 +1,6 @@
 ﻿using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.Updates;
+using XLAutoDeploy.Utilities;
 
 using XLAutoDeploy.Manifests;
 using XLAutoDeploy.Manifests.Utilities;
@@ -167,11 +168,29 @@ namespace XLAutoDeploy.Deployments
                                 $"Supply a valid {nameof(fileNetworkConnection)}."));
                         }
 
-                        UpdateService.UpdateAddIn(payload, updateCoordinator, remoteFileDownloader, fileNetworkConnection);
+                        if (fileNetworkConnection.State == FileNetworkConnectionState.Closed)
+                            fileNetworkConnection.Open();
                     }
-                    else
+
+                    UpdateService.StageUpdate(payload, updateCoordinator);
+
+                    try
                     {
-                        UpdateService.UpdateAddIn(payload, updateCoordinator, remoteFileDownloader);
+                        UpdateService.DownloadAddInFromFileServer(payload, updateCoordinator, remoteFileDownloader);
+
+                        // delete staged temp directory
+                        if (Directory.Exists(payload.Destination.TempDirectory))
+                        {
+                            Directory.Delete(payload.Destination.TempDirectory, true);
+                        }
+
+                        FinalizeDeploymentAndNotifyUser(payload, updateCoordinator);
+                    }
+                    catch (Exception ex)
+                    {
+                        // add logging functionality
+                        UpdateService.RevertToOldAddIn(payload, updateCoordinator);
+                        throw;
                     }
 
                     break;
@@ -194,7 +213,26 @@ namespace XLAutoDeploy.Deployments
                         }
                     }
 
-                    UpdateService.UpdateAddIn(payload, updateCoordinator, remoteFileDownloader, webClient);
+                    UpdateService.StageUpdate(payload, updateCoordinator);
+
+                    try
+                    {
+                        UpdateService.DownloadAddInFromWebServer(payload, updateCoordinator, remoteFileDownloader, webClient);
+
+                        // delete staged temp directory
+                        if (Directory.Exists(payload.Destination.TempDirectory))
+                        {
+                            Directory.Delete(payload.Destination.TempDirectory, true);
+                        }
+
+                        FinalizeDeploymentAndNotifyUser(payload, updateCoordinator);
+                    }
+                    catch (Exception ex)
+                    {
+                        // add logging functionality
+                        UpdateService.RevertToOldAddIn(payload, updateCoordinator);
+                        throw; 
+                    }
 
                     break;
             }
@@ -310,8 +348,6 @@ namespace XLAutoDeploy.Deployments
             ValidateOfficeBitnessAndOsRequirements(deploymentPayload);
             ValidateCompatibleFrameworks(deploymentPayload, _installedClrAndNetFrameworks);
 
-            var addInManifestFilePath = deploymentPayload.GetAddInManifestFilePath();
-
             switch (deploymentPayload.FileHost.HostType)
             {
                 case FileHostType.FileServer:
@@ -328,7 +364,9 @@ namespace XLAutoDeploy.Deployments
                             fileNetworkConnection.Open();
                     }
 
-                    UpdateService.DownloadAddInFromFileServer(deploymentPayload, updateCoordinator, remoteFileDownloader, addInManifestFilePath);
+                    UpdateService.DownloadAddInFromFileServer(deploymentPayload, updateCoordinator, remoteFileDownloader);
+
+                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator);
 
                     break;
 
@@ -348,9 +386,36 @@ namespace XLAutoDeploy.Deployments
                                 $"Supply a valid instance of {webClient.Credentials.GetType().Name} to the {nameof(webClient)}."));
                     }
 
-                    UpdateService.DownloadAddInFromWebServer(deploymentPayload, updateCoordinator, remoteFileDownloader, webClient, addInManifestFilePath);
+                    UpdateService.DownloadAddInFromWebServer(deploymentPayload, updateCoordinator, remoteFileDownloader, webClient);
+
+                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator);
 
                     break;
+            }
+        }
+
+        private static void FinalizeDeploymentAndNotifyUser(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
+        {
+            var addInManifestFilePath = deploymentPayload.GetAddInManifestFilePath();
+
+            // overwrites existing file
+            Serialization.SerializeToXmlFile(deploymentPayload.AddIn, addInManifestFilePath, true);
+
+            Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(deploymentPayload.AddInSchemaLocation));
+
+            if (UpdateService.IsRestartRequired(deploymentPayload))
+            {
+                MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}Excel will now shutdown. " +
+                        $"The next time you open Excel, the new version of the{deploymentPayload.AddIn.Identity.Title} add-in will be available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+
+                InteropIntegration.CloseExcelApp();
+            }
+            else
+            {
+                UpdateService.LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
+
+                MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}" +
+                        $"The {deploymentPayload.AddIn.Identity.Title} add-in is available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             }
         }
 
@@ -359,7 +424,7 @@ namespace XLAutoDeploy.Deployments
             var deprecatedVersionDirectory = Path.Combine(update.Payload.Destination.ParentDirectory, update.Info.DeployedVersion.ToString());
             if (Directory.Exists(deprecatedVersionDirectory))
             {
-                Directory.Delete(deprecatedVersionDirectory);
+                Directory.Delete(deprecatedVersionDirectory, true);
             }
         }
 

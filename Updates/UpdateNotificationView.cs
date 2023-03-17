@@ -12,7 +12,7 @@ namespace XLAutoDeploy.Updates
         private readonly string _message;
         private readonly Description _deploymentDescription;
         private readonly UpdateQueryInfo _updateQueryInfo;
-        private readonly bool _allowSkip;
+        private readonly bool _allowSkip = false;
 
         private bool _doUpdate = false;
 
@@ -31,7 +31,8 @@ namespace XLAutoDeploy.Updates
 
         private void BindValuesToControls()
         {
-            this.txtBxUpdateMessage.Text = _message;
+            this.lblNewVersionAvailable.Text = $"A New Version of {_deploymentDescription.Product} is Available";
+            this.lblUpdateMessage.Text = _message;
             this.txtBxPublisher.Text = _deploymentDescription.Publisher;
             this.txtBxAddIn.Text = _deploymentDescription.Product;
             this.txtBxInstalledVersion.Text = _updateQueryInfo.DeployedVersion.ToString();

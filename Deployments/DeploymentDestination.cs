@@ -47,13 +47,13 @@ namespace XLAutoDeploy.Deployments
         /// in the following format: <br/>
         /// ParentDirectory\Temp\
         /// </summary>
-        public string TempAddInDirectory => Path.Combine(ParentDirectory, "Temp");
+        public string TempDirectory => Path.Combine(ParentDirectory, "Temp");
 
         /// <summary>
-        /// The full temporary file path of the add-in comprised of the <see cref="TempAddInDirectory"/> 
+        /// The full temporary file path of the add-in comprised of the <see cref="TempDirectory"/> 
         /// and the <see cref="AddInFileName"/>. 
         /// </summary>
-        public string TempAddInPath => Path.Combine(TempAddInDirectory, AddInFileName);
+        public string TempAddInPath => Path.Combine(TempDirectory, AddInFileName);
 
 
         public string Version => _version;
