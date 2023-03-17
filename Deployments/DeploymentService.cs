@@ -184,7 +184,7 @@ namespace XLAutoDeploy.Deployments
                             Directory.Delete(payload.Destination.TempDirectory, true);
                         }
 
-                        FinalizeDeploymentAndNotifyUser(payload, updateCoordinator);
+                        FinalizeDeploymentAndNotifyUser(payload, updateCoordinator, false);
                     }
                     catch (Exception ex)
                     {
@@ -225,13 +225,13 @@ namespace XLAutoDeploy.Deployments
                             Directory.Delete(payload.Destination.TempDirectory, true);
                         }
 
-                        FinalizeDeploymentAndNotifyUser(payload, updateCoordinator);
+                        FinalizeDeploymentAndNotifyUser(payload, updateCoordinator, false);
                     }
                     catch (Exception ex)
                     {
                         // add logging functionality
                         UpdateService.RevertToOldAddIn(payload, updateCoordinator);
-                        throw; 
+                        throw;
                     }
 
                     break;
@@ -366,7 +366,7 @@ namespace XLAutoDeploy.Deployments
 
                     UpdateService.DownloadAddInFromFileServer(deploymentPayload, updateCoordinator, remoteFileDownloader);
 
-                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator);
+                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator, true);
 
                     break;
 
@@ -388,13 +388,13 @@ namespace XLAutoDeploy.Deployments
 
                     UpdateService.DownloadAddInFromWebServer(deploymentPayload, updateCoordinator, remoteFileDownloader, webClient);
 
-                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator);
+                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator, true);
 
                     break;
             }
         }
 
-        private static void FinalizeDeploymentAndNotifyUser(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator)
+        private static void FinalizeDeploymentAndNotifyUser(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator, bool isInitialDeployment)
         {
             var addInManifestFilePath = deploymentPayload.GetAddInManifestFilePath();
 
@@ -403,19 +403,27 @@ namespace XLAutoDeploy.Deployments
 
             Serialization.AddSchemaLocationToXmlFile(addInManifestFilePath, new Uri(deploymentPayload.AddInSchemaLocation));
 
-            if (UpdateService.IsRestartRequired(deploymentPayload))
+            if (isInitialDeployment)
             {
-                MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}Excel will now shutdown. " +
-                        $"The next time you open Excel, the new version of the{deploymentPayload.AddIn.Identity.Title} add-in will be available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-
-                InteropIntegration.CloseExcelApp();
+                // may need to restart here if UpdateService.IsRestartRequired(deploymentPayload)==true, not sure
+                UpdateService.LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
             }
             else
             {
-                UpdateService.LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
+                if (UpdateService.IsRestartRequired(deploymentPayload))
+                {
+                    MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}Excel will now shutdown. " +
+                            $"The next time you open Excel, the new version of the{deploymentPayload.AddIn.Identity.Title} add-in will be available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
 
-                MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}" +
-                        $"The {deploymentPayload.AddIn.Identity.Title} add-in is available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    InteropIntegration.CloseExcelApp();
+                }
+                else
+                {
+                    UpdateService.LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
+
+                    MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}" +
+                            $"The {deploymentPayload.AddIn.Identity.Title} add-in is available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                }
             }
         }
 
