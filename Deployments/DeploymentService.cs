@@ -413,7 +413,7 @@ namespace XLAutoDeploy.Deployments
                 if (UpdateService.IsRestartRequired(deploymentPayload))
                 {
                     MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}Excel will now shutdown. " +
-                            $"The next time you open Excel, the new version of the{deploymentPayload.AddIn.Identity.Title} add-in will be available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                            $"The next time you open Excel, the new version of the {deploymentPayload.AddIn.Identity.Title} add-in will be available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
 
                     InteropIntegration.CloseExcelApp();
                 }

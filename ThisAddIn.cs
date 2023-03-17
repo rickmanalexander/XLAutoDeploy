@@ -55,10 +55,10 @@ namespace XLAutoDeploy
 
         private void OnExcelAppStartup()
         {
-            Debug.WriteLine($"Begin {Common.GetAppName()} startup");
-
             ExcelAsyncUtil.QueueAsMacro(delegate
             {
+                Debug.WriteLine($"Begin {Common.GetAppName()} startup");
+
                 try
                 {
                     // Setup logger base directory
@@ -72,7 +72,7 @@ namespace XLAutoDeploy
                     {
                         NLog.LogManager.Configuration.Variables["officeBitness"] = "64Bit";
                     }
-                    NLog.LogManager.ReconfigExistingLoggers();
+                    // NLog.LogManager.ReconfigExistingLoggers();
 
 
                     var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
@@ -113,35 +113,38 @@ namespace XLAutoDeploy
 
         private void OnExcelAppShutdown()
         {
-            _hasExcelAppShutdownExecuted = true;
-
-            Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
-
-            _updateMonitor?.Dispose();
-
-            if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
+            ExcelAsyncUtil.QueueAsMacro(delegate
             {
-                Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
-                return;
-            }
+                _hasExcelAppShutdownExecuted = true;
 
-            try
-            {
-                UpdateService.UnloadAddIns(_deploymentPayloads, _updateCoordinator);
-            }
-            catch (Exception ex)
-            {
-                _logger.Fatal(ex, "Failed application shutdown.");
+                Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
-                Debug.WriteLine(ex.ToString());
+                _updateMonitor?.Dispose();
 
-                LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
-            }
+                if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
+                {
+                    Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
+                    return;
+                }
 
-            // Flush and close down internal threads and timers
-            NLog.LogManager.Shutdown();
+                try
+                {
+                    UpdateService.UnloadAddIns(_deploymentPayloads, _updateCoordinator);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Fatal(ex, "Failed application shutdown.");
 
-            Debug.WriteLine($"End {Common.GetAppName()} shutdown");
+                    Debug.WriteLine(ex.ToString());
+
+                    // LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+                }
+
+                // Flush and close down internal threads and timers
+                NLog.LogManager.Shutdown();
+
+                Debug.WriteLine($"End {Common.GetAppName()} shutdown");
+            });
         }
     }
 }
