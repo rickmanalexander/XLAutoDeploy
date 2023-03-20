@@ -12,15 +12,9 @@ namespace XLAutoDeploy.Updates
 
         public UpdateLoader(ILogger logger)
         {
-
-            if (logger == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateLoader)}",
+            _logger = logger ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateLoader)}",
                     $"The {nameof(logger)} parameter is null.",
                     $"Supply a valid {nameof(logger)}."));
-            }
-
-            _logger = logger;
         }
 
         public void Load(string filePath)

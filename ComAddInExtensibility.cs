@@ -18,8 +18,13 @@ namespace XLAutoDeploy
         //See: https://codereview.stackexchange.com/questions/141956/idtextensibility2-implementation-for-rubberducks-entry-point
         public ComAddInExtensibility(Action startUpAction, Action shutdownAction)
         {
-            _startUpAction = startUpAction;
-            _shutdownAction = shutdownAction;
+            _startUpAction = startUpAction ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(ComAddInExtensibility)}",
+                    $"The {nameof(startUpAction)} parameter is null.",
+                    $"Supply a valid {nameof(startUpAction)}."));
+
+            _shutdownAction = shutdownAction ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(ComAddInExtensibility)}",
+                    $"The {nameof(shutdownAction)} parameter is null.",
+                    $"Supply a valid {nameof(shutdownAction)}."));
         }
 
         public override void OnConnection(object Application, ext_ConnectMode ConnectMode, object AddInInst, ref Array custom)

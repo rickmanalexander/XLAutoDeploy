@@ -1,6 +1,5 @@
 ﻿using XLAutoDeploy.FileSystem.Access;
 using XLAutoDeploy.Updates;
-using XLAutoDeploy.Utilities;
 
 using XLAutoDeploy.Manifests;
 using XLAutoDeploy.Manifests.Utilities;
@@ -412,7 +411,7 @@ namespace XLAutoDeploy.Deployments
             {
                 if (UpdateService.IsRestartRequired(deploymentPayload))
                 {
-                    MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}Excel will now shutdown. " +
+                    Common.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}Excel will now shutdown. " +
                             $"The next time you open Excel, the new version of the {deploymentPayload.AddIn.Identity.Title} add-in will be available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
 
                     InteropIntegration.CloseExcelApp();
@@ -421,7 +420,7 @@ namespace XLAutoDeploy.Deployments
                 {
                     UpdateService.LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
 
-                    MessageBoxDisplay.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}" +
+                    Common.DisplayMessage($"Update Deployment Complete!{Environment.NewLine}{Environment.NewLine}" +
                             $"The {deploymentPayload.AddIn.Identity.Title} add-in is available for use.", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                 }
             }
@@ -481,7 +480,6 @@ namespace XLAutoDeploy.Deployments
                     $"The {nameof(requiredOs.MinimumVersion)} should be {requiredOs.MinimumVersion}."));
             }
 
-            /*
             var os = Environment.OSVersion;
 
             if (os.Platform != requiredOs.PlatformId)
@@ -490,14 +488,6 @@ namespace XLAutoDeploy.Deployments
                     $"The {nameof(OperatingSystemBitness)} is not correct.",
                     $"The {nameof(requiredOs.Bitness)} should be {Enum.GetName(typeof(OperatingSystemBitness), osBitness)}."));
             }
-
-            if (os.Version.CompareTo(requiredOs.MinimumVersion) <= 0)
-            {
-                throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-                    $"The {nameof(requiredOs.MinimumVersion)} (i.e. {os.Version}) is not correct.",
-                    $"The {nameof(requiredOs.MinimumVersion)} should be {requiredOs.MinimumVersion}."));
-            }
-            */
         }
 
         private static void ValidateCompatibleFrameworks(DeploymentPayload deploymentPayload, IDictionary<NetClrVersion, HashSet<System.Version>> installedClrAndNetFrameworks)

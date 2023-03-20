@@ -129,16 +129,16 @@ namespace XLAutoDeploy.Deployments
                                 {
                                     if (value == "x64")
                                     {
-                                        return MicrosoftOfficeBitness.X64;
+                                        return MicrosoftOfficeBitness.Bit64;
                                     }
                                     else
                                     {
-                                        return MicrosoftOfficeBitness.X32;
+                                        return MicrosoftOfficeBitness.Bit32;
                                     }
                                 }
                                 else
                                 {
-                                    return MicrosoftOfficeBitness.X32;
+                                    return MicrosoftOfficeBitness.Bit32;
                                 }
                             }
                             else
@@ -156,28 +156,28 @@ namespace XLAutoDeploy.Deployments
                                                 {
                                                     if (value == "x64")
                                                     {
-                                                        return MicrosoftOfficeBitness.X64;
+                                                        return MicrosoftOfficeBitness.Bit64;
                                                     }
                                                     else
                                                     {
-                                                        return MicrosoftOfficeBitness.X32;
+                                                        return MicrosoftOfficeBitness.Bit32;
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    return MicrosoftOfficeBitness.X32;
+                                                    return MicrosoftOfficeBitness.Bit32;
                                                 }
                                             }
                                             else
                                             {
-                                                return MicrosoftOfficeBitness.X32;
+                                                return MicrosoftOfficeBitness.Bit32;
                                             }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    return MicrosoftOfficeBitness.X32;
+                                    return MicrosoftOfficeBitness.Bit32;
                                 }
                             }
                         }
@@ -185,7 +185,7 @@ namespace XLAutoDeploy.Deployments
                 }
             }
 
-            return MicrosoftOfficeBitness.X32;
+            return MicrosoftOfficeBitness.Bit32;
         }
 
         public static IDictionary<NetClrVersion, HashSet<System.Version>> GetAllInstalledClrAndNetFrameworkVersions()

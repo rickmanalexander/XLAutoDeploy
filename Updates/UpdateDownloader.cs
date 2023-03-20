@@ -16,14 +16,9 @@ namespace XLAutoDeploy.Updates
 
         public UpdateDownloader(ILogger logger)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateDownloader)}",
+            _logger = logger ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateDownloader)}",
                     $"The {nameof(logger)} parameter is null.",
                     $"Supply a valid {nameof(logger)}."));
-            }
-
-            _logger = logger;
         }
 
         // what if targetFilePath != local prod file path becuase it was changed remotely?

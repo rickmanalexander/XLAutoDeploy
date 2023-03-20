@@ -5,12 +5,14 @@ namespace XLAutoDeploy
 {
     internal static class Common
     {
-        //Same name as this assembly
+        // Same name as this assembly
         public const string XLAutoDeployAssemblyName = "XLAutoDeploy";
 
         public const string XLAutoDeployManifestFileName = "XLAutoDeploy.Manifest.xml";
 
         public const string DllFileExtension = "dll";
+
+        public const string NLogConfigOfficeBittnessVariableName = "officeBitness"; 
 
         public static string GetFormatedErrorMessage(string context, string problem, string solution)
         {
@@ -22,15 +24,11 @@ namespace XLAutoDeploy
             return System.Reflection.Assembly.GetExecutingAssembly()?.GetName()?.Name ?? XLAutoDeployAssemblyName;
         }
 
-        public static void DisplayMessageBox(string message, bool allowCancel = false)
+        public static DialogResult DisplayMessage(string message, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
-            using (Form form = new Form { TopMost = true })
+            using (var form = new Form() { TopMost = true })
             {
-                var buttons = allowCancel ? MessageBoxButtons.OKCancel : MessageBoxButtons.OK;
-
-                MessageBox.Show(form, message, String.Empty, buttons, MessageBoxIcon.Information);
-
-                form.Dispose();
+                return MessageBox.Show(form, message, caption, buttons, icon);
             }
         }
 

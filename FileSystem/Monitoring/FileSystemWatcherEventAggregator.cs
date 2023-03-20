@@ -19,14 +19,9 @@ namespace XLAutoDeploy.FileSystem.Monitoring
 
         public FileSystemWatcherEventAggregator(IFileSystemWatcherEventAggregator eventAggregator)
         {
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileSystemWatcherEventAggregator)}",
+            _parent = eventAggregator ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileSystemWatcherEventAggregator)}",
                     $"The {nameof(eventAggregator)} parameter is null.",
                     $"Supply a valid {nameof(eventAggregator)}."));
-            }
-
-            _parent = eventAggregator;
         }
 
         public void RaiseWatcherChanged(FileSystemWatcher watcher, WatcherChangeTypes changeType, string fullPath, string name, DateTime timeStamp)

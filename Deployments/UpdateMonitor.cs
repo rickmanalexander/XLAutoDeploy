@@ -110,16 +110,6 @@ namespace XLAutoDeploy.Deployments
                 try
                 {
                     AutoUpdateAddIn(senderFilePath, payload);
-
-                    if (UpdateService.IsRestartRequired(payload))
-                    {
-                        Common.DisplayMessageBox($"The Excel Application will now be closed " +
-                            $"so that the deployed update(s) can take effect. " +
-                            $"{System.Environment.NewLine}{System.Environment.NewLine}" +
-                            $" Once closed, you may re-open Excel as you would normally.", false);
-
-                        InteropIntegration.CloseExcelApp();
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -190,9 +180,12 @@ namespace XLAutoDeploy.Deployments
 
             if (disposing)
             {
-                foreach (var watchedDirectory in _monitoredDirectories?.Values)
+                if(_monitoredDirectories?.Any() == true)
                 {
-                    watchedDirectory?.Dispose();
+                    foreach (var watchedDirectory in _monitoredDirectories?.Values)
+                    {
+                        watchedDirectory?.Dispose();
+                    }
                 }
 
                 _monitoredDirectories = null;

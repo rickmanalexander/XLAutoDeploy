@@ -133,7 +133,6 @@
     <Compile Include="Updates\UpdateCoordinatorFactory.cs" />
     <Compile Include="Deployments\UpdateMonitor.cs" />
     <Compile Include="Deployments\UpdateMonitorFactory.cs" />
-    <Compile Include="Utilities\MessageBoxDisplay.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

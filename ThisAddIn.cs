@@ -43,8 +43,8 @@ namespace XLAutoDeploy
 
         // AutoClose is only called when the add-in is actually removed by the user, and not
         // when Excel exits.
-        //Due to this, we are using and instance of the 'AddInComAdapter' to run Excel App
-        //open and close events.
+        // Due to this, we are using and instance of the 'AddInComAdapter' to run Excel App
+        // open and close events.
         public void AutoClose()
         {
             if (!_hasExcelAppShutdownExecuted)
@@ -64,25 +64,21 @@ namespace XLAutoDeploy
                     // Setup logger base directory
                     var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
 
-                    if (officeBitness == MicrosoftOfficeBitness.X32)
+                    if (officeBitness == MicrosoftOfficeBitness.Bit32)
                     {
-                        NLog.LogManager.Configuration.Variables["officeBitness"] = "32Bit";
+                        NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "32bit";
                     }
-                    else if (officeBitness == MicrosoftOfficeBitness.X64)
+                    else if (officeBitness == MicrosoftOfficeBitness.Bit64)
                     {
-                        NLog.LogManager.Configuration.Variables["officeBitness"] = "64Bit";
+                        NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "64bit";
                     }
-                    // NLog.LogManager.ReconfigExistingLoggers();
-
 
                     var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
                     var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
                     var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
 
-                    // multiple parameter options: choose based on the FileHost(s)
                     var registry = DeploymentService.GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
 
-                    // multiple parameter options: choose based on the FileHost(s) 
                     _deploymentPayloads = DeploymentService.GetDeploymentPayloads(registry);
 
                     if (_deploymentPayloads?.Any() == false)
@@ -137,7 +133,9 @@ namespace XLAutoDeploy
 
                     Debug.WriteLine(ex.ToString());
 
-                    // LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+#if DEBUG 
+                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+#endif
                 }
 
                 // Flush and close down internal threads and timers

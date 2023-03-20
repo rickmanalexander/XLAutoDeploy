@@ -18,22 +18,13 @@ namespace XLAutoDeploy.FileSystem.Monitoring
 
         public FileSystemMonitor(FileSystemWatcher watcher, IFileSystemWatcherEventAggregator eventAggregator)
         {
-            if (watcher == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileSystemMonitor)}",
+            _watcher = watcher ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileSystemMonitor)}",
                     $"The {nameof(watcher)} parameter is null.",
                     $"Supply a valid {nameof(watcher)}."));
-            }
 
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileSystemMonitor)}",
+            _eventAggregator = eventAggregator ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileSystemMonitor)}",
                     $"The {nameof(eventAggregator)} parameter is null.",
                     $"Supply a valid {nameof(eventAggregator)}."));
-            }
-
-            _watcher = watcher;
-            _eventAggregator = eventAggregator;
 
             _watcher.Changed += _watcher_Changed;
             _watcher.Created += _watcher_Created;

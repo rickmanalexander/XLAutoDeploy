@@ -369,6 +369,15 @@
             Xml Required: Y <br/>
             </remarks> 
         </member>
+        <member name="P:XLAutoDeploy.Manifests.CompatibleFramework.Required">
+            <summary>
+            Specifies if this framework is required for the application to run.
+            </summary>  
+            <remarks>
+            Xml Node Type: Attribute <br/>
+            Xml Required: Y <br/>
+            </remarks> 
+        </member>
         <member name="P:XLAutoDeploy.Manifests.CompatibleFramework.SupportedRuntime">
             <summary>
             Specifies CLR version required to run the application.
