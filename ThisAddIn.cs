@@ -109,40 +109,39 @@ namespace XLAutoDeploy
 
         private void OnExcelAppShutdown()
         {
-            ExcelAsyncUtil.QueueAsMacro(delegate
+            _hasExcelAppShutdownExecuted = true;
+
+            Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
+
+            _updateMonitor?.Dispose();
+
+            if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
             {
-                _hasExcelAppShutdownExecuted = true;
+                Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
+                return;
+            }
 
-                Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
+            try
+            {
+                UpdateService.UnloadAddIns(_deploymentPayloads, _updateCoordinator);
 
-                _updateMonitor?.Dispose();
+                System.Threading.Thread.Sleep(1000);
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal(ex, "Failed application shutdown.");
 
-                if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
-                {
-                    Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
-                    return;
-                }
+                Debug.WriteLine(ex.ToString());
 
-                try
-                {
-                    UpdateService.UnloadAddIns(_deploymentPayloads, _updateCoordinator);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Fatal(ex, "Failed application shutdown.");
-
-                    Debug.WriteLine(ex.ToString());
-
-#if DEBUG 
+#if DEBUG
                     LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
 #endif
-                }
+            }
 
-                // Flush and close down internal threads and timers
-                NLog.LogManager.Shutdown();
+            // Flush and close down internal threads and timers
+            NLog.LogManager.Shutdown();
 
-                Debug.WriteLine($"End {Common.GetAppName()} shutdown");
-            });
+            Debug.WriteLine($"End {Common.GetAppName()} shutdown");
         }
     }
 }
