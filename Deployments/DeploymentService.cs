@@ -426,6 +426,7 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
+        // account for readonly files here??
         private static void DeleteDeprecatedVersionFiles(CheckedUpdate update)
         {
             var deprecatedVersionDirectory = Path.Combine(update.Payload.Destination.ParentDirectory, update.Info.DeployedVersion.ToString());

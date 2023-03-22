@@ -36,8 +36,11 @@ namespace XLAutoDeploy.Deployments
             // Delete existing temp file
             if (File.Exists(deploymentPayload.Destination.TempAddInPath))
             {
+                File.SetAttributes(deploymentPayload.Destination.TempAddInPath, FileAttributes.Normal); // account for readonly file
                 File.Delete(deploymentPayload.Destination.TempAddInPath);
             }
+
+            File.SetAttributes(deploymentPayload.Destination.AddInPath, FileAttributes.Normal);
 
             // File should now be unlocked, so the FileCopy/FileDelete operations
             // that occur as a result of File.Move() will succeed
@@ -57,9 +60,11 @@ namespace XLAutoDeploy.Deployments
                     // Delete existing temp file
                     if (File.Exists(newFilePath))
                     {
+                        File.SetAttributes(newFilePath, FileAttributes.Normal);
                         File.Delete(newFilePath);
                     }
 
+                    File.SetAttributes(filePath, FileAttributes.Normal);
                     File.Move(filePath, newFilePath);
                 }
             }
@@ -75,12 +80,14 @@ namespace XLAutoDeploy.Deployments
                     // if the new add-in exists, then delete it 
                     if (File.Exists(deploymentPayload.Destination.AddInPath))
                     {
+                        File.SetAttributes(deploymentPayload.Destination.AddInPath, FileAttributes.Normal); // account for readonly file
                         File.Delete(deploymentPayload.Destination.AddInPath);
                     }
 
                     // move the original add-in back to the correct path 
                     if (!File.Exists(deploymentPayload.Destination.AddInPath))
                     {
+                        File.SetAttributes(deploymentPayload.Destination.TempAddInPath, FileAttributes.Normal); // account for readonly file
                         File.Move(deploymentPayload.Destination.TempAddInPath, deploymentPayload.Destination.AddInPath);
                     }
 
@@ -101,9 +108,11 @@ namespace XLAutoDeploy.Deployments
                                 // Delete existing temp file
                                 if (File.Exists(newFilePath))
                                 {
+                                    File.SetAttributes(newFilePath, FileAttributes.Normal);
                                     File.Delete(newFilePath);
                                 }
 
+                                File.SetAttributes(filePath, FileAttributes.Normal);
                                 File.Move(filePath, newFilePath);
                             }
                         }
@@ -146,7 +155,12 @@ namespace XLAutoDeploy.Deployments
                 {
                     string filePath = GetDependencyFilePath(dependency, deploymentPayload.Destination);
 
-                    updateCoordinator.Deployer.Download(fileDownloader, dependency.Uri.LocalPath, filePath);
+                    if (File.Exists(filePath))
+                    {
+                        File.SetAttributes(filePath, FileAttributes.Normal);
+                    }
+
+                    updateCoordinator.Deployer.Download(fileDownloader, dependency.Uri.LocalPath, filePath, overwrite: true);
 
                     DownloadAssetFilesFromFileServer(dependency.AssetFiles, fileDownloader, deploymentPayload.Destination);
                 }
@@ -166,6 +180,11 @@ namespace XLAutoDeploy.Deployments
                 foreach (var dependency in deploymentPayload.AddIn.Dependencies)
                 {
                     string filePath = GetDependencyFilePath(dependency, deploymentPayload.Destination);
+
+                    if (File.Exists(filePath))
+                    {
+                        File.SetAttributes(filePath, FileAttributes.Normal);
+                    }
 
                     updateCoordinator.Deployer.Download(fileDownloader, webClient, dependency.Uri, filePath, overwrite: true);
 
@@ -203,12 +222,22 @@ namespace XLAutoDeploy.Deployments
                                 "Update file with the correct hash or change the file."));
                         }
 
+                        if (File.Exists(targetFilePath))
+                        {
+                            File.SetAttributes(targetFilePath, FileAttributes.Normal);
+                        }
+
                         // overwrites if exists
                         File.WriteAllBytes(targetFilePath, fileBytes);
                     }
                 }
                 else
                 {
+                    if (File.Exists(targetFilePath))
+                    {
+                        File.SetAttributes(targetFilePath, FileAttributes.Normal);
+                    }
+
                     fileDownloader.Download(webClient, file.Uri, targetFilePath, overwrite: true);
                 }
             }
@@ -241,12 +270,22 @@ namespace XLAutoDeploy.Deployments
                                 "Update file with the correct hash or change the file."));
                         }
 
+                        if (File.Exists(targetFilePath))
+                        {
+                            File.SetAttributes(targetFilePath, FileAttributes.Normal);
+                        }
+
                         // overwrites if exists
                         File.WriteAllBytes(targetFilePath, fileBytes);
                     }
                 }
                 else
                 {
+                    if (File.Exists(targetFilePath))
+                    {
+                        File.SetAttributes(targetFilePath, FileAttributes.Normal);
+                    }
+
                     fileDownloader.Download(file.Uri.LocalPath, targetFilePath, overwrite: true);
                 }
             }
