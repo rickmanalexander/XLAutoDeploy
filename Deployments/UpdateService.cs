@@ -305,14 +305,11 @@ namespace XLAutoDeploy.Deployments
             }
         }
 
-        public static void UnloadAddIns(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator)
+        public static void TryUnInstallAddIns(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator)
         {
             foreach (var payload in deploymentPayloads)
             {
-                if (!payload.Deployment.Settings.LoadBehavior.Install)
-                {
-                    UnLoadOrUnInstallAddIn(payload, updateCoordinator);
-                }
+                updateCoordinator.Installer.TryUninstall(payload.AddIn.Identity.Title, payload.Destination.AddInPath, out bool success);
             }
         }
 

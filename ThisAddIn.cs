@@ -47,9 +47,32 @@ namespace XLAutoDeploy
         // open and close events.
         public void AutoClose()
         {
-            if (!_hasExcelAppShutdownExecuted)
+            if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
             {
-                OnExcelAppShutdown();
+                Debug.WriteLine("End Excel Un-Register: Early exit - One or more required objects are null.");
+                return;
+            }
+
+            try
+            {
+                _updateMonitor?.Dispose();
+
+                UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
+
+                System.Threading.Thread.Sleep(500);
+
+                // Flush and close down internal threads and timers
+                NLog.LogManager.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal(ex, "Failed application Un-Register.");
+
+                Debug.WriteLine(ex.ToString());
+
+#if DEBUG
+                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+#endif
             }
         }
 
@@ -109,23 +132,17 @@ namespace XLAutoDeploy
 
         private void OnExcelAppShutdown()
         {
-            _hasExcelAppShutdownExecuted = true;
+            if (_hasExcelAppShutdownExecuted)
+                return; 
 
             Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
-            _updateMonitor?.Dispose();
-
-            if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
-            {
-                Debug.WriteLine("End Excel app shutdown: Early exit - One or more required objects are null.");
-                return;
-            }
-
             try
             {
-                UpdateService.UnloadAddIns(_deploymentPayloads, _updateCoordinator);
+                _updateMonitor?.Dispose();
 
-                System.Threading.Thread.Sleep(1000);
+                // Flush and close down internal threads and timers
+                NLog.LogManager.Shutdown();
             }
             catch (Exception ex)
             {
@@ -138,10 +155,9 @@ namespace XLAutoDeploy
 #endif
             }
 
-            // Flush and close down internal threads and timers
-            NLog.LogManager.Shutdown();
-
             Debug.WriteLine($"End {Common.GetAppName()} shutdown");
+
+            _hasExcelAppShutdownExecuted = true;
         }
     }
 }
