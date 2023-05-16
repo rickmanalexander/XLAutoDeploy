@@ -45,7 +45,7 @@ namespace XLAutoDeploy.FileSystem
             {
                 _cache.Add(new Uri(_remoteServerName), "Basic", _networkCredential);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Attempting to open a {nameof(FileNetworkConnection)}.",
                                 "Connection is already open.",
@@ -84,32 +84,26 @@ namespace XLAutoDeploy.FileSystem
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
-        public void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this._disposed)
                 return;
 
             if (disposing)
             {
-                try
-                {
-                    if(_remoteServerName != null)
-                    {
-                        _cache?.Remove(new Uri(_remoteServerName), "Basic");
-                    }
-                }
-                catch
-                {
-                }
-
-                _state = FileNetworkConnectionState.Closed;
+                GC.SuppressFinalize(this);
             }
+
+            if (_remoteServerName != null)
+            {
+                _cache?.Remove(new Uri(_remoteServerName), "Basic");
+            }
+
+            _state = FileNetworkConnectionState.Closed;
 
             this._disposed = true;
         }
-
     }
 }

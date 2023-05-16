@@ -2,7 +2,6 @@
 using XLAutoDeploy.Updates;
 
 using XLAutoDeploy.Manifests;
-using XLAutoDeploy.Manifests.Utilities;
 
 using System;
 using System.Collections.Generic;

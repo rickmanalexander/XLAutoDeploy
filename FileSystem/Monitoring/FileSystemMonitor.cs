@@ -11,7 +11,7 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         private FileSystemWatcher _watcher;
         private readonly IFileSystemWatcherEventAggregator _eventAggregator;
 
-        private IDictionary<string, string> _monitoredFiles = 
+        private IDictionary<string, string> _monitoredFiles =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private bool _disposed = false;
@@ -108,29 +108,28 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         public void Dispose()
         {
             this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
-        public void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this._disposed)
                 return;
 
             if (disposing)
             {
-                // Clean up managed resources
-                if (_watcher != null)
-                {
-                    _watcher.EnableRaisingEvents = false;
-                    _watcher.Dispose();
-
-                    _watcher = null;
-                    _monitoredFiles = null;
-                }
-
-                this._disposed = true;
+                GC.SuppressFinalize(this);
             }
-        }
 
+            if (_watcher != null)
+            {
+                _watcher.EnableRaisingEvents = false;
+                _watcher.Dispose();
+
+                _watcher = null;
+                _monitoredFiles = null;
+            }
+
+            this._disposed = true;
+        }
     }
 }

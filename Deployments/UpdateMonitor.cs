@@ -73,7 +73,6 @@ namespace XLAutoDeploy.Deployments
                         if (payload.Deployment.Settings.UpdateBehavior.DoInRealTime)
                         {
                             var filePath = payload.AddIn.DeploymentUriString;
-
                             var directory = Path.GetDirectoryName(filePath);
 
                             if (!_monitoredDirectories.TryGetValue(directory, out IFileSystemMonitor monitoredDirectory))
@@ -155,7 +154,7 @@ namespace XLAutoDeploy.Deployments
                 Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
             }
 
-            notificationClone[filePath] = notificationClone[filePath]++;
+            notificationClone[filePath] = ++notificationClone[filePath];
 
             _deploymentFilePathNotificationCounts = notificationClone;
         }
@@ -171,7 +170,7 @@ namespace XLAutoDeploy.Deployments
             GC.SuppressFinalize(this);
         }
 
-        public void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this._disposed)
             {

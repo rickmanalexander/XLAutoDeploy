@@ -25,7 +25,6 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         public FileSystemWatcher Create(string filePath, NotifyFilters notifyFilters)
         {
             var directory = Path.GetDirectoryName(filePath);
-
             var result = Create(directory, notifyFilters);
             result.Filter = Path.GetFileName(filePath);
 

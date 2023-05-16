@@ -12,7 +12,7 @@ namespace XLAutoDeploy.Deployments
     {
         public static bool TryDeserializeManifestFile<T>(string filePath, ILogger logger, out T obj)
         {
-            obj = (T)Activator.CreateInstance(typeof(T)); //can't return null
+            obj = (T)Activator.CreateInstance(typeof(T)); // can't return null
 
             try
             {
@@ -53,7 +53,7 @@ namespace XLAutoDeploy.Deployments
                 logger.Error(ex, $"Error loading the configuration file for type '{nameof(T)}' from file path '{uri}'.");
             }
 
-            obj = (T)Activator.CreateInstance(typeof(T)); //can't return null
+            obj = (T)Activator.CreateInstance(typeof(T)); // can't return null
 
             return false;
         }

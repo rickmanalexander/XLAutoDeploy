@@ -8,7 +8,6 @@ namespace XLAutoDeploy.Deployments
         public Deployment Deployment => _deployment;
         public AddIn AddIn => _addIn;
         public string AddInSchemaLocation => _addInSchemaLocation;
-
         public DeploymentDestination Destination => _destination;
 
         private readonly FileHost _fileHost;
