@@ -37,7 +37,7 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         {
             if (_monitoredFiles.ContainsKey(e.FullPath))
             {
-                _eventAggregator.RaiseWatcherChanged(_watcher, e.ChangeType, e.FullPath, e.Name, DateTime.Now);
+                _eventAggregator.RaiseWatcherChanged(_watcher, e.ChangeType, e.FullPath, e.Name, DateTime.UtcNow);
             }
         }
 
@@ -45,7 +45,7 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         {
             if (_monitoredFiles.ContainsKey(e.FullPath))
             {
-                _eventAggregator.RaiseWatcherCreated(_watcher, e.ChangeType, e.FullPath, e.Name, DateTime.Now);
+                _eventAggregator.RaiseWatcherCreated(_watcher, e.ChangeType, e.FullPath, e.Name, DateTime.UtcNow);
             }
         }
 
@@ -53,7 +53,7 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         {
             if (_monitoredFiles.ContainsKey(e.FullPath))
             {
-                _eventAggregator.RaiseWatcherDeleted(_watcher, e.ChangeType, e.FullPath, e.Name, DateTime.Now);
+                _eventAggregator.RaiseWatcherDeleted(_watcher, e.ChangeType, e.FullPath, e.Name, DateTime.UtcNow);
             }
         }
 
@@ -61,7 +61,7 @@ namespace XLAutoDeploy.FileSystem.Monitoring
         {
             if (_monitoredFiles.ContainsKey(e.FullPath))
             {
-                _eventAggregator.RaiseWatcherRenamed(_watcher, e.ChangeType, e.FullPath, e.Name, e.OldName, DateTime.Now);
+                _eventAggregator.RaiseWatcherRenamed(_watcher, e.ChangeType, e.FullPath, e.Name, e.OldName, DateTime.UtcNow);
             }
         }
 

@@ -8,7 +8,7 @@ namespace XLAutoDeploy.FileSystem
 {
     internal static class FileUtilities
     {
-        public const string CouldNotDirectoryErrorMessage = "Could not create create directory";
+        public const string CouldNotCreateDirectoryErrorMessage = "Could not create create directory";
 
         public static void CreateDirectory(string filePath, ILogger logger)
         {
@@ -21,22 +21,22 @@ namespace XLAutoDeploy.FileSystem
             }
             catch (IOException ex)
             {
-                logger.Error(ex, $"{CouldNotDirectoryErrorMessage}: Invalid folder path {folderPath}");
+                logger.Error(ex, $"{CouldNotCreateDirectoryErrorMessage}: Invalid folder path {folderPath}");
                 throw;
             }
             catch (UnauthorizedAccessException ex)
             {
-                logger.Error(ex, $"{CouldNotDirectoryErrorMessage}: Inaccessible file directory {folderPath}");
+                logger.Error(ex, $"{CouldNotCreateDirectoryErrorMessage}: Inaccessible file directory {folderPath}");
                 throw;
             }
             catch (SecurityException ex)
             {
-                logger.Error(ex, $"{CouldNotDirectoryErrorMessage}: Inaccessible file directory {folderPath}");
+                logger.Error(ex, $"{CouldNotCreateDirectoryErrorMessage}: Inaccessible file directory {folderPath}");
                 throw;
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"{CouldNotDirectoryErrorMessage} for {folderPath}");
+                logger.Error(ex, $"{CouldNotCreateDirectoryErrorMessage} for {folderPath}");
                 throw;
             }
         }

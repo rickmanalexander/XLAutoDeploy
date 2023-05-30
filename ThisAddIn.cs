@@ -43,37 +43,11 @@ namespace XLAutoDeploy
 
         // AutoClose is only called when the add-in is actually removed by the user, and not
         // when Excel exits.
-        // Due to this, we are using and instance of the 'AddInComAdapter' to run Excel App
+        // Due to this, we are using and instance of the 'ComAddInExtensibility' to run Excel App
         // open and close events.
         public void AutoClose()
         {
-            if (_deploymentPayloads == null || _updateCoordinator == null || _logger == null)
-            {
-                Debug.WriteLine("End Excel Un-Register: Early exit - One or more required objects are null.");
-                return;
-            }
-
-            try
-            {
-                _updateMonitor?.Dispose();
-
-                UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
-
-                System.Threading.Thread.Sleep(500);
-
-                // Flush and close down internal threads and timers
-                NLog.LogManager.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                _logger.Fatal(ex, "Failed application Un-Register.");
-
-                Debug.WriteLine(ex.ToString());
-
-#if DEBUG
-                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
-#endif
-            }
+            OnExcelAppShutdown(); 
         }
 
         private void OnExcelAppStartup()
@@ -137,9 +111,22 @@ namespace XLAutoDeploy
 
             Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
+            if (_deploymentPayloads == null)
+            {
+                Debug.WriteLine("OnExcelAppShutdown: _deploymentPayloads is null");
+#if DEBUG
+                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+#endif
+                _logger.Fatal("OnExcelAppShutdown: _deploymentPayloads is null.");
+
+                return;
+            }
+
             try
             {
                 _updateMonitor?.Dispose();
+
+                UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
 
                 // Flush and close down internal threads and timers
                 NLog.LogManager.Shutdown();

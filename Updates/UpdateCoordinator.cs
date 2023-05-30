@@ -20,7 +20,6 @@ namespace XLAutoDeploy.Updates
             Loader = loader ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateCoordinator)}",
                     $"The {nameof(loader)} parameter is null.",
                     $"Supply a valid {nameof(loader)}."));
-
             Installer = installer ?? throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateCoordinator)}",
                     $"The {nameof(installer)} parameter is null.",
                     $"Supply a valid {nameof(installer)}.")); ;

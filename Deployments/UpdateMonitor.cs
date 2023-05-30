@@ -4,12 +4,12 @@ using XLAutoDeploy.Updates;
 using XLAutoDeploy.Logging;
 
 using XLAutoDeploy.Manifests;
+using XLAutoDeploy.Manifests.Utilities;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using XLAutoDeploy.Manifests.Utilities;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -167,28 +167,27 @@ namespace XLAutoDeploy.Deployments
         public void Dispose()
         {
             this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         private void Dispose(bool disposing)
         {
             if (this._disposed)
-            {
                 return;
-            }
 
             if (disposing)
             {
-                if(_monitoredDirectories?.Any() == true)
-                {
-                    foreach (var watchedDirectory in _monitoredDirectories?.Values)
-                    {
-                        watchedDirectory?.Dispose();
-                    }
-                }
-
-                _monitoredDirectories = null;
+                GC.SuppressFinalize(this);
             }
+
+            if (_monitoredDirectories?.Any() == true)
+            {
+                foreach (var watchedDirectory in _monitoredDirectories?.Values)
+                {
+                    watchedDirectory?.Dispose();
+                }
+            }
+
+            _monitoredDirectories = null;
 
             this._disposed = true;
         }
