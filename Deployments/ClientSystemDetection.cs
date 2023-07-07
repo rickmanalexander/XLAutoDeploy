@@ -72,6 +72,19 @@ namespace XLAutoDeploy.Deployments
             STATUS_SUCCESS = 0x00000000
         }
 
+        private enum BinaryType : uint
+        {
+            SCS_32BIT_BINARY = 0,   // A 32-bit Windows-based application
+            SCS_DOS_BINARY = 1,     // An MS-DOS – based application
+            SCS_WOW_BINARY = 2,     // A 16-bit Windows-based application 
+            SCS_PIF_BINARY = 3,     // A PIF file that executes an MS-DOS – based application
+            SCS_POSIX_BINARY = 4,   // A POSIX – based application
+            SCS_OS216_BINARY = 5,   // A 16-bit OS/2-based application
+            SCS_64BIT_BINARY = 6    // A 64-bit Windows-based application.
+        }
+
+        [DllImport("kernel32.dll")]
+        private static extern bool GetBinaryType(string lpApplicationName, out BinaryType lpBinaryType);
 
         public static bool IsWindowsAdmin()
         {
@@ -106,6 +119,31 @@ namespace XLAutoDeploy.Deployments
         }
 
         // Only one version of office can be installed at a time. That version can be either 32 or 64 bit, but both cannot be installed side-by-side.
+        public static MicrosoftOfficeBitness GetMicrosoftOfficeBitness()
+        {
+            const string excelExePath = @"Software\Microsoft\Windows\CurrentVersion\App Paths\excel.exe";
+
+            BinaryType binaryType;
+            using (var key = Registry.LocalMachine.OpenSubKey(excelExePath))
+            {
+                var excel = key.GetValue("");
+                GetBinaryType(excel.ToString(), out binaryType);
+            }
+
+            switch (binaryType)
+            {
+                case BinaryType.SCS_32BIT_BINARY:
+                    return MicrosoftOfficeBitness.Bit32;
+
+                case BinaryType.SCS_64BIT_BINARY:
+                    return MicrosoftOfficeBitness.Bit64;
+
+                default:
+                    return MicrosoftOfficeBitness.Unknown; 
+
+            }
+        }
+        /*
         public static MicrosoftOfficeBitness GetMicrosoftOfficeBitness()
         {
             var versionKeys = MsOfficeVersionRegistryKeys; 
@@ -187,6 +225,7 @@ namespace XLAutoDeploy.Deployments
 
             return MicrosoftOfficeBitness.Bit32;
         }
+        */
 
         public static IDictionary<NetClrVersion, HashSet<System.Version>> GetAllInstalledClrAndNetFrameworkVersions()
         {
@@ -206,7 +245,9 @@ namespace XLAutoDeploy.Deployments
                     foreach(var version in clrAndVersionHashSet.Value)
                     {
                         if (!hashset.Contains(version))
+                        {
                             hashset.Add(version);
+                        }
                     }
 
                     v45PlusInstallations[clrAndVersionHashSet.Key] = hashset;

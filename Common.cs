@@ -12,6 +12,7 @@ namespace XLAutoDeploy
 
         public const string DllFileExtension = "dll";
 
+        public const string NLogConfigAppVersionVariableName = "appVersion";
         public const string NLogConfigOfficeBittnessVariableName = "officeBitness"; 
 
         public static string GetFormatedErrorMessage(string context, string problem, string solution)

@@ -58,17 +58,7 @@ namespace XLAutoDeploy
 
                 try
                 {
-                    // Setup logger base directory
-                    var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
-
-                    if (officeBitness == MicrosoftOfficeBitness.Bit32)
-                    {
-                        NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "32bit";
-                    }
-                    else if (officeBitness == MicrosoftOfficeBitness.Bit64)
-                    {
-                        NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "64bit";
-                    }
+                    SetUpLoggerBaseDirectory();
 
                     var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
                     var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
@@ -111,6 +101,8 @@ namespace XLAutoDeploy
 
             Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
+            SetUpLoggerBaseDirectory();
+
             if (_deploymentPayloads == null)
             {
                 Debug.WriteLine("OnExcelAppShutdown: _deploymentPayloads is null");
@@ -145,6 +137,27 @@ namespace XLAutoDeploy
             Debug.WriteLine($"End {Common.GetAppName()} shutdown");
 
             _hasExcelAppShutdownExecuted = true;
+        }
+
+        private static void SetUpLoggerBaseDirectory()
+        {
+            NLog.LogManager.Configuration.Variables[Common.NLogConfigAppVersionVariableName] = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
+            switch (officeBitness)
+            {
+                case MicrosoftOfficeBitness.Bit32:
+                    NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "32bit";
+                    break;
+
+                case MicrosoftOfficeBitness.Bit64:
+                    NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "64bit";
+                    break;
+
+                case MicrosoftOfficeBitness.Unknown:
+                    NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "UnknownBitness";
+                    break;
+            }
         }
     }
 }
