@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <XLAutoDeployManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://github.com/XLAutoDeploy/Schemas/XLAutoDeployManifest.xsd" xsi:schemaLocation="https://github.com/XLAutoDeploy/Schemas/XLAutoDeployManifest.xsd file://s-hdqfp03/publicshare/TechOps/Business%20Intelligence%20Applications/Core%20APIs/Excel%20AddIns/Production/XLAutoDeploy/XLAutoDeployManifest.xsd">
-	<Version>1.2.0.0</Version>
+	<Version>1.2.1.0</Version>
 	<DeploymentRegistryUri>file://s-hdqfp03/publicshare/TechOps/Business%20Intelligence%20Applications/Core%20APIs/Excel%20AddIns/Production/XLAutoDeploy/32Bit/XLAutoDeploy-DeploymentRegistry.xml</DeploymentRegistryUri>
 </XLAutoDeployManifest>

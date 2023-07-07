@@ -23,7 +23,7 @@ namespace XLAutoDeploy.Deployments
                 if (_info.IsMandatoryUpdate)
                 {
                     return "You can update now or defer until later. " +
-                        "If you choose to defer, then add-in will NOT be loaded." +
+                        "If you choose to defer, then the add-in will NOT be loaded." +
                         "If you choose to update now, then once complete, " +
                         "you MUST restart Excel for it to take effect.";
 
@@ -41,7 +41,7 @@ namespace XLAutoDeploy.Deployments
                 if (_info.IsMandatoryUpdate)
                 {
                     return "You can update now or defer until later. " +
-                        "If you choose to defer, then add-in will NOT be loaded."; 
+                        "If you choose to defer, then the add-in will NOT be loaded."; 
 
 
                 }
