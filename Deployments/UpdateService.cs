@@ -46,7 +46,7 @@ namespace XLAutoDeploy.Deployments
             File.Move(deploymentPayload.Destination.AddInPath, deploymentPayload.Destination.TempAddInPath);
 
             // Move any files stored next to the add-in
-            var otherFilePaths = Directory.GetFiles(deploymentPayload.Destination.ParentDirectory); 
+            var otherFilePaths = Directory.GetFiles(deploymentPayload.Destination.ParentDirectory);
 
             if (otherFilePaths != null || otherFilePaths.Length > 0)
             {
@@ -322,18 +322,20 @@ namespace XLAutoDeploy.Deployments
         public static bool CanProceedWithUpdate(CheckedUpdate checkedUpdate, IUpdateCoordinator updateCoordinator)
         {
             var updateBehavior = checkedUpdate.Payload.Deployment.Settings.UpdateBehavior;
-
-            if ((updateBehavior.NotifyClient && checkedUpdate.Info.UpdateAvailable) || (checkedUpdate.Info.IsMandatoryUpdate && checkedUpdate.Info.IsRestartRequired))
+            if ((updateBehavior.NotifyClient && checkedUpdate.Info.UpdateAvailable) || (checkedUpdate.Info.IsMandatoryUpdate))
             {
                 updateCoordinator.Notifier.Notify(checkedUpdate.GetDescription(),
-                    checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info,
-                    !checkedUpdate.Info.IsMandatoryUpdate);
+    checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info, true);
+
+                // updateCoordinator.Notifier.Notify(checkedUpdate.GetDescription(),
+                //     checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info,
+                //     !checkedUpdate.Info.IsMandatoryUpdate);
 
                 return updateCoordinator.Notifier.DoUpdate;
             }
 
             // Silent Update
-            return checkedUpdate.Info.IsMandatoryUpdate;
+            return checkedUpdate.Info.UpdateAvailable;
         }
 
         public static bool IsMandatoryUpdate(System.Version deployedAddInVersion, DeploymentSettings deploymentSettings)

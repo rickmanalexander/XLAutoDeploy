@@ -18,34 +18,39 @@ namespace XLAutoDeploy.Deployments
 
         public string GetDescription()
         {
-            if (_info.IsMandatoryUpdate)
+            if (_info.IsRestartRequired)
             {
-                if (_info.IsRestartRequired)
+                if (_info.IsMandatoryUpdate)
                 {
-                    return $"Please wait while the update is processed. " +
-                        $"Once the update is complete, " +
-                        $"you MUST restart Excel for it to take effect.";
-                }
-                else
-                {
-                    return "Please wait while the update is processed.";
-                }
-            }
-            else
-            {
-                if (_info.IsRestartRequired)
-                {
-                    return "Would you like to update now, or defer until later? " +
-                        "Once the update is complete, " +
+                    return "You can update now or defer until later. " +
+                        "If you choose to defer, then add-in will NOT be loaded." +
+                        "If you choose to update now, then once complete, " +
                         "you MUST restart Excel for it to take effect.";
 
                 }
                 else
                 {
+                    return "Would you like to update now or defer until later? " +
+                        "Once the update is complete, " +
+                        "you MUST restart Excel for it to take effect.";
+
+                }
+            }
+            else
+            {
+                if (_info.IsMandatoryUpdate)
+                {
+                    return "You can update now or defer until later. " +
+                        "If you choose to defer, then add-in will NOT be loaded."; 
+
+
+                }
+                else
+                {
                     return "Would you like to update now, or defer until later?.";
+
                 }
             }
         }
-
     }
 }

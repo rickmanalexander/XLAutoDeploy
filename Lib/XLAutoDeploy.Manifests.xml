@@ -906,9 +906,11 @@
             If <see cref="F:XLAutoDeploy.Manifests.UpdateMode.Forced"/> then the update will be processed regardless if 
             the <see cref="P:XLAutoDeploy.Manifests.AddInIdentity.Version"/> (of the <see cref="T:XLAutoDeploy.Manifests.AddIn"/>) was incremented 
             or not. When <see cref="P:XLAutoDeploy.Manifests.UpdateBehavior.NotifyClient"/> is set to true updates will 
-            display a non-cancellable  dialog to the client that notifies them of a pending 
-            update. If <see cref="F:XLAutoDeploy.Manifests.UpdateMode.Normal"/>, then, updates can be deferred until a 
-            later time. <br/> <br/>
+            display a dialog to the client that notifies them of a pending 
+            update. If the client deferrs the update, then the add-in will not be loaded.  
+            If <see cref="F:XLAutoDeploy.Manifests.UpdateMode.Normal"/>, then, the dialog will only be displayed to 
+            the client if the the <see cref="P:XLAutoDeploy.Manifests.AddInIdentity.Version"/> (of the <see cref="T:XLAutoDeploy.Manifests.AddIn"/>) 
+            was incremented . <br/> <br/>
             Xml Node Type: Element <br/>
             Xml Required: Y 
             </remarks>
@@ -944,8 +946,9 @@
             Specifies whether or not update notifications should be displayed to the client. 
             </summary>
             <remarks>
-            If <see cref="P:RequiresRestart"/> is set to true, then this property will 
-            be ignored and the client will be notified regardless. <br/> <br/>
+            If <see cref="P:XLAutoDeploy.Manifests.UpdateBehavior.RequiresRestart"/> is set to true, or if 
+            <see cref="P:XLAutoDeploy.Manifests.UpdateBehavior.Mode"/> == <see cref="F:XLAutoDeploy.Manifests.UpdateMode.Forced"/> then this 
+            property will be ignored and the client will be notified regardless. <br/> <br/>
             Xml Node Type: Element <br/>
             Xml Required: Y 
             </remarks>
@@ -1102,6 +1105,11 @@
             </summary>  
         </member>
         <!-- Badly formed XML comment ignored for member "T:XLAutoDeploy.Manifests.XLAutoDeployManifest" -->
+        <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.Version">
+            <summary>
+            Specifies the version number of XLAutoDeploy.
+            </summary>  
+        </member>
         <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.DeploymentRegistryUri">
             <summary>
             Specifies the Uri of the associated <see cref="T:XLAutoDeploy.Manifests.DeploymentRegistry"/>.

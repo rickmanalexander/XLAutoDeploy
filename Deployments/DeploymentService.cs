@@ -134,7 +134,9 @@ namespace XLAutoDeploy.Deployments
                     Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
 
                     // ProcessUpdate calls LoadOrInstallAddIn so we don't need to call it again
-                    if (!processUpdateCalled)
+                    // If processUpdateCalled == false then this means the user declined a
+                    // mandatory update, so we DO NOT want to load the add-in 
+                    if (!processUpdateCalled && !checkedUpdate.Info.IsMandatoryUpdate)
                     {
                         UpdateService.LoadOrInstallAddIn(payload, updateCoordinator);
                     }
