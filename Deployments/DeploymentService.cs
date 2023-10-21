@@ -490,34 +490,31 @@ namespace XLAutoDeploy.Deployments
             {
                 if (installedClrAndNetFrameworks.TryGetValue(framework.SupportedRuntime, out HashSet<System.Version> versions))
                 {
-                    System.Diagnostics.Debug.WriteLine($"{System.Environment .NewLine}Target Version: {framework.TargetVersion}");
+                    System.Diagnostics.Debug.WriteLine($"{System.Environment.NewLine}Target Version: {framework.TargetVersion}");
 
-                    foreach (var vs in versions)
+                    int minimumRequiredVersionCount = 0;
+                    foreach (var vers in versions)
                     {
                         System.Diagnostics.Debug.WriteLine($"Installed Frameworks:");
 
-                        System.Diagnostics.Debug.WriteLine($"\t{vs}"); 
-                    }
+                        System.Diagnostics.Debug.WriteLine($"\t{vers}");
 
-                    if (!versions.Contains(framework.TargetVersion))
-                    {
                         if (framework.Required)
                         {
-                            throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-    $"The {nameof(framework.TargetVersion)} could not be found.",
-    $"Supply the correct {nameof(framework.TargetVersion)}."));
+                            if (framework.MinimumRequiredVersion.CompareTo(vers) >= 0)
+                            {
+                                minimumRequiredVersionCount++;
+                                foundCount++;
+                            }
                         }
                     }
-                    else
+
+                    if (framework.Required && minimumRequiredVersionCount == 0)
                     {
-                        foundCount++;
+                        throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
+$"The {nameof(framework.TargetVersion)} could not be found.",
+$"Supply the correct {nameof(framework.TargetVersion)}."));
                     }
-                }
-                else if (framework.Required)
-                {
-                    throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-                        $"The {nameof(framework.SupportedRuntime)} could not be found.",
-                        $"Supply the correct {nameof(framework.TargetVersion)}."));
                 }
             }
 

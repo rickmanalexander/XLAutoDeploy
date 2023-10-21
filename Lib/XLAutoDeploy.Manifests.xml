@@ -388,6 +388,16 @@
             Xml Required: Y
             </remarks> 
         </member>
+        <member name="P:XLAutoDeploy.Manifests.CompatibleFramework.MinimumRequiredVersion">
+            <summary>
+            Specifies the minimum version of the framework required to run the application on the client.
+            </summary>  
+            <remarks>
+            The .NET Framework version required to run the application. <br/> <br/>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
         <member name="P:XLAutoDeploy.Manifests.CompatibleFramework.TargetVersion">
             <summary>
             Specifies the version number of the target .NET Framework.
@@ -953,26 +963,12 @@
             Xml Required: Y 
             </remarks>
         </member>
-        <member name="P:XLAutoDeploy.Manifests.UpdateBehavior.DoInRealTime">
-            <summary>
-            Specifies whether the updates are pushed to the client machine in realtime.  
-            </summary>
-            <remarks>
-            When set to true, updates will be pushed to the client as they occur on the remote 
-            host. This only applies to remote hosts of type <see cref="P:XLAutoDeploy.Manifests.FileHost.HostType"/> 
-            equal to <see cref="F:XLAutoDeploy.Manifests.FileHostType.FileServer"/>  <br/> <br/>
-            Xml Node Type: Element <br/>
-            Xml Required: Y 
-            </remarks>
-        </member>
         <member name="P:XLAutoDeploy.Manifests.UpdateBehavior.Expiration">
             <summary>
             Represents how old the current update can become before the application will perform 
             the next update check. 
             </summary> 
             <remarks>
-            If <see cref="P:XLAutoDeploy.Manifests.UpdateBehavior.DoInRealTime"/> is set to true, then the value of this 
-            property will be ignored. 
             Xml Node Type: Element <br/>
             Xml Required: N
             </remarks>
