@@ -212,7 +212,6 @@
             this.Name = "UpdateNotificationView";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.TopMost = true;
             this.pnlTop.ResumeLayout(false);
             this.pnlBottom.ResumeLayout(false);
             this.ResumeLayout(false);

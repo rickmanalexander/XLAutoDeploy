@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
-using System.Linq;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -97,7 +96,6 @@ namespace XLAutoDeploy.Deployments
                         var existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
 
                         checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
-                        checkedUpdate.Info.LastChecked = currentDateTime;
                         checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo.FirstNotified;
 
                         if (UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
@@ -119,7 +117,6 @@ namespace XLAutoDeploy.Deployments
                     else
                     {
                         checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
-                        checkedUpdate.Info.LastChecked = currentDateTime;
 
                         if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                         {
@@ -261,17 +258,6 @@ namespace XLAutoDeploy.Deployments
             };
 
             return new CheckedUpdate(updateQueryInfo, deploymentPayload);
-        }
-
-        public static void SetRealtimeUpdateMonitoring(IEnumerable<DeploymentPayload> deploymentPayloads, IUpdateCoordinator updateCoordinator,
-            IRemoteFileDownloader remoteFileDownloader, out UpdateMonitor updateMonitor)
-        {
-            updateMonitor = null;
-
-            if (deploymentPayloads.Where(d => d.FileHost.HostType == FileHostType.FileServer & d.Deployment.Settings.UpdateBehavior.DoInRealTime)?.Any() == true)
-            {
-                updateMonitor = UpdateMonitorFactory.Create(deploymentPayloads, updateCoordinator, remoteFileDownloader, 1);
-            }
         }
 
         // should this also check for the add-in manifest??
@@ -504,6 +490,15 @@ namespace XLAutoDeploy.Deployments
             {
                 if (installedClrAndNetFrameworks.TryGetValue(framework.SupportedRuntime, out HashSet<System.Version> versions))
                 {
+                    System.Diagnostics.Debug.WriteLine($"{System.Environment .NewLine}Target Version: {framework.TargetVersion}");
+
+                    foreach (var vs in versions)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Installed Frameworks:");
+
+                        System.Diagnostics.Debug.WriteLine($"\t{vs}"); 
+                    }
+
                     if (!versions.Contains(framework.TargetVersion))
                     {
                         if (framework.Required)

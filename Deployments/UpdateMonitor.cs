@@ -1,6 +1,4 @@
-﻿using XLAutoDeploy.FileSystem.Access;
-using XLAutoDeploy.FileSystem.Monitoring;
-using XLAutoDeploy.Updates;
+﻿using XLAutoDeploy.Updates;
 using XLAutoDeploy.Logging;
 
 using XLAutoDeploy.Manifests;
@@ -10,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -21,31 +20,18 @@ namespace XLAutoDeploy.Deployments
     /// </summary>
     internal sealed class UpdateMonitor : IDisposable
     {
-        private readonly IFileSystemWatcherFactory _watcherFactory;
-        private readonly IFileSystemWatcherEventAggregator _watcherEventAggregator;
-        private readonly IFileSystemMonitorFactory _monitorFactory;
-
         private readonly IEnumerable<DeploymentPayload> _deploymentPayloads;
         private readonly IUpdateCoordinator _updateCoordinator;
-        private readonly IRemoteFileDownloader _remoteFileDowloader;
         private readonly ILogger _logger;
-        private readonly uint _sessionNotificationLimit;
 
-        private IDictionary<string, uint> _deploymentFilePathNotificationCounts = new Dictionary<string, uint>(StringComparer.OrdinalIgnoreCase);
-        //For every directory we watch, keep track of all the add-ins that have files in that directory
-        private IDictionary<string, IFileSystemMonitor> _monitoredDirectories = new Dictionary<string, IFileSystemMonitor>();
+        private List<NonOverlappingTimer> _timers = new List<NonOverlappingTimer>();
 
         private bool _disposed = false;
 
-        public UpdateMonitor(IFileSystemWatcherFactory watcherFactory, IFileSystemWatcherEventAggregator eventAggregator,
-                IFileSystemMonitorFactory monitorFactory, IEnumerable<DeploymentPayload> deploymentPayloads,
-                IUpdateCoordinator updateService, IRemoteFileDownloader remoteFileDowloader, ILogger logger, uint sessionNotificationLimit = 1)
+        public UpdateMonitor(IEnumerable<DeploymentPayload> deploymentPayloads,
+                IUpdateCoordinator updateCoordinator, ILogger logger)
         {
-            _watcherFactory = watcherFactory;
-            _watcherEventAggregator = eventAggregator;
-            _monitorFactory = monitorFactory;
-
-            _deploymentPayloads = deploymentPayloads?.Where(d => d.FileHost.HostType == FileHostType.FileServer & d.Deployment.Settings.UpdateBehavior.DoInRealTime)?.ToList();
+            _deploymentPayloads = deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration != null)?.ToList();
 
             if (_deploymentPayloads?.Any() == false)
             {
@@ -54,10 +40,8 @@ namespace XLAutoDeploy.Deployments
                     "Supply one or more RemoteAddIns that match the aforementioned criteria."));
             }
 
-            _updateCoordinator = updateService;
-            _remoteFileDowloader = remoteFileDowloader;
+            _updateCoordinator = updateCoordinator;
             _logger = logger;
-            _sessionNotificationLimit = sessionNotificationLimit;
 
             SetMonitoredAddIns();
         }
@@ -66,97 +50,88 @@ namespace XLAutoDeploy.Deployments
         {
             foreach (var payload in _deploymentPayloads)
             {
-                if (payload.FileHost.HostType == FileHostType.FileServer)
-                {
-                    try
-                    {
-                        if (payload.Deployment.Settings.UpdateBehavior.DoInRealTime)
-                        {
-                            var filePath = payload.AddIn.DeploymentUriString;
-                            var directory = Path.GetDirectoryName(filePath);
-
-                            if (!_monitoredDirectories.TryGetValue(directory, out IFileSystemMonitor monitoredDirectory))
-                            {
-                                var watcher = _watcherFactory.Create(directory, NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size);
-
-                                monitoredDirectory = _monitorFactory.Create(watcher, _watcherEventAggregator);
-                                monitoredDirectory.Events.Changed += QueueUpdateAction;
-                            }
-
-                            monitoredDirectory.MonitorFile(filePath);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, $"Update monitoring setup failed for add-in titled {payload.AddIn.Identity.Title}");
-                        throw;
-                    }
-                }
-            }
-        }
-
-        // How to handle file rename?????
-        private void QueueUpdateAction(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType == WatcherChangeTypes.Changed)
-            {
-                var senderFilePath = e.FullPath;
-                var payload = _deploymentPayloads.Where(x => x.AddIn.DeploymentUriString.Equals(senderFilePath, StringComparison.OrdinalIgnoreCase))?.ToList()?[0];
-
-                if (payload == null)
-                    return;
-
                 try
                 {
-                    AutoUpdateAddIn(senderFilePath, payload);
+                    int interval = ToMilliseconds(payload.Deployment.Settings.UpdateBehavior.Expiration);
+
+                    var timer = new NonOverlappingTimer(interval, () => EnqueueUpdateNotification(payload));
+                    timer.Start(); 
+
+                    _timers.Add(timer); 
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, $"Update monitoring Update action failed for add-in titled {payload.AddIn.Identity.Title}");
+                    _logger.Error(ex, $"Update monitoring setup failed for add-in titled {payload.AddIn.Identity.Title}");
                     throw;
                 }
             }
         }
 
-        private void AutoUpdateAddIn(string filePath, DeploymentPayload payload)
+        private void EnqueueUpdateNotification(DeploymentPayload payload)
         {
-            // use copy/clone, mutate, and replace to avoid threading issues
-            var notificationClone = _deploymentFilePathNotificationCounts;
-
-            if (!notificationClone.ContainsKey(filePath))
+            try
             {
-                notificationClone.Add(filePath, 0);
+                NotifyAddInUpdate(payload);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Update monitoring 'EnqueueUpdateNotification' failed for add-in titled {payload.AddIn.Identity.Title}");
+                throw;
+            }
+        }
+
+        private void NotifyAddInUpdate(DeploymentPayload payload)
+        {
+            var deployedAddInManifestFilePath = payload.GetAddInManifestFilePath();
+
+            var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
+
+            var currentDateTime = DateTime.UtcNow;
+            var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
+
+            UpdateQueryInfo existingUpdateQueryInfo = null;
+            if (File.Exists(updateQueryInfoManifestFilePath))
+            {
+                existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
             }
 
-            if (notificationClone[filePath] <= _sessionNotificationLimit)
+            var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
+            checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
+
+            var updateBehavior = payload.Deployment.Settings.UpdateBehavior;
+            if ((updateBehavior.NotifyClient && checkedUpdate.Info.UpdateAvailable) || (checkedUpdate.Info.IsMandatoryUpdate))
             {
-                var deployedAddInManifestFilePath = payload.GetAddInManifestFilePath();
+                _updateCoordinator.Notifier.Notify("To update please close Excel and re-open.",
+    checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info, false);
 
-                var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
-
-                var currentDateTime = DateTime.UtcNow;
-                var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
-
-                UpdateQueryInfo existingUpdateQueryInfo = null;
-                if (File.Exists(updateQueryInfoManifestFilePath))
-                {
-                    existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
-                }
-
-                var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
-                checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
-
-                if (UpdateService.CanProceedWithUpdate(checkedUpdate, _updateCoordinator))
-                {
-                    DeploymentService.ProcessUpdate(checkedUpdate, _updateCoordinator, _remoteFileDowloader);
-                }
-
-                Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
             }
 
-            notificationClone[filePath] = ++notificationClone[filePath];
+            Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
+        }
 
-            _deploymentFilePathNotificationCounts = notificationClone;
+        private int ToMilliseconds(UpdateExpiration updateExpiration)
+        {
+            const int millsecondsInMinute = 60000;
+            const int minutesInADay = 1440;
+
+            int maximumAge = (int)updateExpiration.MaximumAge; 
+
+            switch (updateExpiration.UnitOfTime)
+            {
+                case UnitOfTime.Minutes:
+                    return maximumAge * millsecondsInMinute;
+
+                case UnitOfTime.Days:
+                    return (maximumAge * minutesInADay) * millsecondsInMinute;
+
+                case UnitOfTime.Weeks:
+                    return ((maximumAge * 7) * minutesInADay) * millsecondsInMinute;
+
+                case UnitOfTime.Months:
+                    return ((maximumAge * 30 * 7) * minutesInADay) * millsecondsInMinute;
+            }
+
+            return -1; 
         }
 
         ~UpdateMonitor()
@@ -179,15 +154,14 @@ namespace XLAutoDeploy.Deployments
                 GC.SuppressFinalize(this);
             }
 
-            if (_monitoredDirectories?.Any() == true)
+            if (_timers?.Any() == true)
             {
-                foreach (var watchedDirectory in _monitoredDirectories?.Values)
+                foreach (var timer in _timers)
                 {
-                    watchedDirectory?.Dispose();
+                    timer.Stop();
+                    timer.Dispose(); 
                 }
             }
-
-            _monitoredDirectories = null;
 
             this._disposed = true;
         }

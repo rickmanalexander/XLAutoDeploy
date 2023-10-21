@@ -26,14 +26,12 @@ namespace XLAutoDeploy.Deployments
                         "If you choose to defer, then the add-in will NOT be loaded." +
                         "If you choose to update now, then once complete, " +
                         "you MUST restart Excel for it to take effect.";
-
                 }
                 else
                 {
                     return "Would you like to update now or defer until later? " +
                         "Once the update is complete, " +
                         "you MUST restart Excel for it to take effect.";
-
                 }
             }
             else
@@ -42,13 +40,10 @@ namespace XLAutoDeploy.Deployments
                 {
                     return "You can update now or defer until later. " +
                         "If you choose to defer, then the add-in will NOT be loaded."; 
-
-
                 }
                 else
                 {
                     return "Would you like to update now, or defer until later?.";
-
                 }
             }
         }

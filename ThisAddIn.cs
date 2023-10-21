@@ -78,7 +78,7 @@ namespace XLAutoDeploy
 
                     DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
 
-                    DeploymentService.SetRealtimeUpdateMonitoring(_deploymentPayloads, _updateCoordinator, remoteFileDownloader, out _updateMonitor);
+                    _updateMonitor = new UpdateMonitor(_deploymentPayloads, _updateCoordinator, new NLoggerProxy<UpdateMonitor>()); 
                 }
                 catch (Exception ex)
                 {

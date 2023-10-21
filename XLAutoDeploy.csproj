@@ -91,15 +91,6 @@
     <Compile Include="FileSystem\Access\RemoteFileDownloader.cs" />
     <Compile Include="FileSystem\Access\RemoteFileDownloaderFactory.cs" />
     <Compile Include="FileSystem\Comparison.cs" />
-    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemMonitor.cs" />
-    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemMonitorFactory.cs" />
-    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemWatcherEventAggregator.cs" />
-    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemWatcherEventProvider.cs" />
-    <Compile Include="FileSystem\Monitoring\Abstract\IFileSystemWatcherFactory.cs" />
-    <Compile Include="FileSystem\Monitoring\FileSystemMonitor.cs" />
-    <Compile Include="FileSystem\Monitoring\FileSystemMonitorFactory.cs" />
-    <Compile Include="FileSystem\Monitoring\FileSystemWatcherEventAggregator.cs" />
-    <Compile Include="FileSystem\Monitoring\FileSystemWatcherFactory.cs" />
     <Compile Include="FileSystem\Access\FileNetworkConnection.cs" />
     <Compile Include="FileSystem\FileUtilities.cs" />
     <Compile Include="GlobalSuppressions.cs" />
@@ -118,6 +109,7 @@
     <Compile Include="Updates\Abstract\IUpdateNotifier.cs" />
     <Compile Include="Updates\Abstract\IUpdateCoordinator.cs" />
     <Compile Include="Updates\Abstract\IUpdateCoordinatorFactory.cs" />
+    <Compile Include="Updates\NonOverlappingTimer.cs" />
     <Compile Include="Updates\UpdateNotificationEventArgs.cs" />
     <Compile Include="Updates\UpdateNotificationView.cs">
       <SubType>Form</SubType>
@@ -132,7 +124,6 @@
     <Compile Include="Updates\UpdateCoordinator.cs" />
     <Compile Include="Updates\UpdateCoordinatorFactory.cs" />
     <Compile Include="Deployments\UpdateMonitor.cs" />
-    <Compile Include="Deployments\UpdateMonitorFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
