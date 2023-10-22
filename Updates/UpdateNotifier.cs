@@ -26,7 +26,7 @@ namespace XLAutoDeploy.Updates
 
             var now = DateTime.UtcNow;
 
-            updateQueryInfo.FirstNotified = updateQueryInfo.FirstNotified ?? now;
+            updateQueryInfo.FirstNotified = updateQueryInfo?.FirstNotified ?? now;
             updateQueryInfo.LastNotified = now;
 
             _view.NotificationComplete += View_NotificationComplete;

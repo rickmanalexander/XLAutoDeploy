@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace XLAutoDeploy.Deployments
 {
@@ -57,7 +56,9 @@ namespace XLAutoDeploy.Deployments
                     var timer = new NonOverlappingTimer(interval, () => EnqueueUpdateNotification(payload));
                     timer.Start(); 
 
-                    _timers.Add(timer); 
+                    _timers.Add(timer);
+
+                    System.Diagnostics.Debug.WriteLine($"UpdateMonitor.SetMonitoredAddIns timer created for add-in titled {payload.AddIn.Identity.Title}");
                 }
                 catch (Exception ex)
                 {
@@ -69,6 +70,8 @@ namespace XLAutoDeploy.Deployments
 
         private void EnqueueUpdateNotification(DeploymentPayload payload)
         {
+            System.Diagnostics.Debug.WriteLine($"UpdateMonitor.EnqueueUpdateNotification invoked for add-in titled {payload.AddIn.Identity.Title}");
+
             try
             {
                 NotifyAddInUpdate(payload);
@@ -82,6 +85,8 @@ namespace XLAutoDeploy.Deployments
 
         private void NotifyAddInUpdate(DeploymentPayload payload)
         {
+            System.Diagnostics.Debug.WriteLine($"UpdateMonitor.NotifyAddInUpdate invoked for add-in titled {payload.AddIn.Identity.Title}");
+
             var deployedAddInManifestFilePath = payload.GetAddInManifestFilePath();
 
             var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
@@ -94,7 +99,7 @@ namespace XLAutoDeploy.Deployments
                 existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
             }
 
-            var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow);
+            var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow, true);
             checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
 
             var updateBehavior = payload.Deployment.Settings.UpdateBehavior;

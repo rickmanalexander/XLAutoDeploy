@@ -349,10 +349,17 @@ namespace XLAutoDeploy.Deployments
             return (deployed.CompareTo(incoming) < 0);
         }
 
-        public static bool IsRestartRequired(DeploymentPayload deploymentPayload)
+        public static bool IsRestartRequired(DeploymentPayload deploymentPayload, bool omitIsAddInInstalledCheck = false)
         {
-            return (deploymentPayload.Deployment.Settings.UpdateBehavior.RequiresRestart
-                || InteropIntegration.IsAddInInstalled(deploymentPayload.AddIn.Identity.Title));
+            if (omitIsAddInInstalledCheck)
+            {
+                return deploymentPayload.Deployment.Settings.UpdateBehavior.RequiresRestart;
+            }
+            else
+            {
+                return (deploymentPayload.Deployment.Settings.UpdateBehavior.RequiresRestart
+                    || InteropIntegration.IsAddInInstalled(deploymentPayload.AddIn.Identity.Title));
+            }
         }
 
         public static bool IsUpdateExpired(UpdateQueryInfo updateQueryInfo, UpdateExpiration updateExpiration, DateTime currentUtcDateTime)

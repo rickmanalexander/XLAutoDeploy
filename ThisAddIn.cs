@@ -47,7 +47,7 @@ namespace XLAutoDeploy
         // open and close events.
         public void AutoClose()
         {
-            OnExcelAppShutdown(); 
+            OnExcelAppShutdown();
         }
 
         private void OnExcelAppStartup()
@@ -100,7 +100,7 @@ namespace XLAutoDeploy
         private void OnExcelAppShutdown()
         {
             if (_hasExcelAppShutdownExecuted)
-                return; 
+                return;
 
             Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
@@ -110,18 +110,19 @@ namespace XLAutoDeploy
             {
                 Debug.WriteLine("OnExcelAppShutdown: _deploymentPayloads is null");
 #if DEBUG
-                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+                LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
 #endif
                 _logger.Fatal("OnExcelAppShutdown: _deploymentPayloads is null.");
-
-                return;
             }
 
             try
             {
                 _updateMonitor?.Dispose();
 
-                UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
+                if (_deploymentPayloads != null)
+                {
+                    UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
+                }
 
                 // Flush and close down internal threads and timers
                 NLog.LogManager.Shutdown();
@@ -133,7 +134,7 @@ namespace XLAutoDeploy
                 Debug.WriteLine(ex.ToString());
 
 #if DEBUG
-                    LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
+                LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
 #endif
             }
 

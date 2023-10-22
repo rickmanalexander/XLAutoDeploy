@@ -220,7 +220,7 @@ namespace XLAutoDeploy.Deployments
         }
 
         // need to check if is deployed first
-        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion, DateTime checkedDate)
+        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion, DateTime checkedDate, bool omitIsAddInInstalledCheck = false)
         {
             UpdateQueryInfo updateQueryInfo = new UpdateQueryInfo
             {
@@ -230,7 +230,7 @@ namespace XLAutoDeploy.Deployments
                 MinimumRequiredVersion = deploymentPayload.Deployment.Settings.MinimumRequiredVersion,
                 DeployedVersion = deployedAddInVersion,
                 IsMandatoryUpdate = UpdateService.IsMandatoryUpdate(deployedAddInVersion, deploymentPayload.Deployment.Settings),
-                IsRestartRequired = UpdateService.IsRestartRequired(deploymentPayload),
+                IsRestartRequired = UpdateService.IsRestartRequired(deploymentPayload, omitIsAddInInstalledCheck),
 
                 Size = deploymentPayload.AddIn.GetTotalSize(),
             };
