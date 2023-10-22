@@ -36,7 +36,7 @@ namespace XLAutoDeploy.Deployments
             if (_deploymentPayloads?.Any() == false)
             {
                 throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateMonitor)}.",
-                    $"The where no {nameof(deploymentPayloads)} add-ins found whose FileHostConfiguration {nameof(FileHostType)} == {nameof(FileHostType.FileServer)} with UpdateBehavior.DoInRealTime == true.",
+                    $"The where no {nameof(deploymentPayloads)} add-ins found whose Deployment.Settings.UpdateBehavior.Expiration was non-null.",
                     "Supply one or more RemoteAddIns that match the aforementioned criteria."));
             }
 
@@ -86,7 +86,6 @@ namespace XLAutoDeploy.Deployments
 
             var deployedAddInVersion = ManifestSerialization.DeserializeManifestFile<AddIn>(deployedAddInManifestFilePath).Identity.Version;
 
-            var currentDateTime = DateTime.UtcNow;
             var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
             UpdateQueryInfo existingUpdateQueryInfo = null;
@@ -95,7 +94,7 @@ namespace XLAutoDeploy.Deployments
                 existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
             }
 
-            var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
+            var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow);
             checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
 
             var updateBehavior = payload.Deployment.Settings.UpdateBehavior;

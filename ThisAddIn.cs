@@ -80,7 +80,7 @@ namespace XLAutoDeploy
 
                     if (_deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration != null)?.Any() == true)
                     {
-                        _updateMonitor = new UpdateMonitor(_deploymentPayloads, _updateCoordinator, new NLoggerProxy<UpdateMonitor>());
+                        _updateMonitor = UpdateMonitorFactory.Create(_deploymentPayloads, _updateCoordinator);
                     }
                 }
                 catch (Exception ex)

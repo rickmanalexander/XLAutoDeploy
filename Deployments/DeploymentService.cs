@@ -88,55 +88,33 @@ namespace XLAutoDeploy.Deployments
 
                     var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
-                    var currentDateTime = DateTime.UtcNow;
-                    CheckedUpdate checkedUpdate;
-                    bool processUpdateCalled = false;
+                    var checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow);
+
+                    UpdateQueryInfo existingUpdateQueryInfo = null;
                     if (File.Exists(updateQueryInfoManifestFilePath))
                     {
-                        var existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
-
-                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
-                        checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo.FirstNotified;
-
-                        if (UpdateService.IsUpdateExpired(existingUpdateQueryInfo, payload.Deployment.Settings.UpdateBehavior.Expiration, currentDateTime))
-                        {
-                            if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
-                            {
-                                ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
-
-                                processUpdateCalled = true;
-                            }
-                        }
-                        else if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
-                        {
-                            ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
-
-                            processUpdateCalled = true;
-                        }
+                        existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
                     }
-                    else
-                    {
-                        checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, currentDateTime);
 
-                        if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
-                        {
-                            ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
-
-                            processUpdateCalled = true;
-                        }
-                    }
+                    checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
 
                     System.Diagnostics.Debug.WriteLine($"Available Version: {checkedUpdate.Info.AvailableVersion}");
 
-                    Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
-
-                    // ProcessUpdate calls LoadOrInstallAddIn so we don't need to call it again
-                    // If processUpdateCalled == false then this means the user declined a
-                    // mandatory update, so we DO NOT want to load the add-in 
-                    if (!processUpdateCalled && !checkedUpdate.Info.IsMandatoryUpdate)
+                    if (UpdateService.CanProceedWithUpdate(checkedUpdate, updateCoordinator))
                     {
-                        UpdateService.LoadOrInstallAddIn(payload, updateCoordinator);
+                        ProcessUpdate(checkedUpdate, updateCoordinator, remoteFileDownloader, fileNetworkConnection, webClient);
                     }
+                    else
+                    {
+                        // If UpdateService.CanProceedWithUpdate == false then this means the user
+                        // declined a mandatory update, so we DO NOT want to load the add-in
+                        if (!checkedUpdate.Info.IsMandatoryUpdate)
+                        {
+                            UpdateService.LoadOrInstallAddIn(payload, updateCoordinator);
+                        }
+                    }
+
+                    Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);
                 }
                 else
                 {
@@ -499,21 +477,18 @@ namespace XLAutoDeploy.Deployments
 
                         System.Diagnostics.Debug.WriteLine($"\t{vers}");
 
-                        if (framework.Required)
+                        if (framework.Required && framework.MinimumRequiredVersion.CompareTo(vers) >= 0)
                         {
-                            if (framework.MinimumRequiredVersion.CompareTo(vers) >= 0)
-                            {
-                                minimumRequiredVersionCount++;
-                                foundCount++;
-                            }
+                            minimumRequiredVersionCount++;
+                            foundCount++;
                         }
                     }
 
                     if (framework.Required && minimumRequiredVersionCount == 0)
                     {
                         throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-$"The {nameof(framework.TargetVersion)} could not be found.",
-$"Supply the correct {nameof(framework.TargetVersion)}."));
+$"The {nameof(framework.MinimumRequiredVersion)} could not be found.",
+$"Supply the correct {nameof(framework.MinimumRequiredVersion)}."));
                     }
                 }
             }

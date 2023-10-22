@@ -77,6 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Deployments\UpdateMonitorFactory.cs" />
     <Compile Include="Deployments\UpdateService.cs" />
     <Compile Include="Deployments\CheckedUpdate.cs" />
     <Compile Include="Deployments\ClientSystemDetection.cs" />
