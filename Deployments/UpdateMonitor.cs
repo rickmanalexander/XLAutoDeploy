@@ -105,7 +105,23 @@ namespace XLAutoDeploy.Deployments
             var updateBehavior = payload.Deployment.Settings.UpdateBehavior;
             if ((updateBehavior.NotifyClient && checkedUpdate.Info.UpdateAvailable) || (checkedUpdate.Info.IsMandatoryUpdate))
             {
-                _updateCoordinator.Notifier.Notify("To update please close Excel and re-open.",
+                string message;
+                if (checkedUpdate.Info.IsMandatoryUpdate)
+                {
+                    message = $"Please re-start Excel (at your earliest convenience) to install a manadatory update.";  
+                }
+                else
+                {
+                    message = "Please re-start Excel (at your earliest convenience) to install the latest update."; 
+                }
+
+                string unitOfTime = Enum.GetName(typeof(UnitOfTime), updateBehavior.Expiration.UnitOfTime).ToLower();
+
+                string frequency = updateBehavior.Expiration.MaximumAge > 1 ? $"{updateBehavior.Expiration.MaximumAge} {unitOfTime}" : unitOfTime.TrimEnd('s');
+
+                message = message + $" You will continue to be notified every {frequency} that the Excel application remains open until you do so.";
+
+                _updateCoordinator.Notifier.Notify(message,
     checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info, false);
 
             }

@@ -88,7 +88,7 @@ namespace XLAutoDeploy.Deployments
 
                     var updateQueryInfoManifestFilePath = payload.GetUpdateQueryInfoManifestFilePath();
 
-                    var checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow);
+                    var checkedUpdate = GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow, false);
 
                     UpdateQueryInfo existingUpdateQueryInfo = null;
                     if (File.Exists(updateQueryInfoManifestFilePath))
@@ -106,8 +106,8 @@ namespace XLAutoDeploy.Deployments
                     }
                     else
                     {
-                        // If UpdateService.CanProceedWithUpdate == false then this means the user
-                        // declined a mandatory update, so we DO NOT want to load the add-in
+                        // If we get here, then this means the user declined an newly available update.
+                        // If the update was mandatory, then we DO NOT want to load the add-in
                         if (!checkedUpdate.Info.IsMandatoryUpdate)
                         {
                             UpdateService.LoadOrInstallAddIn(payload, updateCoordinator);
@@ -220,7 +220,7 @@ namespace XLAutoDeploy.Deployments
         }
 
         // need to check if is deployed first
-        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion, DateTime checkedDate, bool omitIsAddInInstalledCheck = false)
+        public static CheckedUpdate GetCheckedUpdate(DeploymentPayload deploymentPayload, System.Version deployedAddInVersion, DateTime checkedDate, bool omitIsAddInInstalledCheck)
         {
             UpdateQueryInfo updateQueryInfo = new UpdateQueryInfo
             {
@@ -370,7 +370,8 @@ namespace XLAutoDeploy.Deployments
 
             if (isInitialDeployment)
             {
-                // may need to restart here if UpdateService.IsRestartRequired(deploymentPayload)==true, not sure
+                // may need to restart here if UpdateService.IsRestartRequired(deploymentPayload)==true,
+                // not sure
                 UpdateService.LoadOrInstallAddIn(deploymentPayload, updateCoordinator);
             }
             else
@@ -477,17 +478,18 @@ namespace XLAutoDeploy.Deployments
 
                         System.Diagnostics.Debug.WriteLine($"\t{vers}");
 
-                        if (framework.Required && framework.MinimumRequiredVersion.CompareTo(vers) >= 0)
+                        if (framework.MinimumRequiredVersion.CompareTo(vers) >= 0)
                         {
                             minimumRequiredVersionCount++;
                             foundCount++;
                         }
                     }
 
+                    // only throw an exception is the framework is required
                     if (framework.Required && minimumRequiredVersionCount == 0)
                     {
                         throw new PlatformNotSupportedException(Common.GetFormatedErrorMessage($"Deploying add-in titled {addInTitle} to client.",
-$"The {nameof(framework.MinimumRequiredVersion)} could not be found.",
+$"A {nameof(framework.MinimumRequiredVersion)} could not be found.",
 $"Supply the correct {nameof(framework.MinimumRequiredVersion)}."));
                     }
                 }
