@@ -380,10 +380,10 @@ namespace XLAutoDeploy.Deployments
                     return difference.Days >= updateExpiration.MaximumAge;
 
                 case UnitOfTime.Weeks:
-                    return (difference.Days / 7) >= updateExpiration.MaximumAge;
+                    return (double)(difference.Days / 7.00) >= (double)updateExpiration.MaximumAge;
 
                 case UnitOfTime.Months:
-                    return (((currentUtcDateTime.Year - lastChecked.Year) * 12) + currentUtcDateTime.Month - lastChecked.Month) >= updateExpiration.MaximumAge;
+                    return (double)(((double)(currentUtcDateTime.Year - lastChecked.Year) * 12) + currentUtcDateTime.Month - lastChecked.Month) >= (double)updateExpiration.MaximumAge;
 
                 default:
                     return false;

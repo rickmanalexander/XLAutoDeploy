@@ -17,56 +17,28 @@ namespace XLAutoDeploy.Deployments
         private static readonly IDictionary<NetClrVersion, HashSet<System.Version>> _installedClrAndNetFrameworks =
             ClientSystemDetection.GetAllInstalledClrAndNetFrameworkVersions();
 
-        public static DeploymentRegistry GetDeploymentRegistry(Uri uri)
+        public static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloads(string xlAutoDeployCurrentFilePath)
         {
-            if (uri.IsFile || uri.IsUnc)
-            {
-                return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(uri.LocalPath);
-            }
-            else
-            {
-                return GetDeploymentRegistry(new WebClient(), uri);
-            }
+            var applicationDirectory = Path.GetDirectoryName(xlAutoDeployCurrentFilePath);
+            var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
+
+            var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
+
+            var registry = GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
+
+            return GetDeploymentPayloadsFromRegistry(registry);
         }
 
-        public static DeploymentRegistry GetDeploymentRegistry(WebClient webClient, Uri uri)
+        public static DeploymentPayload GetDeploymentPayloadByAddInTitle(string xlAutoDeployCurrentFilePath, string addInTitle)
         {
-            return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(webClient, uri);
-        }
+            var applicationDirectory = Path.GetDirectoryName(xlAutoDeployCurrentFilePath);
+            var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
 
-        public static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloads(DeploymentRegistry registry)
-        {
-            WebClient webClient = new WebClient();
+            var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
 
-            return GetDeploymentPayloads(registry, null, webClient);
-        }
+            var registry = GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
 
-        public static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloads(DeploymentRegistry registry,
-            IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
-        {
-            if (registry == null)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
-                    $"The {nameof(DeploymentRegistry)} is null.",
-                    $"Retrieve the deployment registry using GetDeploymentRegistry."));
-            }
-
-            if (registry?.PublishedDeployments?.Count == 0)
-            {
-                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
-                    $"The {nameof(DeploymentRegistry.PublishedDeployments)} is null.",
-                    $"Retrieve the deployment registry using GetDeploymentRegistry."));
-            }
-
-            List<DeploymentPayload> payloads = new List<DeploymentPayload>();
-            foreach (var publishedDeployment in registry.PublishedDeployments)
-            {
-                var payload = GetDeploymentPayload(publishedDeployment, fileNetworkConnection, webClient);
-
-                payloads.Add(payload);
-            }
-
-            return new ReadOnlyCollection<DeploymentPayload>(payloads);
+            return GetDeploymentPayloadFromRegistryByAddInTitle(registry, addInTitle);
         }
 
         // This is a mess and could use some cleaning up
@@ -244,8 +216,7 @@ namespace XLAutoDeploy.Deployments
             return File.Exists(deploymentDestination.AddInPath);
         }
 
-        #region PrivateMethods
-        private static DeploymentPayload GetDeploymentPayload(PublishedDeployment publishedDeployment,
+        public static DeploymentPayload GetDeploymentPayload(PublishedDeployment publishedDeployment,
                       IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
         {
             Deployment deployment = null;
@@ -306,6 +277,89 @@ namespace XLAutoDeploy.Deployments
             return new DeploymentPayload(publishedDeployment.FileHost, deployment, addIn, addInSchemaLocation);
         }
 
+        #region PrivateMethods
+        private static DeploymentRegistry GetDeploymentRegistry(Uri uri)
+        {
+            if (uri.IsFile || uri.IsUnc)
+            {
+                return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(uri.LocalPath);
+            }
+            else
+            {
+                return GetDeploymentRegistry(new WebClient(), uri);
+            }
+        }
+
+        private static DeploymentRegistry GetDeploymentRegistry(WebClient webClient, Uri uri)
+        {
+            return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(webClient, uri);
+        }
+
+        private static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloadsFromRegistry(DeploymentRegistry registry)
+        {
+            WebClient webClient = new WebClient();
+
+            return GetDeploymentPayloadsFromRegistry(registry, null, webClient);
+        }
+
+        private static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloadsFromRegistry(DeploymentRegistry registry,
+            IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
+        {
+            if (registry == null)
+            {
+                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
+                    $"The {nameof(DeploymentRegistry)} is null.",
+                    $"Retrieve the deployment registry using GetDeploymentRegistry."));
+            }
+
+            if (registry?.PublishedDeployments?.Count == 0)
+            {
+                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
+                    $"The {nameof(DeploymentRegistry.PublishedDeployments)} is null.",
+                    $"Retrieve the deployment registry using GetDeploymentRegistry."));
+            }
+
+            List<DeploymentPayload> payloads = new List<DeploymentPayload>();
+            foreach (var publishedDeployment in registry.PublishedDeployments)
+            {
+                var payload = GetDeploymentPayload(publishedDeployment, fileNetworkConnection, webClient);
+
+                payloads.Add(payload);
+            }
+
+            return new ReadOnlyCollection<DeploymentPayload>(payloads);
+        }
+
+        private static DeploymentPayload GetDeploymentPayloadFromRegistryByAddInTitle(DeploymentRegistry registry, string addInTitle,
+            IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
+        {
+            if (registry == null)
+            {
+                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
+                    $"The {nameof(DeploymentRegistry)} is null.",
+                    $"Retrieve the deployment registry using GetDeploymentRegistry."));
+            }
+
+            if (registry?.PublishedDeployments?.Count == 0)
+            {
+                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
+                    $"The {nameof(DeploymentRegistry.PublishedDeployments)} is null.",
+                    $"Retrieve the deployment registry using GetDeploymentRegistry."));
+            }
+
+            foreach (var publishedDeployment in registry.PublishedDeployments)
+            {
+                var payload = GetDeploymentPayload(publishedDeployment, fileNetworkConnection, webClient);
+
+                if (payload.AddIn.Identity.Title == addInTitle)
+                {
+                    return payload;
+                }
+            }
+
+            return null;
+        }
+
         private static void DeployAddIn(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator, IRemoteFileDownloader remoteFileDownloader,
             IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
         {
@@ -331,8 +385,6 @@ namespace XLAutoDeploy.Deployments
 
                     UpdateService.DownloadAddInFromFileServer(deploymentPayload, updateCoordinator, remoteFileDownloader);
 
-                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator, true);
-
                     break;
 
                 case FileHostType.WebServer:
@@ -353,10 +405,10 @@ namespace XLAutoDeploy.Deployments
 
                     UpdateService.DownloadAddInFromWebServer(deploymentPayload, updateCoordinator, remoteFileDownloader, webClient);
 
-                    FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator, true);
-
                     break;
             }
+
+            FinalizeDeploymentAndNotifyUser(deploymentPayload, updateCoordinator, true);
         }
 
         private static void FinalizeDeploymentAndNotifyUser(DeploymentPayload deploymentPayload, IUpdateCoordinator updateCoordinator, bool isInitialDeployment)

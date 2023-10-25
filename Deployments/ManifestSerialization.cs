@@ -22,19 +22,19 @@ namespace XLAutoDeploy.Deployments
             }
             catch (IOException ex)
             {
-                logger.Error(ex, $"Invalid configuration file location for type '{nameof(T)}' from file path '{filePath}'.");
+                logger.Error(ex, $"Invalid configuration file location for type '{typeof(T).Name}' from file path '{filePath}'.");
             }
             catch (UnauthorizedAccessException ex)
             {
-                logger.Error(ex, $"Inaccessible configuration file location for type '{nameof(T)}' from file path '{filePath}'.");
+                logger.Error(ex, $"Inaccessible configuration file location for type '{typeof(T).Name}' from file path '{filePath}'.");
             }
             catch (SecurityException ex)
             {
-                logger.Error(ex, $"Inaccessible configuration file location for type '{nameof(T)}' from file path '{filePath}'.");
+                logger.Error(ex, $"Inaccessible configuration file location for type '{typeof(T).Name}' from file path '{filePath}'.");
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Error loading the configuration file for type '{nameof(T)}' from file path '{filePath}'.");
+                logger.Error(ex, $"Error loading the configuration file for type '{typeof(T).Name}' from file path '{filePath}'.");
             }
 
             return false;
@@ -50,7 +50,7 @@ namespace XLAutoDeploy.Deployments
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Error loading the configuration file for type '{nameof(T)}' from file path '{uri}'.");
+                logger.Error(ex, $"Error loading the configuration file for type '{typeof(T).Name}' from file path '{uri}'.");
             }
 
             obj = (T)Activator.CreateInstance(typeof(T)); // can't return null
@@ -63,7 +63,7 @@ namespace XLAutoDeploy.Deployments
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException(Common.GetFormatedErrorMessage($"Attempting to deserialize a manifest file.",
-                                                $"The {nameof(T)} manifest file could not be found in the following path: {filePath}.",
+                                                $"The {typeof(T).Name} manifest file could not be found in the following path: {filePath}.",
                                                 $"Supply a valid manifest {nameof(filePath)}"));
             }
 
@@ -85,19 +85,19 @@ namespace XLAutoDeploy.Deployments
             }
             catch (IOException ex)
             {
-                logger.Error(ex, $"Invalid configuration file location for type '{nameof(T)}' to file path '{filePath}'.");
+                logger.Error(ex, $"Invalid configuration file location for type '{typeof(T).Name}' to file path '{filePath}'.");
             }
             catch (UnauthorizedAccessException ex)
             {
-                logger.Error(ex, $"Inaccessible configuration file location for type '{nameof(T)}' to file path '{filePath}'.");
+                logger.Error(ex, $"Inaccessible configuration file location for type '{typeof(T).Name}' to file path '{filePath}'.");
             }
             catch (SecurityException ex)
             {
-                logger.Error(ex, $"Inaccessible configuration file location for type '{nameof(T)}' to file path '{filePath}'.");
+                logger.Error(ex, $"Inaccessible configuration file location for type '{typeof(T).Name}' to file path '{filePath}'.");
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Error serializing for type '{nameof(T)}' to file path '{filePath}'.");
+                logger.Error(ex, $"Error serializing for type '{typeof(T).Name}' to file path '{filePath}'.");
             }
 
             return false;

@@ -4,6 +4,8 @@ using XLAutoDeploy.Logging;
 using XLAutoDeploy.Manifests;
 using XLAutoDeploy.Manifests.Utilities;
 
+using ExcelDna.Integration;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,11 +32,11 @@ namespace XLAutoDeploy.Deployments
         public UpdateMonitor(IEnumerable<DeploymentPayload> deploymentPayloads,
                 IUpdateCoordinator updateCoordinator, ILogger logger)
         {
-            _deploymentPayloads = deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration != null)?.ToList();
+            _deploymentPayloads = deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration != null)?.ToList(); 
 
             if (_deploymentPayloads?.Any() == false)
             {
-                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateMonitor)}.",
+                throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Constructing type {nameof(Deployments.UpdateMonitor)}.",
                     $"The where no {nameof(deploymentPayloads)} add-ins found whose Deployment.Settings.UpdateBehavior.Expiration was non-null.",
                     "Supply one or more RemoteAddIns that match the aforementioned criteria."));
             }
@@ -99,7 +101,11 @@ namespace XLAutoDeploy.Deployments
                 existingUpdateQueryInfo = ManifestSerialization.DeserializeManifestFile<UpdateQueryInfo>(updateQueryInfoManifestFilePath);
             }
 
-            var checkedUpdate = DeploymentService.GetCheckedUpdate(payload, deployedAddInVersion, DateTime.UtcNow, true);
+            // If the remote addin manifest file version was updated while XLAutoDeploy was
+            // running, we need to get that version and compare against the deployed version
+            var remoteDeploymentPayload = DeploymentService.GetDeploymentPayloadByAddInTitle(ExcelDnaUtil.XllPath, payload.AddIn.Identity.Title);
+
+            var checkedUpdate = DeploymentService.GetCheckedUpdate(remoteDeploymentPayload, deployedAddInVersion, DateTime.UtcNow, true);
             checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;
 
             var updateBehavior = payload.Deployment.Settings.UpdateBehavior;
@@ -119,7 +125,7 @@ namespace XLAutoDeploy.Deployments
 
                 string frequency = updateBehavior.Expiration.MaximumAge > 1 ? $"{updateBehavior.Expiration.MaximumAge} {unitOfTime}" : unitOfTime.TrimEnd('s');
 
-                message = message + $" You will continue to be notified every {frequency} that the Excel application remains open until you do so.";
+                message = $"{message} You will continue to be notified every {frequency} that the Excel application remains open until you do so.";
 
                 _updateCoordinator.Notifier.Notify(message,
     checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info, false);

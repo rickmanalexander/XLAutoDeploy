@@ -11,7 +11,6 @@ using ExcelDna.Logging;
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace XLAutoDeploy
@@ -60,13 +59,7 @@ namespace XLAutoDeploy
                 {
                     SetUpLoggerBaseDirectory();
 
-                    var applicationDirectory = Path.GetDirectoryName(ExcelDnaUtil.XllPath);
-                    var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
-                    var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
-
-                    var registry = DeploymentService.GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
-
-                    _deploymentPayloads = DeploymentService.GetDeploymentPayloads(registry);
+                    _deploymentPayloads = DeploymentService.GetDeploymentPayloads(ExcelDnaUtil.XllPath);
 
                     if (_deploymentPayloads?.Any() == false)
                     {
