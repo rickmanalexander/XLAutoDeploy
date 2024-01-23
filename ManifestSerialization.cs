@@ -1,4 +1,5 @@
 ﻿using XLAutoDeploy.Logging;
+
 using XLAutoDeploy.Manifests.Utilities;
 
 using System;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Net;
 using System.Security;
 
-namespace XLAutoDeploy.Deployments
+namespace XLAutoDeploy
 {
     internal static class ManifestSerialization
     {

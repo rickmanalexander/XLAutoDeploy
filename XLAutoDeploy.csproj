@@ -99,7 +99,7 @@
     <Compile Include="Logging\Abstract\INLoggerProxyFactory.cs" />
     <Compile Include="Logging\NLoggerProxy.cs" />
     <Compile Include="Logging\NLoggerProxyFactory.cs" />
-    <Compile Include="Deployments\ManifestSerialization.cs" />
+    <Compile Include="ManifestSerialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThisAddIn.cs" />
     <Compile Include="Deployments\DeploymentDestination.cs" />

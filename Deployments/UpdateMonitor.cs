@@ -103,7 +103,8 @@ namespace XLAutoDeploy.Deployments
 
             // If the remote addin manifest file version was updated while XLAutoDeploy was
             // running, we need to get that version and compare against the deployed version
-            var remoteDeploymentPayload = DeploymentService.GetDeploymentPayloadByAddInTitle(ExcelDnaUtil.XllPath, payload.AddIn.Identity.Title);
+            var xLAutoDeployManifest = Common.GetXLAutoDeployManifest(ExcelDnaUtil.XllPath);
+            var remoteDeploymentPayload = DeploymentService.GetDeploymentPayloadByAddInTitle(xLAutoDeployManifest, payload.AddIn.Identity.Title);
 
             var checkedUpdate = DeploymentService.GetCheckedUpdate(remoteDeploymentPayload, deployedAddInVersion, DateTime.UtcNow, true);
             checkedUpdate.Info.FirstNotified = existingUpdateQueryInfo?.FirstNotified;

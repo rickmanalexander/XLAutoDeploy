@@ -17,25 +17,15 @@ namespace XLAutoDeploy.Deployments
         private static readonly IDictionary<NetClrVersion, HashSet<System.Version>> _installedClrAndNetFrameworks =
             ClientSystemDetection.GetAllInstalledClrAndNetFrameworkVersions();
 
-        public static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloads(string xlAutoDeployCurrentFilePath)
+        public static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloads(XLAutoDeployManifest xlAutoDeployManifest)
         {
-            var applicationDirectory = Path.GetDirectoryName(xlAutoDeployCurrentFilePath);
-            var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
-
-            var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
-
             var registry = GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
 
             return GetDeploymentPayloadsFromRegistry(registry);
         }
 
-        public static DeploymentPayload GetDeploymentPayloadByAddInTitle(string xlAutoDeployCurrentFilePath, string addInTitle)
+        public static DeploymentPayload GetDeploymentPayloadByAddInTitle(XLAutoDeployManifest xlAutoDeployManifest, string addInTitle)
         {
-            var applicationDirectory = Path.GetDirectoryName(xlAutoDeployCurrentFilePath);
-            var manifestFilePath = Path.Combine(applicationDirectory, Common.XLAutoDeployManifestFileName);
-
-            var xlAutoDeployManifest = ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
-
             var registry = GetDeploymentRegistry(xlAutoDeployManifest.DeploymentRegistryUri);
 
             return GetDeploymentPayloadFromRegistryByAddInTitle(registry, addInTitle);

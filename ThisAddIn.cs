@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace XLAutoDeploy
 {
@@ -27,11 +28,12 @@ namespace XLAutoDeploy
         private static readonly ILogger _logger = _loggerProxyFactory.Create(typeof(ThisAddIn));
         private readonly IUpdateCoordinator _updateCoordinator = new UpdateCoordinatorFactory().Create(_loggerProxyFactory);
 
+        private XLAutoDeployManifest _xLAutoDeployManifest;
         private IReadOnlyCollection<DeploymentPayload> _deploymentPayloads;
         private UpdateMonitor _updateMonitor;
 
         private ComAddInExtensibility _comExtensibility;
-        private bool _hasExcelAppShutdownExecuted = false;
+        private int _onExcelAppShutdownExecutionCount = 0;
 
         public void AutoOpen()
         {
@@ -57,13 +59,16 @@ namespace XLAutoDeploy
 
                 try
                 {
-                    SetUpLoggerBaseDirectory();
+                    SetUpLoggerEndPoint();
 
-                    _deploymentPayloads = DeploymentService.GetDeploymentPayloads(ExcelDnaUtil.XllPath);
+                    _xLAutoDeployManifest = Common.GetXLAutoDeployManifest(ExcelDnaUtil.XllPath);
+
+                    _deploymentPayloads = DeploymentService.GetDeploymentPayloads(_xLAutoDeployManifest);
 
                     if (_deploymentPayloads?.Any() == false)
                     {
                         Debug.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
+                        _logger.Warn($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
                         return;
                     }
 
@@ -92,12 +97,12 @@ namespace XLAutoDeploy
 
         private void OnExcelAppShutdown()
         {
-            if (_hasExcelAppShutdownExecuted)
+            if (Interlocked.Increment(ref _onExcelAppShutdownExecutionCount) > 1)
                 return;
 
             Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
-            SetUpLoggerBaseDirectory();
+            SetUpLoggerEndPoint();
 
             if (_deploymentPayloads == null)
             {
@@ -132,27 +137,25 @@ namespace XLAutoDeploy
             }
 
             Debug.WriteLine($"End {Common.GetAppName()} shutdown");
-
-            _hasExcelAppShutdownExecuted = true;
         }
 
-        private static void SetUpLoggerBaseDirectory()
+        private static void SetUpLoggerEndPoint()
         {
-            NLog.LogManager.Configuration.Variables[Common.NLogConfigAppVersionVariableName] = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            NLog.LogManager.Configuration.Variables[Common.NLogConfigurationVariableNames.AppVersion] = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();
             switch (officeBitness)
             {
                 case MicrosoftOfficeBitness.Bit32:
-                    NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "32bit";
+                    NLog.LogManager.Configuration.Variables[Common.NLogConfigurationVariableNames.OfficeBittness] = "32bit";
                     break;
 
                 case MicrosoftOfficeBitness.Bit64:
-                    NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "64bit";
+                    NLog.LogManager.Configuration.Variables[Common.NLogConfigurationVariableNames.OfficeBittness] = "64bit";
                     break;
 
                 case MicrosoftOfficeBitness.Unknown:
-                    NLog.LogManager.Configuration.Variables[Common.NLogConfigOfficeBittnessVariableName] = "UnknownBitness";
+                    NLog.LogManager.Configuration.Variables[Common.NLogConfigurationVariableNames.OfficeBittness] = "UnknownBitness";
                     break;
             }
         }
