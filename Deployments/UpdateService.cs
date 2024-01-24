@@ -48,7 +48,7 @@ namespace XLAutoDeploy.Deployments
             // Move any files stored next to the add-in
             var otherFilePaths = Directory.GetFiles(deploymentPayload.Destination.ParentDirectory);
 
-            if (otherFilePaths != null || otherFilePaths.Length > 0)
+            if (otherFilePaths is not null || otherFilePaths.Length > 0)
             {
                 for (int i = 0; i < otherFilePaths.Length; i++)
                 {
@@ -96,7 +96,7 @@ namespace XLAutoDeploy.Deployments
                         // Move any files stored next to the add-in
                         var otherFilePaths = Directory.GetFiles(deploymentPayload.Destination.TempDirectory);
 
-                        if (otherFilePaths != null || otherFilePaths.Length > 0)
+                        if (otherFilePaths is not null || otherFilePaths.Length > 0)
                         {
                             for (int i = 0; i < otherFilePaths.Length; i++)
                             {
@@ -204,7 +204,7 @@ namespace XLAutoDeploy.Deployments
             {
                 string targetFilePath = GetAssetFileFilePath(file, destination);
 
-                if (file.Hash != null)
+                if (file.Hash is not null)
                 {
                     var fileBytes = fileDownloader.DownloadBytes(webClient, file.Uri);
 
@@ -252,7 +252,7 @@ namespace XLAutoDeploy.Deployments
             {
                 string targetFilePath = GetAssetFileFilePath(file, destination);
 
-                if (file.Hash != null)
+                if (file.Hash is not null)
                 {
                     var fileBytes = fileDownloader.DownloadBytes(file.Uri.LocalPath);
 
@@ -364,7 +364,7 @@ namespace XLAutoDeploy.Deployments
 
         public static bool IsUpdateExpired(UpdateQueryInfo updateQueryInfo, UpdateExpiration updateExpiration, DateTime currentUtcDateTime)
         {
-            if (updateQueryInfo.LastChecked != null)
+            if (updateQueryInfo.LastChecked is not null)
                 return false;
 
             DateTime lastChecked = (DateTime)updateQueryInfo.LastChecked;

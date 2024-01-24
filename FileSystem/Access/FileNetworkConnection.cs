@@ -21,7 +21,7 @@ namespace XLAutoDeploy.FileSystem
 
         public FileNetworkConnection(NetworkCredential networkCredential, string remoteServerName)
         {
-            if (networkCredential == null)
+            if (networkCredential is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(FileNetworkConnection)}",
                     $"The {nameof(networkCredential)} parameter is null.",
@@ -96,7 +96,7 @@ namespace XLAutoDeploy.FileSystem
                 GC.SuppressFinalize(this);
             }
 
-            if (_remoteServerName != null)
+            if (_remoteServerName is not null)
             {
                 _cache?.Remove(new Uri(_remoteServerName), "Basic");
             }

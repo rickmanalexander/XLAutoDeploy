@@ -32,7 +32,7 @@ namespace XLAutoDeploy.Deployments
         public UpdateMonitor(IEnumerable<DeploymentPayload> deploymentPayloads,
                 IUpdateCoordinator updateCoordinator, ILogger logger)
         {
-            _deploymentPayloads = deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration != null)?.ToList(); 
+            _deploymentPayloads = deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration is not null)?.ToList(); 
 
             if (_deploymentPayloads?.Any() == false)
             {

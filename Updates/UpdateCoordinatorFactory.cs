@@ -8,7 +8,7 @@ namespace XLAutoDeploy.Updates
     {
         public IUpdateCoordinator Create(INLoggerProxyFactory loggerProxyFactory)
         {
-            if (loggerProxyFactory == null)
+            if (loggerProxyFactory is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateCoordinatorFactory)}",
                     $"The {nameof(loggerProxyFactory)} parameter is null.",

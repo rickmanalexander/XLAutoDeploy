@@ -22,7 +22,9 @@ namespace XLAutoDeploy.Updates
         {
             _doUpdate = false;
 
-            _view = new UpdateNotificationView(message, deploymentDescription, updateQueryInfo, allowSkip); 
+            _view = new UpdateNotificationView(message, deploymentDescription, updateQueryInfo, allowSkip) ?? throw new NullReferenceException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateNotificationView)}",
+                    $"The {nameof(UpdateNotificationView)} contructor returned null unexpectedly.",
+                    $"Return a valid instance from the constructor."));
 
             var now = DateTime.UtcNow;
 

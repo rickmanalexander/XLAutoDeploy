@@ -85,28 +85,28 @@ namespace XLAutoDeploy.Deployments
             if (String.IsNullOrEmpty(manufacturer) || String.IsNullOrWhiteSpace(manufacturer))
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {typeName}",
-                    $"The {nameof(manufacturer)} parameter is null or empty.",
+                    $"The {nameof(manufacturer)} parameter is null, empty, or whitespace.",
                     $"Supply a valid {nameof(manufacturer)}."));
             }
 
             if (String.IsNullOrEmpty(product) || String.IsNullOrWhiteSpace(product))
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {typeName}",
-                    $"The {nameof(product)} parameter is null or empty.",
+                    $"The {nameof(product)} parameter is null, empty, or whitespace.",
                     $"Supply a valid {nameof(product)}."));
             }
 
-            if (version == null)
+            if (version is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {typeName}",
-                    $"The {nameof(version)} parameter is null or empty.",
+                    $"The {nameof(version)} parameter is null, empty, or whitespace.",
                     $"Supply a valid {nameof(version)}."));
             }
 
             if (String.IsNullOrEmpty(addInName) || String.IsNullOrWhiteSpace(addInName))
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {typeName}",
-                    $"The {nameof(addInName)} parameter is null or empty.",
+                    $"The {nameof(addInName)} parameter is null, empty, or whitespace.",
                     $"Supply a valid {nameof(addInName)}."));
             }
 

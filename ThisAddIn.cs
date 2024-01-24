@@ -76,7 +76,7 @@ namespace XLAutoDeploy
 
                     DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
 
-                    if (_deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration != null)?.Any() == true)
+                    if (_deploymentPayloads?.Where(d => d.Deployment.Settings.UpdateBehavior.Expiration is not null)?.Any() == true)
                     {
                         _updateMonitor = UpdateMonitorFactory.Create(_deploymentPayloads, _updateCoordinator);
                     }
@@ -104,7 +104,7 @@ namespace XLAutoDeploy
 
             SetUpLoggerEndPoint();
 
-            if (_deploymentPayloads == null)
+            if (_deploymentPayloads is null)
             {
                 Debug.WriteLine("OnExcelAppShutdown: _deploymentPayloads is null");
 #if DEBUG
@@ -117,7 +117,7 @@ namespace XLAutoDeploy
             {
                 _updateMonitor?.Dispose();
 
-                if (_deploymentPayloads != null)
+                if (_deploymentPayloads is not null)
                 {
                     UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
                 }

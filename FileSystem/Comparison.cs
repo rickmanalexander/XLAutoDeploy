@@ -33,7 +33,7 @@ namespace XLAutoDeploy.FileSystem
             int b1, b2;
             using (var fs = File.OpenRead(filePath))
             {
-                if (stream == null || stream.Length != fs.Length)
+                if (stream is null || stream.Length != fs.Length)
                     return false;
 
                 do
@@ -49,7 +49,7 @@ namespace XLAutoDeploy.FileSystem
 
         public static bool BytesEqual(Stream stream1, Stream stream2)
         {
-            if (stream1 == null || stream2 == null || stream1.Length != stream2.Length)
+            if (stream1 is null || stream2 is null || stream1.Length != stream2.Length)
                 return false;
 
             int b1, b2;
@@ -112,7 +112,7 @@ namespace XLAutoDeploy.FileSystem
         {
             using (var fs = File.OpenRead(filePath))
             {
-                if (stream == null || stream.Length != fs.Length)
+                if (stream is null || stream.Length != fs.Length)
                     return false;
 
                 var h1 = algorithm.ComputeHash(stream);
@@ -124,7 +124,7 @@ namespace XLAutoDeploy.FileSystem
 
         public static bool HashEqual(HashAlgorithm algorithm, Stream stream1, Stream stream2)
         {
-            if (stream1 == null || stream2 == null || stream1.Length != stream2.Length)
+            if (stream1 is null || stream2 is null || stream1.Length != stream2.Length)
                 return false;
 
             var h1 = algorithm.ComputeHash(stream1);
@@ -139,7 +139,7 @@ namespace XLAutoDeploy.FileSystem
             if (b1 == b2)
                 return true;
 
-            if (b1 == null || b2 == null || b1.Length != b2.Length)
+            if (b1 is null || b2 is null || b1.Length != b2.Length)
                 return false;
 
             fixed (byte* p1 = b1, p2 = b2)

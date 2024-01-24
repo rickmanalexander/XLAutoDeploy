@@ -194,7 +194,7 @@ namespace XLAutoDeploy
 
             var registeredFunctions = excelApp.RegisteredFunctions;
 
-            if (registeredFunctions != null)
+            if (registeredFunctions is not null)
             {
                 var startRowIndex = registeredFunctions.GetLowerBound(0);
                 var startColumnIndex = registeredFunctions.GetLowerBound(1);

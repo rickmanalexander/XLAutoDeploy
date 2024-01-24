@@ -56,7 +56,7 @@ namespace XLAutoDeploy.Updates
         private void RaiseNotificationCompleteEvent(bool doUpdate)
         {
             var handler = NotificationComplete;
-            if (handler != null)
+            if (handler is not null)
             {
                 var @event = new UpdateNotificationEventArgs(doUpdate);
                 handler(this, @event);

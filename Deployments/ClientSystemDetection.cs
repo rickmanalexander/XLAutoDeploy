@@ -90,7 +90,7 @@ namespace XLAutoDeploy.Deployments
         {
             var identity = WindowsIdentity.GetCurrent();
 
-            if (identity != null)
+            if (identity is not null)
             {
                 var sid = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
                 var principal = new WindowsPrincipal(identity);
@@ -160,10 +160,10 @@ namespace XLAutoDeploy.Deployments
                     {
                         using (RegistryKey subKey = baseKey.OpenSubKey(versionKey, false))
                         {
-                            if (subKey != null)
+                            if (subKey is not null)
                             {
                                 var value = subKey.GetValue("Bitness").ToString();
-                                if (value != null)
+                                if (value is not null)
                                 {
                                     if (value == "x64")
                                     {
@@ -187,10 +187,10 @@ namespace XLAutoDeploy.Deployments
                                     {
                                         using (RegistryKey subKey2 = baseKey2.OpenSubKey(versionKey, false))
                                         {
-                                            if (subKey2 != null)
+                                            if (subKey2 is not null)
                                             {
                                                 var value = subKey2.GetValue("Bitness").ToString();
-                                                if (value != null)
+                                                if (value is not null)
                                                 {
                                                     if (value == "x64")
                                                     {
@@ -388,12 +388,12 @@ namespace XLAutoDeploy.Deployments
                 using (var ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView)
                         .OpenSubKey(key.Key))
                 {
-                    if (ndpKey != null && ndpKey.GetValue("Release") != null)
+                    if (ndpKey is not null && ndpKey.GetValue("Release") is not null)
                     {
                         KeyValuePair<NetClrVersion, System.Version> clrAndVersion;
 
                         //First check if there's a specific version indicated
-                        if (ndpKey.GetValue("Version") != null)
+                        if (ndpKey.GetValue("Version") is not null)
                         {
                             clrAndVersion = new KeyValuePair<NetClrVersion, System.Version>(NetClrVersion.V4, new System.Version(ndpKey.GetValue("Version").ToString()));
                         }

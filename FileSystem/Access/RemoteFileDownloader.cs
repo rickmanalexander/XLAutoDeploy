@@ -16,7 +16,7 @@ namespace XLAutoDeploy.FileSystem.Access
 
         public RemoteFileDownloader(ILogger logger)
         {
-            if (logger == null)
+            if (logger is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(RemoteFileDownloader)}",
                     $"The {nameof(logger)} parameter is null.",

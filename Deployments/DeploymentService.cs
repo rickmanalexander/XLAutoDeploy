@@ -99,7 +99,7 @@ namespace XLAutoDeploy.Deployments
                 case FileHostType.FileServer:
                     if (payload.FileHost.RequiresAuthentication)
                     {
-                        if (fileNetworkConnection == null)
+                        if (fileNetworkConnection is null)
                         {
                             throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to process update for {payload.AddIn.Identity.Title}.",
                                 $"The {nameof(fileNetworkConnection)} is null, but it is required.",
@@ -134,7 +134,7 @@ namespace XLAutoDeploy.Deployments
                     break;
 
                 case FileHostType.WebServer:
-                    if (webClient == null)
+                    if (webClient is null)
                     {
                         throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to process update for {payload.AddIn.Identity.Title}.",
                             $"The {nameof(webClient)} is null, but it is required.",
@@ -143,7 +143,7 @@ namespace XLAutoDeploy.Deployments
 
                     if (payload.FileHost.RequiresAuthentication)
                     {
-                        if (webClient.Credentials == null)
+                        if (webClient.Credentials is null)
                         {
                             throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {payload.AddIn.Identity.Title} from a protected web server.",
                                 $"The {nameof(webClient.Credentials)} property of the {nameof(webClient)} is null.",
@@ -217,7 +217,7 @@ namespace XLAutoDeploy.Deployments
                 case FileHostType.FileServer:
                     if (publishedDeployment.FileHost.RequiresAuthentication)
                     {
-                        if (fileNetworkConnection == null)
+                        if (fileNetworkConnection is null)
                         {
                             throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve a {nameof(DeploymentPayload)}.",
                                 $"The {nameof(fileNetworkConnection)} is null, but it is required.",
@@ -243,7 +243,7 @@ namespace XLAutoDeploy.Deployments
                     break;
 
                 case FileHostType.WebServer:
-                    if (webClient == null)
+                    if (webClient is null)
                     {
                         throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve a {nameof(DeploymentPayload)} from a web server.",
                             $"The {nameof(webClient)} is null, but it is required.",
@@ -252,7 +252,7 @@ namespace XLAutoDeploy.Deployments
 
                     if (publishedDeployment.FileHost.RequiresAuthentication)
                     {
-                        if (webClient.Credentials == null)
+                        if (webClient.Credentials is null)
                             throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Attempting to retrieve {nameof(DeploymentPayload)} from a protected web server.",
                                 $"The credentials property of the {nameof(webClient)} is null.",
                                 $"Supply a valid instance of {nameof(ICredentials)} to the {nameof(webClient)}."));
@@ -295,7 +295,7 @@ namespace XLAutoDeploy.Deployments
         private static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloadsFromRegistry(DeploymentRegistry registry,
             IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
         {
-            if (registry == null)
+            if (registry is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
                     $"The {nameof(DeploymentRegistry)} is null.",
@@ -323,7 +323,7 @@ namespace XLAutoDeploy.Deployments
         private static DeploymentPayload GetDeploymentPayloadFromRegistryByAddInTitle(DeploymentRegistry registry, string addInTitle,
             IFileNetworkConnection fileNetworkConnection = null, WebClient webClient = null)
         {
-            if (registry == null)
+            if (registry is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to retrieve deployment payloads.",
                     $"The {nameof(DeploymentRegistry)} is null.",
@@ -362,7 +362,7 @@ namespace XLAutoDeploy.Deployments
                 case FileHostType.FileServer:
                     if (deploymentPayload.FileHost.RequiresAuthentication)
                     {
-                        if (fileNetworkConnection == null)
+                        if (fileNetworkConnection is null)
                         {
                             throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to Deploy update for {deploymentPayload.AddIn.Identity.Title}.",
                                 $"The {nameof(fileNetworkConnection)} is null, but it is required.",
@@ -378,7 +378,7 @@ namespace XLAutoDeploy.Deployments
                     break;
 
                 case FileHostType.WebServer:
-                    if (webClient == null)
+                    if (webClient is null)
                     {
                         throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Attempting to Deploy update for {deploymentPayload.AddIn.Identity.Title}.",
                             $"The {nameof(webClient)} is null, but it is required.",
@@ -387,7 +387,7 @@ namespace XLAutoDeploy.Deployments
 
                     if (deploymentPayload.FileHost.RequiresAuthentication)
                     {
-                        if (webClient.Credentials == null)
+                        if (webClient.Credentials is null)
                             throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Deploying add-in titled {deploymentPayload.AddIn.Identity.Title} from a protected web server.",
                                 $"The {nameof(webClient.Credentials)} property of the {nameof(webClient)} is null.",
                                 $"Supply a valid instance of {webClient.Credentials.GetType().Name} to the {nameof(webClient)}."));

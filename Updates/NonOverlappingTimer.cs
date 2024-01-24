@@ -46,11 +46,16 @@ namespace XLAutoDeploy.Updates
         {
             if (interval < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(interval));
+                throw new ArgumentOutOfRangeException(nameof(interval), $"{nameof(interval)} cannot be less than 1.");
+            }
+
+            if (timeout < Timeout.Infinite)
+            {
+                throw new ArgumentOutOfRangeException(nameof(timeout), $"{nameof(timeout)} cannot be less than {Timeout.Infinite}.");
             }
 
             _interval = interval;
-            _callBack = callBack;
+            _callBack = callBack ?? throw new ArgumentNullException(nameof(callBack));
             _timeout = timeout;
 
             // This constructor specifies an infinite due time before the first callback
@@ -141,7 +146,7 @@ namespace XLAutoDeploy.Updates
             // - http://blogs.msdn.com/b/danielvl/archive/2011/02/18/disposing-system-threading-timer.aspx
             lock (_threadLock)
             {
-                if (_timer == null)
+                if (_timer is null)
                     return;
 
                 Stop();
@@ -182,7 +187,7 @@ namespace XLAutoDeploy.Updates
             {
                 try
                 {
-                    if (_timer == null)
+                    if (_timer is null)
                         return;
 
                     // Stop while callBack is running to prevent reentry if action takes

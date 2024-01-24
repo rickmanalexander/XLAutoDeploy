@@ -6,7 +6,7 @@ namespace XLAutoDeploy.Logging
     {
         public ILogger Create(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {nameof(NLoggerProxyFactory)}",
                     $"The {nameof(type)} parameter is null.",

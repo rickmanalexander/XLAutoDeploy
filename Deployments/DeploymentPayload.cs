@@ -1,5 +1,7 @@
 ﻿using XLAutoDeploy.Manifests;
 
+using System;
+
 namespace XLAutoDeploy.Deployments
 {
     internal sealed class DeploymentPayload
@@ -18,9 +20,17 @@ namespace XLAutoDeploy.Deployments
 
         public DeploymentPayload(FileHost fileHost, Deployment deployment, AddIn addIn, string addInSchemaLocation)
         {
-            _fileHost = fileHost; 
-            _deployment = deployment;
-            _addIn = addIn;
+            _fileHost = fileHost ?? throw new ArgumentNullException(nameof(fileHost)); 
+            _deployment = deployment ?? throw new ArgumentNullException(nameof(deployment));
+            _addIn = addIn ?? throw new ArgumentNullException(nameof(addIn));
+
+            if (String.IsNullOrEmpty(addInSchemaLocation) || String.IsNullOrWhiteSpace(addInSchemaLocation))
+            {
+                throw new ArgumentNullException(Common.GetFormatedErrorMessage($"Constructing type {typeof(DeploymentPayload).Name}",
+                    $"The {nameof(addInSchemaLocation)} parameter is null, empty, or whitespace.",
+                    $"Supply a valid {nameof(addInSchemaLocation)}."));
+            }
+
             _addInSchemaLocation = addInSchemaLocation;
             _destination = new DeploymentDestination(this.Deployment.Settings.DeploymentBasis,
                     this.Deployment.Description.Manufacturer,
