@@ -63,16 +63,18 @@ namespace XLAutoDeploy
 
                     _xLAutoDeployManifest = Common.GetXLAutoDeployManifest(ExcelDnaUtil.XllPath);
 
+                    var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
+
                     _deploymentPayloads = DeploymentService.GetDeploymentPayloads(_xLAutoDeployManifest);
 
                     if (_deploymentPayloads?.Any() == false)
                     {
-                        Debug.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
+                        LogDisplay.WriteLine($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
+
                         _logger.Warn($"{Common.GetAppName()} startup: Early Exit - No {nameof(DeploymentPayload)}(s) found");
+
                         return;
                     }
-
-                    var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
 
                     DeploymentService.ProcessDeploymentPayloads(_deploymentPayloads, _updateCoordinator, remoteFileDownloader);
 
@@ -106,10 +108,8 @@ namespace XLAutoDeploy
 
             if (_deploymentPayloads is null)
             {
-                Debug.WriteLine("OnExcelAppShutdown: _deploymentPayloads is null");
-#if DEBUG
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
-#endif
+
                 _logger.Fatal("OnExcelAppShutdown: _deploymentPayloads is null.");
             }
 
@@ -131,9 +131,7 @@ namespace XLAutoDeploy
 
                 Debug.WriteLine(ex.ToString());
 
-#if DEBUG
                 LogDisplay.WriteLine($"{Common.GetAppName()} - An error ocurred while attempting auto Un-load/Un-install add-ins.");
-#endif
             }
 
             Debug.WriteLine($"End {Common.GetAppName()} shutdown");

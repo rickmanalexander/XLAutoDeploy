@@ -147,7 +147,7 @@ namespace XLAutoDeploy.Deployments
                         {
                             throw new InvalidOperationException(Common.GetFormatedErrorMessage($"Updating add-in titled {payload.AddIn.Identity.Title} from a protected web server.",
                                 $"The {nameof(webClient.Credentials)} property of the {nameof(webClient)} is null.",
-                                $"Supply a valid instance of {webClient.Credentials.GetType().Name} to the {nameof(webClient)}."));
+                                $"Supply a valid instance of {nameof(ICredentials)} to the {nameof(webClient)}."));
                         }
                     }
 

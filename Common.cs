@@ -11,7 +11,7 @@ namespace XLAutoDeploy
         // Same name as this assembly
         public const string XLAutoDeployAssemblyName = "XLAutoDeploy";
 
-        public const string XLAutoDeployManifestFileName = "XLAutoDeploy.Manifest.xml";
+        public const string XLAutoDeployManifestFileName = XLAutoDeployAssemblyName + ".Manifest.xml";
 
         public const string DllFileExtension = "dll";
 
