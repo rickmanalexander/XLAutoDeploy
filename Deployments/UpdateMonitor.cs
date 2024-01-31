@@ -129,8 +129,11 @@ namespace XLAutoDeploy.Deployments
                 message = $"{message} You will continue to be notified every {frequency} that the Excel application remains open until you do so.";
 
                 _updateCoordinator.Notifier.Notify(message,
-    checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info, false);
+    checkedUpdate.Payload.Deployment.Description.Product, checkedUpdate.Payload.Deployment.Description.Publisher, checkedUpdate.Info.DeployedVersion, checkedUpdate.Info.AvailableVersion, false);
 
+                var now = DateTime.UtcNow;
+                checkedUpdate.Info.FirstNotified = checkedUpdate.Info?.FirstNotified ?? now;
+                checkedUpdate.Info.LastNotified = now;
             }
 
             Serialization.SerializeToXmlFile(checkedUpdate.Info, updateQueryInfoManifestFilePath);

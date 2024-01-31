@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using XLAutoDeploy.Manifests;
-
 namespace XLAutoDeploy.Updates
 {
     internal partial class UpdateNotificationView : Form
@@ -10,20 +8,24 @@ namespace XLAutoDeploy.Updates
         public event EventHandler<UpdateNotificationEventArgs> NotificationComplete;
 
         private readonly string _message;
-        private readonly Description _deploymentDescription;
-        private readonly UpdateQueryInfo _updateQueryInfo;
+        private readonly string _product;
+        private readonly string _publisher;
+        private readonly Version _deployedVersion;
+        private readonly Version _availableVersion;
         private readonly bool _allowSkip = false;
 
         private bool _doUpdate = false;
 
-        public UpdateNotificationView(string message, Description deploymentDescription, 
-            UpdateQueryInfo updateQueryInfo, bool allowSkip)
+        public UpdateNotificationView(string message, string product, 
+            string publisher, Version deployedVersion, Version availableVersion, bool allowSkip)
         {
             InitializeComponent();
 
             _message = message;
-            _deploymentDescription = deploymentDescription;
-            _updateQueryInfo = updateQueryInfo;
+            _product = product;
+            _publisher = publisher;
+            _deployedVersion = deployedVersion;
+            _availableVersion = availableVersion;
             _allowSkip = allowSkip;
 
             BindValuesToControls();
@@ -31,12 +33,12 @@ namespace XLAutoDeploy.Updates
 
         private void BindValuesToControls()
         {
-            this.lblNewVersionAvailable.Text = $"A New Version of {_deploymentDescription.Product} is Available";
+            this.lblNewVersionAvailable.Text = $"A new version of {_product} is available";
             this.lblUpdateMessage.Text = _message;
-            this.txtBxPublisher.Text = _deploymentDescription.Publisher;
-            this.txtBxAddIn.Text = _deploymentDescription.Product;
-            this.txtBxInstalledVersion.Text = _updateQueryInfo.DeployedVersion.ToString();
-            this.txtBxNewVersion.Text = _updateQueryInfo.AvailableVersion.ToString();
+            this.txtBxPublisher.Text = _publisher;
+            this.txtBxAddIn.Text = _product;
+            this.txtBxInstalledVersion.Text = _deployedVersion.ToString();
+            this.txtBxNewVersion.Text = _availableVersion.ToString();
 
             this.btnSkip.Enabled = _allowSkip;
         }

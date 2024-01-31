@@ -325,11 +325,11 @@ namespace XLAutoDeploy.Deployments
             if ((updateBehavior.NotifyClient && checkedUpdate.Info.UpdateAvailable) || (checkedUpdate.Info.IsMandatoryUpdate))
             {
                 updateCoordinator.Notifier.Notify(checkedUpdate.GetDescription(),
-    checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info, true);
+    checkedUpdate.Payload.Deployment.Description.Product, checkedUpdate.Payload.Deployment.Description.Publisher, checkedUpdate.Info.DeployedVersion, checkedUpdate.Info.AvailableVersion, true);
 
-                // updateCoordinator.Notifier.Notify(checkedUpdate.GetDescription(),
-                //     checkedUpdate.Payload.Deployment.Description, checkedUpdate.Info,
-                //     !checkedUpdate.Info.IsMandatoryUpdate);
+                var now = DateTime.UtcNow;
+                checkedUpdate.Info.FirstNotified = checkedUpdate.Info?.FirstNotified ?? now;
+                checkedUpdate.Info.LastNotified = now;
 
                 return updateCoordinator.Notifier.DoUpdate;
             }

@@ -1,6 +1,4 @@
-﻿using XLAutoDeploy.Manifests;
-
-using System;
+﻿using System;
 
 namespace XLAutoDeploy.Updates
 {
@@ -16,20 +14,15 @@ namespace XLAutoDeploy.Updates
         /// Notify a user of an available update. 
         /// </summary>  
         /// <remarks>
-        /// This method will automatically set the <see cref="UpdateQueryInfo.FirstNotified"/> and <see cref="UpdateQueryInfo.LastNotified"/> properties using the current UTC datetime. 
         /// </remarks>
-        public void Notify(string message, Description deploymentDescription, UpdateQueryInfo updateQueryInfo, bool allowSkip)
+        public void Notify(string message, string product,
+            string publisher, Version deployedVersion, Version availableVersion, bool allowSkip)
         {
             _doUpdate = false;
 
-            _view = new UpdateNotificationView(message, deploymentDescription, updateQueryInfo, allowSkip) ?? throw new NullReferenceException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateNotificationView)}",
+            _view = new UpdateNotificationView(message, product, publisher, deployedVersion, availableVersion, allowSkip) ?? throw new NullReferenceException(Common.GetFormatedErrorMessage($"Constructing type {nameof(UpdateNotificationView)}",
                     $"The {nameof(UpdateNotificationView)} contructor returned null unexpectedly.",
-                    $"Return a valid instance from the constructor."));
-
-            var now = DateTime.UtcNow;
-
-            updateQueryInfo.FirstNotified = updateQueryInfo?.FirstNotified ?? now;
-            updateQueryInfo.LastNotified = now;
+                    $"Return a valid instance from the constructor.")); 
 
             _view.NotificationComplete += View_NotificationComplete;
 

@@ -1,4 +1,4 @@
-﻿using XLAutoDeploy.Manifests;
+﻿using System;
 
 namespace XLAutoDeploy.Updates
 {
@@ -6,6 +6,7 @@ namespace XLAutoDeploy.Updates
     {
         bool DoUpdate { get; }
 
-        void Notify(string message, Description deploymentDescription, UpdateQueryInfo updateQueryInfo, bool allowSkip);
+        void Notify(string message, string product,
+            string publisher, Version deployedVersion, Version availableVersion, bool allowSkip);
     }
 }
