@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Net;
 
 namespace XLAutoDeploy
 {
@@ -17,9 +18,9 @@ namespace XLAutoDeploy
 
         public static class NLogConfigurationVariableNames 
         {
+            public const string BaseDirectory = "baseDirectory";
             public const string AppVersion = "appVersion";
             public const string OfficeBittness = "officeBitness";
-            public const string BaseDirectory = "baseDirectory";
         }
 
         public static string GetFormatedErrorMessage(string context, string problem, string solution)
@@ -45,12 +46,24 @@ namespace XLAutoDeploy
             return String.Concat(fileName.Replace("." + fileExtension, String.Empty), "." + fileExtension);
         }
 
-        public static XLAutoDeployManifest GetXLAutoDeployManifest(string xlAutoDeployCurrentFilePath)
+        public static XLAutoDeployManifest GetLocalXLAutoDeployManifest(string xlAutoDeployCurrentFilePath)
         {
             var applicationDirectory = Path.GetDirectoryName(xlAutoDeployCurrentFilePath);
             var manifestFilePath = Path.Combine(applicationDirectory, XLAutoDeployManifestFileName);
 
-            return ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(manifestFilePath);
+            return GetXLAutoDeployManifest(new Uri(manifestFilePath)); 
+        }
+
+        public static XLAutoDeployManifest GetXLAutoDeployManifest(Uri uri)
+        {
+            if (uri.IsFile || uri.IsUnc)
+            {
+                return ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(uri.LocalPath);
+            }
+            else
+            {
+                return ManifestSerialization.DeserializeManifestFile<XLAutoDeployManifest>(new WebClient(), uri);
+            }
         }
     }
 }

@@ -28,6 +28,8 @@ namespace XLAutoDeploy
         private static readonly ILogger _logger = _loggerProxyFactory.Create(typeof(ThisAddIn));
         private readonly IUpdateCoordinator _updateCoordinator = new UpdateCoordinatorFactory().Create(_loggerProxyFactory);
 
+        private string _loggerFileDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); 
+
         private XLAutoDeployManifest _xLAutoDeployManifest;
         private IReadOnlyCollection<DeploymentPayload> _deploymentPayloads;
         private UpdateMonitor _updateMonitor;
@@ -57,11 +59,20 @@ namespace XLAutoDeploy
             {
                 Debug.WriteLine($"Begin {Common.GetAppName()} startup");
 
+                SetUpLoggerFilePath(_loggerFileDirectory);
+
                 try
                 {
-                    SetUpLoggerEndPoint();
+                    _xLAutoDeployManifest = Common.GetLocalXLAutoDeployManifest(ExcelDnaUtil.XllPath);
 
-                    _xLAutoDeployManifest = Common.GetXLAutoDeployManifest(ExcelDnaUtil.XllPath);
+                    Debug.WriteLine($"Retrieved XLAutoDeployManifest file");
+
+                    // reset
+                    _loggerFileDirectory = _xLAutoDeployManifest.LoggerFileDirectory;
+
+                    SetUpLoggerFilePath(_loggerFileDirectory);
+
+                    // CheckForXLAutoDeployUpdateAndNotify(_xLAutoDeployManifest);
 
                     var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
 
@@ -104,7 +115,7 @@ namespace XLAutoDeploy
 
             Debug.WriteLine($"Begin {Common.GetAppName()} shutdown");
 
-            SetUpLoggerEndPoint();
+            SetUpLoggerFilePath(_loggerFileDirectory);
 
             if (_deploymentPayloads is null)
             {
@@ -122,6 +133,11 @@ namespace XLAutoDeploy
                     UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
                 }
 
+                // if (_xLAutoDeployManifest is not null)
+                // {
+                //     CheckForXLAutoDeployUpdateAndNotify(_xLAutoDeployManifest);
+                // }
+                
                 // Flush and close down internal threads and timers
                 NLog.LogManager.Shutdown();
             }
@@ -137,8 +153,24 @@ namespace XLAutoDeploy
             Debug.WriteLine($"End {Common.GetAppName()} shutdown");
         }
 
-        private static void SetUpLoggerEndPoint()
+        /*
+        private static void CheckForXLAutoDeployUpdateAndNotify(XLAutoDeployManifest xlAutoDeployManifest)
         {
+            var remoteManifestUri = xlAutoDeployManifest.ManifestUri;
+            var remoteManifest = Common.GetXLAutoDeployManifest(remoteManifestUri);
+
+            if (UpdateService.IsNewVersionAvailable(xlAutoDeployManifest.Version, remoteManifest.Version))
+            {
+                Common.DisplayMessage($"A new version of {Common.XLAutoDeployAssemblyName} was detected{Environment.NewLine}{Environment.NewLine}When time permits, please close Excel and run the installation manager found in the following location: " +
+                        $"{Environment.NewLine}{Environment.NewLine}{remoteManifest.InstallerUri}", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+            }
+        }
+        */ 
+
+        private static void SetUpLoggerFilePath(string baseDirectory)
+        {
+            NLog.LogManager.Configuration.Variables[Common.NLogConfigurationVariableNames.BaseDirectory] = baseDirectory;
+
             NLog.LogManager.Configuration.Variables[Common.NLogConfigurationVariableNames.AppVersion] = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             var officeBitness = ClientSystemDetection.GetMicrosoftOfficeBitness();

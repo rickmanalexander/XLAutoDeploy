@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <XLAutoDeployManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://github.com/XLAutoDeploy/Schemas/XLAutoDeployManifest.xsd" xsi:schemaLocation="https://github.com/XLAutoDeploy/Schemas/XLAutoDeployManifest.xsd https://github.com/rickmanalexander/XLAutoDeploy.Manifests/blob/master/Schemas/XLAutoDeployManifest.xsd">
 	<Version>1.3.5.0</Version>
+	<ExcelDnaVersion>1.7.0</ExcelDnaVersion>
 	<DeploymentRegistryUri>file://s-hdqfp03/publicshare/TechOps/Business%20Intelligence%20Applications/Core%20APIs/Excel%20AddIns/Production/XLAutoDeploy/32Bit/XLAutoDeploy-DeploymentRegistry.xml</DeploymentRegistryUri>
+	<LoggerFileDirectory>//s-hdqfp03/publicshare/TechOps/Business Intelligence Applications/Core APIs/Excel AddIns/LogFiles/</LoggerFileDirectory>
 </XLAutoDeployManifest>

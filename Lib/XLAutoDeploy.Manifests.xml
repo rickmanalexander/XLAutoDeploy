@@ -1106,6 +1106,15 @@
             Specifies the version number of XLAutoDeploy.
             </summary>  
         </member>
+        <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.ExcelDnaVersion">
+            <summary>
+            Specifies the Excel DNA version number on which XLAutoDeploy was compiled.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: Y
+            </remarks> 
+        </member>
         <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.DeploymentRegistryUri">
             <summary>
             Specifies the Uri of the associated <see cref="T:XLAutoDeploy.Manifests.DeploymentRegistry"/>.
@@ -1115,6 +1124,15 @@
             the remote <see cref="T:XLAutoDeploy.Manifests.FileHost"/>. <br/> <br/>
             Xml Node Type: Element <br/>
             Xml Required: Y
+            </remarks> 
+        </member>
+        <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.LoggerFileDirectory">
+            <summary>
+            Specifies the root folder/directory path for log files.
+            </summary>  
+            <remarks>
+            Xml Node Type: Element <br/>
+            Xml Required: N
             </remarks> 
         </member>
     </members>

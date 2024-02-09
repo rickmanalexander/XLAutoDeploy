@@ -276,13 +276,8 @@ namespace XLAutoDeploy.Deployments
             }
             else
             {
-                return GetDeploymentRegistry(new WebClient(), uri);
+                return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(new WebClient(), uri);
             }
-        }
-
-        private static DeploymentRegistry GetDeploymentRegistry(WebClient webClient, Uri uri)
-        {
-            return ManifestSerialization.DeserializeManifestFile<DeploymentRegistry>(webClient, uri);
         }
 
         private static IReadOnlyCollection<DeploymentPayload> GetDeploymentPayloadsFromRegistry(DeploymentRegistry registry)
