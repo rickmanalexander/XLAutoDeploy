@@ -68,7 +68,7 @@ namespace XLAutoDeploy
                     Debug.WriteLine($"Retrieved XLAutoDeployManifest file");
 
                     // reset
-                    _loggerFileDirectory = _xLAutoDeployManifest.LoggerFileDirectory;
+                    _loggerFileDirectory = _xLAutoDeployManifest.LoggerFileDirectory ?? _loggerFileDirectory;
 
                     SetUpLoggerFilePath(_loggerFileDirectory);
 

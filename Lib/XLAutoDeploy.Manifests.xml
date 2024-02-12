@@ -1100,7 +1100,11 @@
             <see cref="T:XLAutoDeploy.Manifests.Dependency"/>(s) and <see cref="T:XLAutoDeploy.Manifests.AssetFile"/>(s), excluding the size of add-in file itself.
             </summary>  
         </member>
-        <!-- Badly formed XML comment ignored for member "T:XLAutoDeploy.Manifests.XLAutoDeployManifest" -->
+        <member name="T:XLAutoDeploy.Manifests.XLAutoDeployManifest">
+            <summary>
+            Represents the location of the <see cref="T:XLAutoDeploy.Manifests.DeploymentRegistry"/>.
+            </summary>  
+        </member>
         <member name="P:XLAutoDeploy.Manifests.XLAutoDeployManifest.Version">
             <summary>
             Specifies the version number of XLAutoDeploy.
