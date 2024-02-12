@@ -72,8 +72,6 @@ namespace XLAutoDeploy
 
                     SetUpLoggerFilePath(_loggerFileDirectory);
 
-                    // CheckForXLAutoDeployUpdateAndNotify(_xLAutoDeployManifest);
-
                     var remoteFileDownloader = new RemoteFileDownloaderFactory().Create();
 
                     _deploymentPayloads = DeploymentService.GetDeploymentPayloads(_xLAutoDeployManifest);
@@ -133,11 +131,6 @@ namespace XLAutoDeploy
                     UpdateService.TryUnInstallAddIns(_deploymentPayloads, _updateCoordinator);
                 }
 
-                // if (_xLAutoDeployManifest is not null)
-                // {
-                //     CheckForXLAutoDeployUpdateAndNotify(_xLAutoDeployManifest);
-                // }
-                
                 // Flush and close down internal threads and timers
                 NLog.LogManager.Shutdown();
             }
@@ -152,20 +145,6 @@ namespace XLAutoDeploy
 
             Debug.WriteLine($"End {Common.GetAppName()} shutdown");
         }
-
-        /*
-        private static void CheckForXLAutoDeployUpdateAndNotify(XLAutoDeployManifest xlAutoDeployManifest)
-        {
-            var remoteManifestUri = xlAutoDeployManifest.ManifestUri;
-            var remoteManifest = Common.GetXLAutoDeployManifest(remoteManifestUri);
-
-            if (UpdateService.IsNewVersionAvailable(xlAutoDeployManifest.Version, remoteManifest.Version))
-            {
-                Common.DisplayMessage($"A new version of {Common.XLAutoDeployAssemblyName} was detected{Environment.NewLine}{Environment.NewLine}When time permits, please close Excel and run the installation manager found in the following location: " +
-                        $"{Environment.NewLine}{Environment.NewLine}{remoteManifest.InstallerUri}", string.Empty, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-            }
-        }
-        */ 
 
         private static void SetUpLoggerFilePath(string baseDirectory)
         {
