@@ -3,9 +3,9 @@
 	<ExternalLibrary Path="XLAutoDeploy.dll" ExplicitExports="false" LoadFromBytes="true" Pack="true" IncludePdb="false" />
 	<Reference Path="XLAutoDeploy.Manifests.dll" Pack="true" />
 	<Reference Path="XLAutoDeploy.Manifests.XmlSerializers.dll" Pack="true" />
+	<Reference Path="NLog.dll" Pack="true" />             
 	<Reference Path="System.Security.Cryptography.Xml.dll" Pack="true" />
-	<Reference Path="NLog.dll" Pack="true" />
-  <!--
+	<!--
        The RuntimeVersion attribute above allows two settings:
        * RuntimeVersion="v4.0" - for .NET 4 and 4.5
        * RuntimeVersion="v2.0" - for .NET 2.0, 3.0 and 3.5
